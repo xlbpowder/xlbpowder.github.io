@@ -7,6 +7,15 @@ Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://j
 ### Markdown
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+```java
+    public V get() throws InterruptedException, ExecutionException {
+        int s = state;
+        if (s <= COMPLETING)
+            s = awaitDone(false, 0L);
+        return report(s);
+    }
+```
+
 
 ```markdown
 Syntax highlighted code block
