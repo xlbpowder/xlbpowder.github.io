@@ -1,4 +1,4 @@
-## Welcome to GitHub Pages
+## 先随便写点东西吧
 
 You can use the [editor on GitHub](https://github.com/xlbpowder/xlbpowder.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
