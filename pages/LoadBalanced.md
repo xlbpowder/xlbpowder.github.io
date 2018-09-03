@@ -58,11 +58,13 @@
 * HTTP重定向
 
 ### 服务器负载均衡系统（SLB）
-* FW-F5-IHS-WAS-xxx
+* FW-F5-IHS-核心（三层）交换机-WAS
+* ![F5-photo](./image/F5_ISH_WAS.png)
+* VIP-Nginx-Keepalived-webserver
+* ![Nginx-photo](./image/Nginx-Keepalived.png)
 
 ### 服务底层负载均衡
 * 分布系统中服务的负载均衡
-
 
 ### 网络分层中的负载均衡区别
 服务器负载均衡根据LB设备处理到的报文层次，分为四层服务器负载均衡和七层负载均衡。
@@ -73,9 +75,12 @@
 
 即：四层是IP：PORT的负载均衡，七层是对内容的负载均衡。
 
-## 服务端&客户端 负载均衡
+## 正向代理&反向代理
+* 正向代理（forward proxy） ，一个位于客户端和原始服务器之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并制定目标（原始服务器），然后代理向原始服务器转发请求并将获得的内容返回给客户端，客户端才能使用正向代理。我们平时说的代理就是指正向代理。 简单一点：A向C借钱，由于一些情况不能直接向C借钱，于是A想了一个办法，他让B去向C借钱，这样B就代替A向C借钱，A就得到了C的钱，C并不知道A的存在，B就充当了A的代理人的角色。 
 
-## 反向代理
+* 反向代理（Reverse Proxy），以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求的客户端，此时代理服务器对外表现为一个反向代理服务器。理解起来有些抽象，可以这么说：A向B借钱，B没有拿自己的钱，而是悄悄地向C借钱，拿到钱之后再交给A,A以为是B的钱，他并不知道C的存在。 
+
+## 服务端负载均衡&客户端负载均衡
 
 ## 负载均衡服务
 * 四层：F5、LVS
@@ -106,3 +111,5 @@
 * 软/硬件负载均衡产品知多少：https://www.cnblogs.com/lcword/p/5773296.html
 * 全局负载均衡与CDN网络简介：https://blog.csdn.net/u010340143/article/details/9062213
 * 大型网络-负载均衡架构：http://www.cnblogs.com/and/p/3366400.html
+* Nginx实现负载均衡+keepalived实现Nginx高可用：https://www.cnblogs.com/youzhibing/p/7327342.html
+* 正向代理&反向代理：https://blog.csdn.net/zt15732625878/article/details/78941268
