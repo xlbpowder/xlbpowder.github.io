@@ -85,7 +85,7 @@
 ## 负载均衡服务
 * 四层：F5、LVS
 * 七层：Nginx、HAproxy
-* 协调：Keppalived
+* 协调：Keepalived
 
 ## 负载均衡云服务
 * 阿里SLB
