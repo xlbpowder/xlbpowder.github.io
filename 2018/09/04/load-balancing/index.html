@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="前言：自己做的总结，结合各类摘要，对某些技术、服务等名词字眼不做过深讨论，如有错误请及时指出。  什么是负载均衡？讲到负载均衡是什么，首先要讨论下负载均衡出现的背景。 虽说是计算机名词，处处都源于生活嘛，生活的一部分。  一个人做事慢，分给多个人平坦做事。 CPU的发展单核心高频-&amp;gt;多核心多线程技术 单体架构-&amp;gt;集群架构-&amp;gt;分布式架构   关键字 效率提升 横向扩容（集群）">
+<meta name="description" content="前言：自己做的总结稿子，有点像是目录，结合各类摘要，对某些技术、服务等名词字眼不做过深讨论，如有错误还望及时指出。  什么是负载均衡？讲到负载均衡是什么，首先要讨论下负载均衡出现的背景。 虽说是计算机名词，处处都源于生活嘛，生活的一部分。  一个人做事慢，分给多个人平坦做事。 CPU的发展单核心高频-&amp;gt;多核心多线程技术 单体架构-&amp;gt;集群架构-&amp;gt;分布式架构   关键字 效率提升 横">
 <meta property="og:type" content="article">
 <meta property="og:title" content="load balancing">
 <meta property="og:url" content="http://yoursite.com/2018/09/04/load-balancing/index.html">
 <meta property="og:site_name" content="Bo.Liu&#39;s Blogger">
-<meta property="og:description" content="前言：自己做的总结，结合各类摘要，对某些技术、服务等名词字眼不做过深讨论，如有错误请及时指出。  什么是负载均衡？讲到负载均衡是什么，首先要讨论下负载均衡出现的背景。 虽说是计算机名词，处处都源于生活嘛，生活的一部分。  一个人做事慢，分给多个人平坦做事。 CPU的发展单核心高频-&amp;gt;多核心多线程技术 单体架构-&amp;gt;集群架构-&amp;gt;分布式架构   关键字 效率提升 横向扩容（集群）">
+<meta property="og:description" content="前言：自己做的总结稿子，有点像是目录，结合各类摘要，对某些技术、服务等名词字眼不做过深讨论，如有错误还望及时指出。  什么是负载均衡？讲到负载均衡是什么，首先要讨论下负载均衡出现的背景。 虽说是计算机名词，处处都源于生活嘛，生活的一部分。  一个人做事慢，分给多个人平坦做事。 CPU的发展单核心高频-&amp;gt;多核心多线程技术 单体架构-&amp;gt;集群架构-&amp;gt;分布式架构   关键字 效率提升 横">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/image/F5_ISH_WAS.png">
 <meta property="og:image" content="http://yoursite.com/image/Nginx-Keepalived.png">
-<meta property="og:updated_time" content="2018-09-04T06:46:07.404Z">
+<meta property="og:updated_time" content="2018-09-04T07:16:49.062Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="load balancing">
-<meta name="twitter:description" content="前言：自己做的总结，结合各类摘要，对某些技术、服务等名词字眼不做过深讨论，如有错误请及时指出。  什么是负载均衡？讲到负载均衡是什么，首先要讨论下负载均衡出现的背景。 虽说是计算机名词，处处都源于生活嘛，生活的一部分。  一个人做事慢，分给多个人平坦做事。 CPU的发展单核心高频-&amp;gt;多核心多线程技术 单体架构-&amp;gt;集群架构-&amp;gt;分布式架构   关键字 效率提升 横向扩容（集群）">
+<meta name="twitter:description" content="前言：自己做的总结稿子，有点像是目录，结合各类摘要，对某些技术、服务等名词字眼不做过深讨论，如有错误还望及时指出。  什么是负载均衡？讲到负载均衡是什么，首先要讨论下负载均衡出现的背景。 虽说是计算机名词，处处都源于生活嘛，生活的一部分。  一个人做事慢，分给多个人平坦做事。 CPU的发展单核心高频-&amp;gt;多核心多线程技术 单体架构-&amp;gt;集群架构-&amp;gt;分布式架构   关键字 效率提升 横">
 <meta name="twitter:image" content="http://yoursite.com/image/F5_ISH_WAS.png">
 
 
@@ -302,7 +302,7 @@
       
 
       
-        <p><strong>前言：自己做的总结，结合各类摘要，对某些技术、服务等名词字眼不做过深讨论，如有错误请及时指出。</strong></p>
+        <p><strong>前言：自己做的总结稿子，有点像是目录，结合各类摘要，对某些技术、服务等名词字眼不做过深讨论，如有错误还望及时指出。</strong></p>
 <hr>
 <h2 id="什么是负载均衡？"><a href="#什么是负载均衡？" class="headerlink" title="什么是负载均衡？"></a>什么是负载均衡？</h2><p>讲到负载均衡是什么，首先要讨论下负载均衡出现的背景。</p>
 <p>虽说是计算机名词，处处都源于生活嘛，生活的一部分。</p>
@@ -319,7 +319,7 @@
 <li>空间换时间</li>
 </ul>
 <hr>
-<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><a href="https://en.wikipedia.org/wiki/Load_balancing_(computing" target="_blank" rel="noopener">负载均衡（Load balancing ）</a>)：在计算中，负载平衡改善了跨多个计算资源（例如计算机，计算机集群，网络链接，中央处理单元或磁盘驱动器）的工作负载分布。负载平衡旨在优化资源使用，最大化吞吐量，最小化响应时间，并避免任何单个资源的过载。使用具有负载平衡而不是单个组件的多个组件可以通过冗余提高可靠性和可用性。负载平衡通常涉及专用软件或硬件，例如多层交换机或域名系统服务器进程。</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>负载均衡（Load balancing）：在计算中，负载平衡改善了跨多个计算资源（例如计算机，计算机集群，网络链接，中央处理单元或磁盘驱动器）的工作负载分布。负载平衡旨在优化资源使用，最大化吞吐量，最小化响应时间，并避免任何单个资源的过载。使用具有负载平衡而不是单个组件的多个组件可以通过冗余提高可靠性和可用性。负载平衡通常涉及专用软件或硬件，例如多层交换机或域名系统服务器进程。</p>
 <p>将负载（工作任务）进行平衡、分摊到多个操作单元上进行执行。需要我们注意的是：它并不属于网络基础架构，而是属于一种网络优化设备。它是建立在现有的网络基础架构之上，给企业提供了更廉价更有效的扩展选择。</p>
 <p>个人总结：将负载进行平衡，将特定的业务(网络服务、网络流量等)分担给多个服务器或网络设备。</p>
 <hr>
@@ -449,6 +449,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/09/04/hexo/" rel="prev" title="hexo">
+                hexo <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -524,7 +528,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
