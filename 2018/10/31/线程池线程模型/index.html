@@ -79,13 +79,21 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="LiuBo&#39;s Notes">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="线程模型分享 （上）本片文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Thead Pool">
+<meta property="og:url" content="http://yoursite.com/2018/10/31/线程池线程模型/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="线程模型分享 （上）本片文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="https://user-images.githubusercontent.com/5201798/47539254-f5648380-d901-11e8-9446-8a4705430539.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/5201798/47539187-a74f8000-d901-11e8-9f94-f8f4be0477a0.png">
+<meta property="og:image" content="https://images2018.cnblogs.com/blog/1424165/201808/1424165-20180803142242491-1328318201.png">
+<meta property="og:updated_time" content="2018-10-31T02:38:13.718Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LiuBo&#39;s Notes">
+<meta name="twitter:title" content="Thead Pool">
+<meta name="twitter:description" content="线程模型分享 （上）本片文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/5201798/47539254-f5648380-d901-11e8-9446-8a4705430539.png">
 
 
 
@@ -115,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/10/31/线程池线程模型/"/>
 
 
 
 
 
-  <title>LiuBo's Notes</title>
+  <title>Thead Pool | LiuBo's Notes</title>
   
 
 
@@ -140,8 +148,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -224,9 +231,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -256,9 +263,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/31/线程池线程模型/" itemprop="url">Thead Pool</a></h1>
+          <h1 class="post-title" itemprop="name headline">Thead Pool</h1>
         
 
         <div class="post-meta">
@@ -330,9 +335,7 @@
       
 
       
-        
-          
-            <h1 id="线程模型分享-（上）"><a href="#线程模型分享-（上）" class="headerlink" title="线程模型分享 （上）"></a>线程模型分享 （上）</h1><p>本片文章是公司大佬<strong>约拿</strong>上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。</p>
+        <h1 id="线程模型分享-（上）"><a href="#线程模型分享-（上）" class="headerlink" title="线程模型分享 （上）"></a>线程模型分享 （上）</h1><p>本片文章是公司大佬<strong>约拿</strong>上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。</p>
 <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><blockquote>
 <p>为什么有这篇文章？</p>
 </blockquote>
@@ -502,8 +505,6 @@
 <li><a href="http://gee.cs.oswego.edu/dl/cpjslides/nio.pdf" target="_blank" rel="noopener">http://gee.cs.oswego.edu/dl/cpjslides/nio.pdf</a> Scalable IO in Java</li>
 </ul>
 
-          
-        
       
     </div>
     
@@ -520,177 +521,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/04/hexo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="LiuBo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuBo's Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/04/hexo/" itemprop="url">hexo</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-04T15:12:28+08:00">
-                2018-09-04
-              </time>
+              <a href="/2018/09/04/hexo/" rel="next" title="hexo">
+                <i class="fa fa-chevron-left"></i> hexo
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Others/" itemprop="url" rel="index">
-                    <span itemprop="name">Others</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <h1 id="Hexo-amp-GitHub-Pages"><a href="#Hexo-amp-GitHub-Pages" class="headerlink" title="Hexo&amp;GitHub Pages"></a>Hexo&amp;GitHub Pages</h1><p>最初接触github pages之后，一直想尝试搭建一个属于自己的博客网站，根据朋友的博客网站搭建选择了jekyll，但由于选择的模板以及调试问题居多，最后放弃了。偶然间了解到了hexo和vuepress，了解了之后感觉vuepress的模板比较单一，再加上自己不是很了解vuejs（说的好像node.js自己就很懂一样），最后选择了hexo。</p>
-<p>hexo是基于node.js的高效的静态站点生成框架，通过Hexo可以轻松地使用Markdown编写文章，除了Markdown本身的语法之外，还可以使用Hexo提供的标签插件来快速的插入特定形式的内容。使用起来非常方便。</p>
-<p>从基于Ruby的jekyll，到hexo，再到vuepress。最后选择了hexo。真的是因为用起来简单，但是可能由于自己的电脑git出现了一些问题，导致不能使用hexo deploy，每次都要自己手动构建提交，这还是很麻烦的。</p>
-<p>关于如何在使用github pages搭建博客网站，这里就不抄写细节了，能找到一大堆教程，这篇文章主要是记录下我在学习hexo的一些常用命令。</p>
-<p>github pages是github提供的一个托管的公开网页，会自动将你id.github.io仓库的静态文件自动部署至：https://你的githubID.github.io/ 但由于是公开的仓库，所以大家要注意不要将敏感数据上传。</p>
-<p>由于hexo是基于NodeJS的，所以要先安装NodeJS，具体教程有很多，就不做表述了，下面记录了一些搭建博客过程中常用的命令。</p>
-<h1 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h1><h2 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo clean</span><br></pre></td></tr></table></figure>
-<h2 id="构建服务"><a href="#构建服务" class="headerlink" title="构建服务"></a>构建服务</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>也可以缩写为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo g</span><br></pre></td></tr></table></figure></p>
-<h2 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>缩写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo s</span><br></pre></td></tr></table></figure></p>
-<h2 id="部署到远程站点"><a href="#部署到远程站点" class="headerlink" title="部署到远程站点"></a>部署到远程站点</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>缩写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo d</span><br></pre></td></tr></table></figure></p>
-<h2 id="新建博文"><a href="#新建博文" class="headerlink" title="新建博文"></a>新建博文</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new &quot;post name&quot;</span><br></pre></td></tr></table></figure>
-<p>缩写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo n &quot;post name&quot;</span><br></pre></td></tr></table></figure></p>
-<p>之后会在source/_posts下面生成对应的post name.md的文件。</p>
-<h2 id="创建新主页"><a href="#创建新主页" class="headerlink" title="创建新主页"></a>创建新主页</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new page &quot;page name&quot;</span><br></pre></td></tr></table></figure>
-<p>之后会在source/_posts/page name下面生成对应的page index.md的文件。如：tags、categories的主页，然后再标题头中添加type。</p>
-<h1 id="选择主题"><a href="#选择主题" class="headerlink" title="选择主题"></a>选择主题</h1><p><a href="https://hexo.io/themes/" target="_blank" rel="noopener">https://hexo.io/themes/</a></p>
-<h2 id="替换模板"><a href="#替换模板" class="headerlink" title="替换模板"></a>替换模板</h2><p>github上clone各类模板到/themes/xxx</p>
-<p>修改_config.yml中的theme: xxx</p>
-<p>我个人使用的Theme是NexT，他有三种模式，分别可以在模板的_config.yml中设置schemes。<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Schemes</span></span><br><span class="line"><span class="attr">scheme:</span> <span class="string">Muse</span></span><br><span class="line"><span class="comment">#scheme: Mist</span></span><br><span class="line"><span class="comment">#scheme: Pisces</span></span><br><span class="line"><span class="comment">#scheme: Gemini</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="安装hexo-git配置插件"><a href="#安装hexo-git配置插件" class="headerlink" title="安装hexo git配置插件"></a>安装hexo git配置插件</h2><p>npm install hexo-deployer-git –save<br>配置_config.yml中修改入下：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">git</span></span><br><span class="line"><span class="attr">  repo:</span> <span class="string">gti仓库https地址或SSH地址</span></span><br><span class="line"><span class="attr">  branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure></p>
-<p>目前我是每一次generate之后，将构建好的文件从public中全部复制到本地仓库，然后再上传，其实嘛区别不大，就是自己打两个命令。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -700,443 +552,11 @@
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/04/load-balancing/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="LiuBo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuBo's Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/04/load-balancing/" itemprop="url">load balancing</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-04T13:54:17+08:00">
-                2018-09-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Others/" itemprop="url" rel="index">
-                    <span itemprop="name">Others</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <hr>
-<h2 id="什么是负载均衡？"><a href="#什么是负载均衡？" class="headerlink" title="什么是负载均衡？"></a>什么是负载均衡？</h2><p>讲到负载均衡是什么，首先要讨论下负载均衡出现的背景。</p>
-<ul>
-<li>CPU的发展单核心高频-&gt;多核心多线程技术</li>
-<li>单体架构-&gt;集群架构-&gt;分布式架构</li>
-</ul>
-<hr>
-<h2 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h2><ul>
-<li>效率提升</li>
-<li>横向扩容（集群）  </li>
-<li>平衡、防止单体过载</li>
-<li>空间换时间</li>
-</ul>
-<hr>
-<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>负载均衡（Load balancing）：在计算中，负载平衡改善了跨多个计算资源（例如计算机，计算机集群，网络链接，中央处理单元或磁盘驱动器）的工作负载分布。负载平衡旨在优化资源使用，最大化吞吐量，最小化响应时间，并避免任何单个资源的过载。使用具有负载平衡而不是单个组件的多个组件可以通过冗余提高可靠性和可用性。负载平衡通常涉及专用软件或硬件，例如多层交换机或域名系统服务器进程。</p>
-<p>将负载（工作任务）进行平衡、分摊到多个操作单元上进行执行。需要我们注意的是：它并不属于网络基础架构，而是属于一种网络优化设备。它是建立在现有的网络基础架构之上，给企业提供了更廉价更有效的扩展选择。</p>
-<p>个人总结：将负载进行平衡，将特定的业务(网络服务、网络流量等)分担给多个服务器或网络设备。</p>
-<hr>
-<h2 id="为了解决的问题"><a href="#为了解决的问题" class="headerlink" title="为了解决的问题"></a>为了解决的问题</h2><p>流量堵塞、效率缓慢、运行不畅，提高业务的处理能力，服务的高可用性。</p>
-<hr>
-<h2 id="硬件负载均衡-amp-软件负载均衡"><a href="#硬件负载均衡-amp-软件负载均衡" class="headerlink" title="硬件负载均衡&amp;软件负载均衡"></a>硬件负载均衡&amp;软件负载均衡</h2><p>硬件负载均衡不做讨论。列举一些产品：</p>
-<ul>
-<li>F5 BIG-IP负载均衡器（LTM）</li>
-<li>思科</li>
-<li>Radware的AppDirector系列</li>
-<li>…</li>
-</ul>
-<hr>
-<h2 id="网络七层协议"><a href="#网络七层协议" class="headerlink" title="网络七层协议"></a>网络七层协议</h2><ol>
-<li>物理层 </li>
-<li>数据链路层</li>
-<li>网络层</li>
-<li>传输层</li>
-<li>会话层</li>
-<li>表示层</li>
-<li>应用层</li>
-</ol>
-<hr>
-<h2 id="负载均衡的场景"><a href="#负载均衡的场景" class="headerlink" title="负载均衡的场景"></a>负载均衡的场景</h2><h3 id="浏览器发送请求后发生了什么？"><a href="#浏览器发送请求后发生了什么？" class="headerlink" title="浏览器发送请求后发生了什么？"></a>浏览器发送请求后发生了什么？</h3><ul>
-<li>DNS服务器，DNS本身是一个基于UDP协议的网络协议，查询IP地址信息。</li>
-<li>浏览器获得真正的IP、port、通过TCP协议发起网络访问</li>
-<li>Web Server（协议处理、静态文件、动态内容）</li>
-<li>调用不同服务、不同接口等进行处理</li>
-<li>响应</li>
-</ul>
-<h3 id="全局负载均衡系统（GSLB）"><a href="#全局负载均衡系统（GSLB）" class="headerlink" title="全局负载均衡系统（GSLB）"></a>全局负载均衡系统（GSLB）</h3><p>全局负载均衡主要用于在多个区域拥有自己服务器的站点，为了使全球用户只以一个IP地址或域名就能访问到离自己最近的服务器，从而获得最快的访问速度。</p>
-<ul>
-<li>内容分发网络（CDN）</li>
-<li><p>DNS轮询<br><img src="/image/loadbalancing/DNS.png" alt="DNS-photo"><br>利用DNS处理域名解析请求的同时进行负载均衡是另一种常用的方案。在DNS服务器中配置多个A记录，如：xxx IN A 114.100.80.1、xxx IN A 114.100.80.2、xxx IN A 114.100.80.3.<br>每次域名解析请求都会根据负载均衡算法计算一个不同的IP地址返回，这样A记录中配置的多个服务器就构成一个集群，并可以实现负载均衡。</p>
-</li>
-<li><p>HTTP重定向</p>
-</li>
-</ul>
-<h3 id="服务器负载均衡系统（SLB）"><a href="#服务器负载均衡系统（SLB）" class="headerlink" title="服务器负载均衡系统（SLB）"></a>服务器负载均衡系统（SLB）</h3><ul>
-<li>数据链路层负载均衡<br><img src="/image/loadbalancing/LVS.png" alt="LVS-photo"></li>
-</ul>
-<p>数据链路层负载均衡是指在通信协议的数据链路层修改mac地址进行负载均衡。</p>
-<p>这种数据传输方式又称作三角传输模式，负载均衡数据分发过程中不修改IP地址，只修改目的的mac地址，通过配置真实物理服务器集群所有机器虚拟IP和负载均衡服务器IP地址一样，从而达到负载均衡，这种负载均衡方式又称为直接路由方式（DR）.</p>
-<p>在上图中，用户请求到达负载均衡服务器后，负载均衡服务器将请求数据的目的mac地址修改为真是WEB服务器的mac地址，并不修改数据包目标IP地址，因此数据可以正常到达目标WEB服务器，该服务器在处理完数据后可以经过网管服务器而不是负载均衡服务器直接到达用户浏览器。</p>
-<p>使用三角传输模式的链路层负载均衡是目前大型网站所使用的最广的一种负载均衡手段。在linux平台上最好的链路层负载均衡开源产品是LVS(linux virtual server)。</p>
-<ul>
-<li>IP负载均衡（SNAT）<br><img src="/image/loadbalancing/IP.png" alt="IP-photo"></li>
-</ul>
-<p>IP负载均衡：即在网络层通过修改请求目标地址进行负载均衡。</p>
-<p>用户请求数据包到达负载均衡服务器后，负载均衡服务器在操作系统内核进行获取网络数据包，根据负载均衡算法计算得到一台真实的WEB服务器地址，然后将数据包的IP地址修改为真实的WEB服务器地址，不需要通过用户进程处理。真实的WEB服务器处理完毕后，相应数据包回到负载均衡服务器，负载均衡服务器再将数据包源地址修改为自身的IP地址发送给用户浏览器。</p>
-<p>这里的关键在于真实WEB服务器相应数据包如何返回给负载均衡服务器，一种是负载均衡服务器在修改目的IP地址的同时修改源地址，将数据包源地址改为自身的IP，即源地址转换（SNAT），另一种方案是将负载均衡服务器同时作为真实物理服务器的网关服务器，这样所有的数据都会到达负载均衡服务器。</p>
-<p>IP负载均衡在内核进程完成数据分发，较反向代理均衡有更好的处理性能。但由于所有请求响应的数据包都需要经过负载均衡服务器，因此负载均衡的网卡带宽成为系统的瓶颈。</p>
-<hr>
-<h2 id="常用的负载均衡"><a href="#常用的负载均衡" class="headerlink" title="常用的负载均衡"></a>常用的负载均衡</h2><ul>
-<li>FW-F5-IHS-核心（三层）交换机-WAS<br><img src="/image/loadbalancing/F5_ISH_WAS.png" alt="F5-photo"></li>
-<li>VIP-Nginx-Keepalived-webserver<br><img src="/image/loadbalancing/Nginx-Keepalived.png" alt="Nginx-photo"></li>
-</ul>
-<hr>
-<h3 id="服务底层负载均衡"><a href="#服务底层负载均衡" class="headerlink" title="服务底层负载均衡"></a>服务底层负载均衡</h3><ul>
-<li>分布系统中服务的负载均衡，如SpringCloud Ribbon、Zookeeper。</li>
-</ul>
-<hr>
-<h2 id="网络分层中的负载均衡区别"><a href="#网络分层中的负载均衡区别" class="headerlink" title="网络分层中的负载均衡区别"></a>网络分层中的负载均衡区别</h2><p>服务器负载均衡根据LB设备处理到的报文层次，分为四层服务器负载均衡和七层负载均衡。</p>
-<ul>
-<li>技术原理上的区别</li>
-</ul>
-<p>四层负载均衡，也就是主要通过报文中的目标地址和端口，再加上负载均衡设备设置的服务器选择方式，决定最终选择的内部服务器。<br>以常见的TCP为例，负载均衡设备在接收到第一个来自客户端的SYN 请求时，即通过上述方式选择一个最佳的服务器，并对报文中目标IP地址进行修改(改为后端服务器IP)，直接转发给该服务器。<br>TCP的连接建立，即三次握手是客户端和服务器直接建立的，负载均衡设备只是起到一个类似路由器的转发动作。在某些部署情况下，为保证服务器回包可以正确返回给负载均衡设备，在转发报文的同时可能还会对报文原来的源地址进行修改。</p>
-<p>七层负载均衡，也称为“内容交换”，也就是主要通过报文中的真正有意义的应用层内容，再加上负载均衡设备设置的服务器选择方式，决定最终选择的内部服务器。<br>以常见的TCP为例，负载均衡设备如果要根据真正的应用层内容再选择服务器，只能先代理最终的服务器和客户端建立连接(三次握手)后，才可能接受到客户端发送的真正应用层内容的报文，然后再根据该报文中的特定字段，再加上负载均衡设备设置的服务器选择方式，决定最终选择的内部服务器。负载均衡设备在这种情况下，更类似于一个代理服务器。</p>
-<p><img src="/image/loadbalancing/loadbalancing_layer4&amp;7.jpeg" alt="layer4&amp;7-photo"></p>
-<ul>
-<li>应用场景的需求</li>
-</ul>
-<p>七层应用负载的好处，是使得整个网络更”智能化”, 例如访问一个网站的用户流量，可以通过七层的方式，将对图片类的请求转发到特定的图片服务器并可以使用缓存技术。<br>将对文字类的请求可以转发到特定的文字服务器并可以使用压缩技术。当然这只是七层应用的一个小案例，从技术原理上，这种方式可以对客户端的请求和服务器的响应进行任意意义上的修改，极大的提升了应用系统在网络层的灵活性。很多在后台，(例如Nginx或者Apache)上部署的功能可以前移到负载均衡设备上，例如客户请求中的Header重写，服务器响应中的关键字过滤或者内容插入等功能。</p>
-<ul>
-<li>安全性</li>
-</ul>
-<p>是否真的可以提高安全性</p>
-<p>是否有足够的灵活度</p>
-<hr>
-<h2 id="正向代理-amp-反向代理"><a href="#正向代理-amp-反向代理" class="headerlink" title="正向代理&amp;反向代理"></a>正向代理&amp;反向代理</h2><ul>
-<li><p>正向代理（forward proxy） ，一个位于客户端和原始服务器之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并制定目标（原始服务器），然后代理向原始服务器转发请求并将获得的内容返回给客户端，客户端才能使用正向代理。我们平时说的代理就是指正向代理。 简单一点：A向C借钱，由于一些情况不能直接向C借钱，于是A想了一个办法，他让B去向C借钱，这样B就代替A向C借钱，A就得到了C的钱，C并不知道A的存在，B就充当了A的代理人的角色。 </p>
-</li>
-<li><p>反向代理（Reverse Proxy），以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求的客户端，此时代理服务器对外表现为一个反向代理服务器。理解起来有些抽象，可以这么说：A向B借钱，B没有拿自己的钱，而是悄悄地向C借钱，拿到钱之后再交给A,A以为是B的钱，他并不知道C的存在。 </p>
-</li>
-</ul>
-<hr>
-<h2 id="服务端负载均衡-amp-客户端负载均衡"><a href="#服务端负载均衡-amp-客户端负载均衡" class="headerlink" title="服务端负载均衡&amp;客户端负载均衡"></a>服务端负载均衡&amp;客户端负载均衡</h2><hr>
-<h2 id="负载均衡服务"><a href="#负载均衡服务" class="headerlink" title="负载均衡服务"></a>负载均衡服务</h2><ul>
-<li>四层：F5、LVS</li>
-<li>七层：Nginx、HAproxy</li>
-<li>协调：Keepalived</li>
-</ul>
-<hr>
-<h2 id="负载均衡云服务"><a href="#负载均衡云服务" class="headerlink" title="负载均衡云服务"></a>负载均衡云服务</h2><ul>
-<li>阿里SLB</li>
-<li>Amazon ELB</li>
-<li>Citrix ADC</li>
-<li>腾讯 CLB</li>
-<li>Radware的AppDirector</li>
-</ul>
-<hr>
-<h2 id="负载均衡组件"><a href="#负载均衡组件" class="headerlink" title="负载均衡组件"></a>负载均衡组件</h2><ul>
-<li>zookeeper</li>
-<li>spring-cloud-ribbon客户端负载均衡</li>
-<li>spring-cloud-zuul实现反向代理和负载均衡</li>
-</ul>
-<hr>
-<h2 id="负载均衡策咯"><a href="#负载均衡策咯" class="headerlink" title="负载均衡策咯"></a>负载均衡策咯</h2><ul>
-<li>轮循(Round Robin) &amp; 加权轮循(Weighted Round Robin)</li>
-<li>最少连接数(Least Connection)</li>
-<li>最少连接数慢启动时间(Least Connection Slow Start Time)</li>
-<li>基于代理的自适应负载均衡(Agent Based Adaptive Balancing)</li>
-<li>固定权重(Fixed Weighted)</li>
-<li>加权响应(Weighted Response)</li>
-<li>源IP哈希(Source IP Hash)</li>
-</ul>
-<hr>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li>Load Balancing (computing) WIKI：<a href="https://en.wikipedia.org/wiki/Load_balancing_(computing)" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Load_balancing_(computing)</a></li>
-<li>四层/七层负载均衡区别：<a href="https://www.jianshu.com/p/fa937b8e6712" target="_blank" rel="noopener">https://www.jianshu.com/p/fa937b8e6712</a></li>
-<li>软/硬件负载均衡产品知多少：<a href="https://www.cnblogs.com/lcword/p/5773296.html" target="_blank" rel="noopener">https://www.cnblogs.com/lcword/p/5773296.html</a></li>
-<li>全局负载均衡与CDN网络简介：<a href="https://blog.csdn.net/u010340143/article/details/9062213" target="_blank" rel="noopener">https://blog.csdn.net/u010340143/article/details/9062213</a></li>
-<li>大型网络-负载均衡架构：<a href="http://www.cnblogs.com/and/p/3366400.html" target="_blank" rel="noopener">http://www.cnblogs.com/and/p/3366400.html</a></li>
-<li>Nginx实现负载均衡+keepalived实现Nginx高可用：<a href="https://www.cnblogs.com/youzhibing/p/7327342.html" target="_blank" rel="noopener">https://www.cnblogs.com/youzhibing/p/7327342.html</a></li>
-<li>正向代理&amp;反向代理：<a href="https://blog.csdn.net/zt15732625878/article/details/78941268" target="_blank" rel="noopener">https://blog.csdn.net/zt15732625878/article/details/78941268</a></li>
-<li>常见负载均衡算法：<a href="https://www.cnblogs.com/will-shun/archive/2017/09/22/7574644.html" target="_blank" rel="noopener">https://www.cnblogs.com/will-shun/archive/2017/09/22/7574644.html</a></li>
-</ul>
-
-          
-        
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/03/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="LiuBo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiuBo's Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/03/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-03T17:02:29+08:00">
-                2018-09-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Others/" itemprop="url" rel="index">
-                    <span itemprop="name">Others</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
 
 
           </div>
@@ -1144,6 +564,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -1164,8 +588,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -1232,6 +665,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#线程模型分享-（上）"><span class="nav-number">1.</span> <span class="nav-text">线程模型分享 （上）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程启动与停止"><span class="nav-number">1.2.</span> <span class="nav-text">线程启动与停止</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK线程池继承层次"><span class="nav-number">1.3.</span> <span class="nav-text">JDK线程池继承层次</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#结构图"><span class="nav-number">1.3.1.</span> <span class="nav-text">结构图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池核心要素"><span class="nav-number">1.3.2.</span> <span class="nav-text">线程池核心要素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心代码分析"><span class="nav-number">1.3.3.</span> <span class="nav-text">核心代码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK线程池存在的问题"><span class="nav-number">1.3.4.</span> <span class="nav-text">JDK线程池存在的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程竞争"><span class="nav-number">1.4.</span> <span class="nav-text">线程竞争</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程竞争的定义"><span class="nav-number">1.4.1.</span> <span class="nav-text">线程竞争的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用锁控制线程间的竞争"><span class="nav-number">1.4.2.</span> <span class="nav-text">用锁控制线程间的竞争</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁的弊端"><span class="nav-number">1.4.3.</span> <span class="nav-text">锁的弊端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不用锁解决线程安全的方式"><span class="nav-number">1.4.4.</span> <span class="nav-text">不用锁解决线程安全的方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见线程模型"><span class="nav-number">1.5.</span> <span class="nav-text">常见线程模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程模型的定义"><span class="nav-number">1.5.1.</span> <span class="nav-text">线程模型的定义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.6.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1359,6 +808,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
