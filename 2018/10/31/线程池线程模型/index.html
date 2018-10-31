@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="线程模型分享 （上）本片文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
+<meta name="description" content="线程模型分享 （上）本篇文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Thead Pool">
 <meta property="og:url" content="http://yoursite.com/2018/10/31/线程池线程模型/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
-<meta property="og:description" content="线程模型分享 （上）本片文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
+<meta property="og:description" content="线程模型分享 （上）本篇文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://user-images.githubusercontent.com/5201798/47539254-f5648380-d901-11e8-9446-8a4705430539.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/5201798/47539187-a74f8000-d901-11e8-9f94-f8f4be0477a0.png">
 <meta property="og:image" content="https://images2018.cnblogs.com/blog/1424165/201808/1424165-20180803142242491-1328318201.png">
-<meta property="og:updated_time" content="2018-10-31T02:38:13.718Z">
+<meta property="og:updated_time" content="2018-10-31T03:47:05.043Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Thead Pool">
-<meta name="twitter:description" content="线程模型分享 （上）本片文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
+<meta name="twitter:description" content="线程模型分享 （上）本篇文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/5201798/47539254-f5648380-d901-11e8-9446-8a4705430539.png">
 
 
@@ -335,7 +335,7 @@
       
 
       
-        <h1 id="线程模型分享-（上）"><a href="#线程模型分享-（上）" class="headerlink" title="线程模型分享 （上）"></a>线程模型分享 （上）</h1><p>本片文章是公司大佬<strong>约拿</strong>上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。</p>
+        <h1 id="线程模型分享-（上）"><a href="#线程模型分享-（上）" class="headerlink" title="线程模型分享 （上）"></a>线程模型分享 （上）</h1><p>本篇文章是公司大佬<strong>约拿</strong>上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。</p>
 <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><blockquote>
 <p>为什么有这篇文章？</p>
 </blockquote>
