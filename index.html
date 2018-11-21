@@ -239,6 +239,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/21/lambda、函数式接口、引用表达式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuBo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/21/lambda、函数式接口、引用表达式/" itemprop="url">Lambda、函数式接口、引用表达式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-21T14:00:01+08:00">
+                2018-11-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Lambda、函数式接口、引用表达式"><a href="#Lambda、函数式接口、引用表达式" class="headerlink" title="Lambda、函数式接口、引用表达式"></a>Lambda、函数式接口、引用表达式</h1><h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><blockquote>
+<p>最近在学习Stream的api，发现Java推出的函数式接口、Lambda表达式、引用表达式等大都服务于Stream的api使用，但其实并不一定，所以收集整理了下关于相关特性的用法。<br>在这只会讲解下基本的用法，关于函数编程框架的详细解读，大家可以参考下这篇 <a href="http://www.importnew.com/27901.html" title="Java8 函数式编程探秘" target="_blank" rel="noopener">Java8 函数式编程探秘</a>，介绍的非常全面。</p>
+</blockquote>
+<h2 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h2><p>先讲一个注解 <strong><em>@FunctionalInterface</em></strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> FunctionalInterface &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>@FunctionalInterface 注解要求接口有且只有一个抽象方法，JDK中有许多类用到该注解，比如 Runnable，它只有一个 Run 方法。（注：默认方法并不是抽象方法）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * When an object implementing interface &lt;code&gt;Runnable&lt;/code&gt; is used</span></span><br><span class="line"><span class="comment">     * to create a thread, starting the thread causes the object's</span></span><br><span class="line"><span class="comment">     * &lt;code&gt;run&lt;/code&gt; method to be called in that separately executing</span></span><br><span class="line"><span class="comment">     * thread.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * The general contract of the method &lt;code&gt;run&lt;/code&gt; is that it may</span></span><br><span class="line"><span class="comment">     * take any action whatsoever.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span>     java.lang.Thread#run()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Java8中接口可以定义静态方法，直接通过类名调用，并且接口中可以通过default为抽象方法提供默认的实现。接口继承接口时，如果默认方法相同，则需要进行重写</p>
+<p>Java8推出的Lambda表达式只能针对函数式接口使用。</p>
+<h2 id="Lambda的语法"><a href="#Lambda的语法" class="headerlink" title="Lambda的语法"></a>Lambda的语法</h2><p>首先Lambda可以认为是一种特殊的匿名内部类，其次lambda只能用于函数式接口。</p>
+<p>lambda语法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">([形参列表，不带数据类型])-&gt; &#123;</span><br><span class="line">    <span class="comment">//执行语句</span></span><br><span class="line">    [<span class="keyword">return</span>..;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>要注意的点：</p>
+<ol>
+<li>如果形参列表是空的，只需要保留（）即可</li>
+<li>如果没有返回值。只需要在{}写执行语句即可</li>
+<li>如果接口的抽象方法只有一个形参，（）可以省略，只需要参数的名称即可</li>
+<li>如果执行语句只有一行，可以省略{}，但是如果有返回值时，情况特殊。</li>
+<li>如果函数式接口的方法有返回值，必须给定返回值，如果执行语句只有一句，还可以简写，即省去大括号和return以及最后的；号。</li>
+<li>形参列表的数据类型会自动推断，只需要参数名称。</li>
+</ol>
+<p>eg:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">IDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">(IDemo c)</span> </span>&#123;</span><br><span class="line">        System.out.println(c);</span><br><span class="line">        c.doSomething();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Demo demo = <span class="keyword">new</span> Demo();</span><br><span class="line">        demo.doSomething(<span class="keyword">new</span> IDemo() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">"使用匿名内部类实现"</span>);</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        demo.doSomething(() -&gt; System.out.println(<span class="string">"使用lambda表达式实现"</span>));</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        demo.doSomething(() -&gt; &#123;</span></span><br><span class="line"><span class="comment">            System.out.println("使用lambda表达式实现");</span></span><br><span class="line"><span class="comment">            System.out.println("使用lambda表达式实现");</span></span><br><span class="line"><span class="comment">        &#125;);</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="函数式接口引用表达式"><a href="#函数式接口引用表达式" class="headerlink" title="函数式接口引用表达式"></a>函数式接口引用表达式</h2><ul>
+<li>引用实例方法：<br>  自动把调用方法的时候的参数，全部传给引用的方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;函数式接口&gt; &lt;变量名&gt; = &lt;实例&gt; :: &lt;实例方法名&gt;</span><br><span class="line"><span class="comment">//自动把实参传递给引用的实例方法</span></span><br><span class="line">&lt;变量名&gt;.&lt;接口方法&gt;（[实参]）</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>引用类方法（静态方法）：<br>  自动把调用方法的时候的参数，全部传给引用的方法</p>
+</li>
+<li><p>引用类的实例方法：<br>  定义、调用接口方法的时候需要多一个参数，并且参数的类型必须和引用实例方法的类型必须一致，把第一个参数作为引用的实例，后面的每个参数全部传递给引用的方法。</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> &lt;函数式接口&gt; </span>&#123;</span><br><span class="line">    &lt;返回值&gt; &lt;方法名&gt;(&lt;类名&gt;&lt;名称&gt; [,其它参数...])    </span><br><span class="line">&#125;</span><br><span class="line">&lt;变量名&gt;.&lt;方法名&gt;（&lt;类名的实例&gt;[,其它参数]）</span><br></pre></td></tr></table></figure>
+<p>eg:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestMethodRef</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MethodRef r1 = (s) -&gt; System.out.println(s);</span><br><span class="line">        r1.test(<span class="string">"普通方式"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//使用方法的引用：实例方法的引用</span></span><br><span class="line">        <span class="comment">//System.out是一个实例  out是PrintStream 类型，有println方法</span></span><br><span class="line">        MethodRef r2 = System.out::println;</span><br><span class="line">        r2.test(<span class="string">"方法引用"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//MethodRef1 r3 =(a)-&gt; Arrays.sort(a);</span></span><br><span class="line">        <span class="comment">//引用类方法</span></span><br><span class="line">        MethodRef1 r3 = Arrays::sort;</span><br><span class="line">        <span class="keyword">int</span>[] a = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">4</span>, <span class="number">12</span>, <span class="number">23</span>, <span class="number">1</span>, <span class="number">3</span>&#125;;</span><br><span class="line">        r3.test(a);</span><br><span class="line">        <span class="comment">//将排序后的数组输出</span></span><br><span class="line">        r1.test(Arrays.toString(a));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//引用类的实例方法</span></span><br><span class="line">        MethodRef2 r4 = PrintStream::println;</span><br><span class="line">        <span class="comment">//第二个之后的参数作为引用方法的参数</span></span><br><span class="line">        r4.test(System.out, <span class="string">"第二个参数"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//引用构造器</span></span><br><span class="line">        MethodRef3 r5 = String::<span class="keyword">new</span>;</span><br><span class="line">        String test = r5.test(<span class="keyword">new</span> <span class="keyword">char</span>[]&#123;<span class="string">'测'</span>, <span class="string">'试'</span>, <span class="string">'构'</span>, <span class="string">'造'</span>, <span class="string">'器'</span>, <span class="string">'引'</span>, <span class="string">'用'</span>&#125;);</span><br><span class="line">        System.out.println(test);</span><br><span class="line">        <span class="comment">//普通情况</span></span><br><span class="line">        MethodRef3 r6 = (c) -&gt; &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> String(c);</span><br><span class="line">        &#125;;</span><br><span class="line">        String test2 = r6.test(<span class="keyword">new</span> <span class="keyword">char</span>[]&#123;<span class="string">'测'</span>, <span class="string">'试'</span>, <span class="string">'构'</span>, <span class="string">'造'</span>, <span class="string">'器'</span>, <span class="string">'引'</span>, <span class="string">'用'</span>&#125;);</span><br><span class="line">        System.out.println(test2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MethodRef</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(String s)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MethodRef1</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span>[] arr)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MethodRef2</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(PrintStream out, String str)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//测试构造器引用</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MethodRef3</span> </span>&#123;</span><br><span class="line">    <span class="function">String <span class="title">test</span><span class="params">(<span class="keyword">char</span>[] chars)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://blog.csdn.net/zymx14/article/details/70175746" target="_blank" rel="noopener">https://blog.csdn.net/zymx14/article/details/70175746</a></li>
+<li><a href="https://blog.csdn.net/kegaofei/article/details/80582356" target="_blank" rel="noopener">https://blog.csdn.net/kegaofei/article/details/80582356</a></li>
+<li><a href="https://edu.aliyun.com/lesson_1012_9096?spm=5176.10731542.0.0.xGlbkv#_9096" target="_blank" rel="noopener">https://edu.aliyun.com/lesson_1012_9096?spm=5176.10731542.0.0.xGlbkv#_9096</a></li>
+<li><a href="http://www.importnew.com/27901.html" target="_blank" rel="noopener">http://www.importnew.com/27901.html</a></li>
+<li><a href="http://www.importnew.com/10360.html" target="_blank" rel="noopener">http://www.importnew.com/10360.html</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/19/Stream/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -332,7 +514,9 @@
       
         
           
-            <p>最近在学习JAVA8 Stream的API，找到了这篇文章，觉得内容很好就抄了过来，文章来源：<a href="https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/</a></p>
+            <blockquote>
+<p>最近在学习JAVA8 Stream的API，找到了这篇文章，觉得内容很好就抄了过来，文章来源：<a href="https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/</a></p>
+</blockquote>
 <h1 id="为什么需要-Stream"><a href="#为什么需要-Stream" class="headerlink" title="为什么需要 Stream"></a>为什么需要 Stream</h1><p>Stream 作为 Java 8 的一大亮点，它与 java.io 包里的 InputStream 和 OutputStream 是完全不同的概念。它也不同于 StAX 对 XML 解析的 Stream，也不是 Amazon Kinesis 对大数据实时处理的 Stream。Java 8 中的 Stream 是对集合（Collection）对象功能的增强，它专注于对集合对象进行各种非常便利、高效的聚合操作（aggregate operation），或者大批量数据操作 (bulk data operation)。Stream API 借助于同样新出现的 Lambda 表达式，极大的提高编程效率和程序可读性。同时它提供串行和并行两种模式进行汇聚操作，并发模式能够充分利用多核处理器的优势，使用 fork/join 并行方式来拆分任务和加速处理过程。通常编写并行代码很难而且容易出错, 但使用 Stream API 无需编写一行多线程的代码，就可以很方便地写出高性能的并发程序。所以说，Java 8 中首次出现的 java.util.stream 是一个函数式语言+多核时代综合影响的产物。</p>
 <h2 id="什么是聚合操作"><a href="#什么是聚合操作" class="headerlink" title="什么是聚合操作"></a>什么是聚合操作</h2><p>在传统的 J2EE 应用中，Java 代码经常不得不依赖于关系型数据库的聚合操作来完成诸如：</p>
 <ul>
@@ -1506,7 +1690,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
