@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本篇是在对线程基础进行学习时的概念知识的随笔  线程每一个java进程，都伴随着N个线程进行执行，入口main函数为主线程。 线程的状态线程启动使用的start()方法，但是启动的时候，线程将进入一种就绪状态，现在并没有立刻执行。 进入到就绪状态之后就需要等待进行资源调度，当某一个线程的调度成功之后，则回进入到运行状态（run方法） 但是所有的线程不可能一致执行下去，中间需要产生一些暂停的状态，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java Thread">
+<meta property="og:url" content="http://yoursite.com/2018/11/28/thread/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="本篇是在对线程基础进行学习时的概念知识的随笔  线程每一个java进程，都伴随着N个线程进行执行，入口main函数为主线程。 线程的状态线程启动使用的start()方法，但是启动的时候，线程将进入一种就绪状态，现在并没有立刻执行。 进入到就绪状态之后就需要等待进行资源调度，当某一个线程的调度成功之后，则回进入到运行状态（run方法） 但是所有的线程不可能一致执行下去，中间需要产生一些暂停的状态，">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/image/volatile.png">
+<meta property="og:updated_time" content="2018-11-28T08:47:58.905Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java Thread">
+<meta name="twitter:description" content="本篇是在对线程基础进行学习时的概念知识的随笔  线程每一个java进程，都伴随着N个线程进行执行，入口main函数为主线程。 线程的状态线程启动使用的start()方法，但是启动的时候，线程将进入一种就绪状态，现在并没有立刻执行。 进入到就绪状态之后就需要等待进行资源调度，当某一个线程的调度成功之后，则回进入到运行状态（run方法） 但是所有的线程不可能一致执行下去，中间需要产生一些暂停的状态，">
+<meta name="twitter:image" content="http://yoursite.com/image/volatile.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/11/28/thread/"/>
+
+
+
+
+
+  <title>Java Thread | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/28/thread/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuBo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java Thread</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-28T14:12:17+08:00">
+                2018-11-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本篇是在对线程基础进行学习时的概念知识的随笔</p>
+</blockquote>
+<h2 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h2><p>每一个java进程，都伴随着N个线程进行执行，入口main函数为主线程。</p>
+<h2 id="线程的状态"><a href="#线程的状态" class="headerlink" title="线程的状态"></a>线程的状态</h2><p>线程启动使用的start()方法，但是启动的时候，线程将进入一种就绪状态，现在并没有立刻执行。</p>
+<p>进入到就绪状态之后就需要等待进行资源调度，当某一个线程的调度成功之后，则回进入到运行状态（run方法）</p>
+<p>但是所有的线程不可能一致执行下去，中间需要产生一些暂停的状态，例如：某个线程执行一段时间之后就需要让出资源，这个线程将会进入阻塞状态</p>
+<p>run()方法执行结束后，实际该线程的主要任务也就结束了，此时将会直接进入到停止状态</p>
+<ol>
+<li>start() 就绪</li>
+<li>run() 运行状态</li>
+<li>阻塞状态</li>
+<li>停止状态</li>
+</ol>
+<p>注：线程的停止等相关方法在jdk1.2就已经废弃，如果想停止线程应当自定义编写线程推出的条件对线程进行退出，而不是外部的暴力退出线程。</p>
+<h2 id="线程休眠"><a href="#线程休眠" class="headerlink" title="线程休眠"></a>线程休眠</h2><p>希望一个线程可以暂缓执行，进行休眠的时候可能会产生中断异常</p>
+<p>休眠的特点是可以自动实现线程的唤醒，以继续进行后续的处理，但休眠也是有先后顺序的</p>
+<h2 id="线程中断"><a href="#线程中断" class="headerlink" title="线程中断"></a>线程中断</h2><p>所有正在执行的线程都是可以被中断的，中断线程必须进行异常的处理</p>
+<ul>
+<li>判断线程是否被中断：public static boolean interrupted()</li>
+<li>中断线程执行：public void interrupt()</li>
+</ul>
+<p>interrupt()不能中断在运行中的线程，它只能改变中断状态</p>
+<h2 id="线程的强制执行"><a href="#线程的强制执行" class="headerlink" title="线程的强制执行"></a>线程的强制执行</h2><p>当满足于某些条件之后，某一个线程对象可以一直独占资源，一直到该线程的程序执行结束</p>
+<p>通过需要进行join的线程对象调用</p>
+<ul>
+<li>public final void join() throws InterruptedException </li>
+</ul>
+<h2 id="线程的礼让"><a href="#线程的礼让" class="headerlink" title="线程的礼让"></a>线程的礼让</h2><p>将资源让出给其他线程先执行</p>
+<ul>
+<li>public static native void yield();</li>
+</ul>
+<h2 id="线程优先级"><a href="#线程优先级" class="headerlink" title="线程优先级"></a>线程优先级</h2><ul>
+<li>线程优先级越高，越有可能先执行（先抢占到资源），在Thread类中针对于优先级有两个方法：</li>
+<li>设置优先级：public final void setPriority(int newPriority)</li>
+<li>获取优先级：public final void getPriority()</li>
+<li>优先级常量，分别为低、中、高优先级<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * The minimum priority that a thread can have.</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> MIN_PRIORITY = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * The default priority that is assigned to a thread.</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> NORM_PRIORITY = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * The maximum priority that a thread can have.</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> MAX_PRIORITY = <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>主线程、子线程默认的优先级为NORM_PRIORITY，中优先级</p>
+<p>设置高优先级后，该线程有可能，但并不是必定会优先执行</p>
+<h2 id="线程同步问题"><a href="#线程同步问题" class="headerlink" title="线程同步问题"></a>线程同步问题</h2><ul>
+<li>关键字：synchronized，同步代码块、同步方法中只允许一个线程执行，大都使用同步方法。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span>(同步对象)&#123;</span><br><span class="line">    同步代码操作;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>一般要进行同步对象处理的时候可以采用当前对象this进行同步。</p>
+<p>同步会造成程序性能的整体降低</p>
+<h2 id="线程死锁"><a href="#线程死锁" class="headerlink" title="线程死锁"></a>线程死锁</h2><p>死锁造成的主要原因是因为彼此都在互相等待，等待对方先让出资源。</p>
+<p>若干个线程访问同一资源时一定要进行同步处理，而过多的同步处理可能会造成死锁。</p>
+<p>如何避免死锁：</p>
+<pre><code>避免在对象的同步方法种调用其他对象的同步方法
+
+死锁的根本原因1）是多个线程涉及到多个锁，这些锁存在着交叉，所以可能会导致了一个锁依赖的闭环；2）默认的锁申请操作是阻塞的。所以要避免死锁，就要在一遇到多个对象锁交叉的情况，就要仔细审查这几个对象的类中的所有方法，是否存在着导致锁依赖的环路的可能性。要采取各种方法来杜绝这种可能性。
+</code></pre><p>一旦我们在一个同步方法中，或者说在一个锁的保护的范围中，调用了其它对象的方法时，就要十而分的小心：</p>
+<p>1）如果其它对象的这个方法会消耗比较长的时间，那么就会导致锁被我们持有了很长的时间；</p>
+<p>2）如果其它对象的这个方法是一个同步方法，那么就要注意避免发生死锁的可能性了；</p>
+<h2 id="守护线程"><a href="#守护线程" class="headerlink" title="守护线程"></a>守护线程</h2><p>守护线程的生命周期紧随用户线程，JVM最大的守护线程是GC线程，程序执行中GC线程将一直存在，如果程序执行完毕，GC线程也会消失</p>
+<ul>
+<li><p>设置为当前线程的守护线程 public final void setDaemon(boolean on)</p>
+</li>
+<li><p>是否是守护线程 public final boolean isDaemon()</p>
+</li>
+</ul>
+<h2 id="volatile关键字"><a href="#volatile关键字" class="headerlink" title="volatile关键字"></a>volatile关键字</h2><p>用于修饰关键字，表示该属性为直接属性操作，不进行副本拷贝处理。<br>一些文档和书中错误的讲其描写为同步属性。</p>
+<p>在正常进行变量处理的时候一般会经历以下几个步骤：</p>
+<ol>
+<li>获取变量原有的数据内容副本</li>
+<li>利用副本为变量进行数学计算</li>
+<li>将计算后的变量保存到原始空间之中</li>
+</ol>
+<p>如果加上了volatile关键字，表示不使用副本，直接操作原始变量，相当于节约了拷贝副本</p>
+<p><img src="/image/volatile.png" alt="volatile-photo"></p>
+<p>volatile与synchronized的区别：</p>
+<pre><code>volatile只能描述属性，而synchronized可以用于代码块与方法。
+volatile无法描述属性进行同步处理，只是一种直接内存的处理，避免了副本处理。
+</code></pre><p>对于volatile的详细解释，可以参考：<a href="https://www.ibm.com/developerworks/cn/java/j-jtp06197.html" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/java/j-jtp06197.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/21/lambda、函数式接口、引用表达式/" rel="next" title="Lambda、函数式接口、引用表达式">
+                <i class="fa fa-chevron-left"></i> Lambda、函数式接口、引用表达式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/28/对象创建及类的加载机制/" rel="prev" title="对象的创建及类的加载机制">
+                对象的创建及类的加载机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">LiuBo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#线程"><span class="nav-number">1.</span> <span class="nav-text">线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程的状态"><span class="nav-number">2.</span> <span class="nav-text">线程的状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程休眠"><span class="nav-number">3.</span> <span class="nav-text">线程休眠</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程中断"><span class="nav-number">4.</span> <span class="nav-text">线程中断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程的强制执行"><span class="nav-number">5.</span> <span class="nav-text">线程的强制执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程的礼让"><span class="nav-number">6.</span> <span class="nav-text">线程的礼让</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程优先级"><span class="nav-number">7.</span> <span class="nav-text">线程优先级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程同步问题"><span class="nav-number">8.</span> <span class="nav-text">线程同步问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程死锁"><span class="nav-number">9.</span> <span class="nav-text">线程死锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#守护线程"><span class="nav-number">10.</span> <span class="nav-text">守护线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#volatile关键字"><span class="nav-number">11.</span> <span class="nav-text">volatile关键字</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuBo</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
