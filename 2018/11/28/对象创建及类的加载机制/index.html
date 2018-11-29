@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。  类加载的各种几种方式和区别 new Class.forName class.newInstance ClassLoader  ClassLoader类加载器主要分为两类，一类是JDK默认提供的，">
+<meta name="description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。  类加载的各种几种方式和区别 new class.newInstance constructor.newInstance clone 反序列化 ClassLoader  ClassLoader类加">
 <meta property="og:type" content="article">
 <meta property="og:title" content="对象的创建及类的加载机制">
 <meta property="og:url" content="http://yoursite.com/2018/11/28/对象创建及类的加载机制/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
-<meta property="og:description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。  类加载的各种几种方式和区别 new Class.forName class.newInstance ClassLoader  ClassLoader类加载器主要分为两类，一类是JDK默认提供的，">
+<meta property="og:description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。  类加载的各种几种方式和区别 new class.newInstance constructor.newInstance clone 反序列化 ClassLoader  ClassLoader类加">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/image/classloader.png">
-<meta property="og:updated_time" content="2018-11-28T08:45:17.093Z">
+<meta property="og:updated_time" content="2018-11-29T06:34:44.629Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="对象的创建及类的加载机制">
-<meta name="twitter:description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。  类加载的各种几种方式和区别 new Class.forName class.newInstance ClassLoader  ClassLoader类加载器主要分为两类，一类是JDK默认提供的，">
+<meta name="twitter:description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。  类加载的各种几种方式和区别 new class.newInstance constructor.newInstance clone 反序列化 ClassLoader  ClassLoader类加">
 <meta name="twitter:image" content="http://yoursite.com/image/classloader.png">
 
 
@@ -338,8 +338,10 @@
 </blockquote>
 <h2 id="类加载的各种几种方式和区别"><a href="#类加载的各种几种方式和区别" class="headerlink" title="类加载的各种几种方式和区别"></a>类加载的各种几种方式和区别</h2><ol>
 <li>new</li>
-<li>Class.forName</li>
 <li>class.newInstance</li>
+<li>constructor.newInstance</li>
+<li>clone</li>
+<li>反序列化</li>
 <li>ClassLoader</li>
 </ol>
 <h2 id="ClassLoader"><a href="#ClassLoader" class="headerlink" title="ClassLoader"></a>ClassLoader</h2><p>类加载器主要分为两类，一类是JDK默认提供的，一类是用户自定义的。 </p>
