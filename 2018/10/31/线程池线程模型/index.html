@@ -89,7 +89,7 @@
 <meta property="og:image" content="https://user-images.githubusercontent.com/5201798/47539254-f5648380-d901-11e8-9446-8a4705430539.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/5201798/47539187-a74f8000-d901-11e8-9f94-f8f4be0477a0.png">
 <meta property="og:image" content="https://images2018.cnblogs.com/blog/1424165/201808/1424165-20180803142242491-1328318201.png">
-<meta property="og:updated_time" content="2018-10-31T03:47:05.043Z">
+<meta property="og:updated_time" content="2018-12-13T01:19:01.952Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Thead Pool">
 <meta name="twitter:description" content="线程模型分享 （上）本篇文章是公司大佬约拿上周五给我培训的文档，分享给大家。非常感谢百忙之中给我培训。 引言 为什么有这篇文章？  起先看我的目标是看netty的线程模型，但是在看netty的过程中，我发现很多知识点是互相关联的。比如netty的EventLoop，EventLoopGroup其实是继承自JDK的线程池。学习netty的线程模型前需要懂得预备知识。基于这个理由，我把预备内容部分也写">
@@ -372,7 +372,7 @@
 </ol>
 <ul>
 <li><strong>stop</strong> 会立即杀死线程，可能导致执行一半的程序被终结导致数据不一致的风险</li>
-<li><strong>suspend</strong> 会挂起线程，但是不会释放锁，可能会造成思索</li>
+<li><strong>suspend</strong> 会挂起线程，但是不会释放锁，可能会造成死锁</li>
 <li>线程池有个 <strong>shutdown</strong> 方法只是阻止线程池接受新的线程 ，并不会停止已存在的线程。</li>
 </ul>
 <ol start="2">
@@ -382,7 +382,8 @@
 <li>线程自己运行完成</li>
 <li>设置终止标志，在循环中检查这个标志</li>
 </ul>
-<h2 id="JDK线程池继承层次"><a href="#JDK线程池继承层次" class="headerlink" title="JDK线程池继承层次"></a>JDK线程池继承层次</h2><h3 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h3><p><img src="https://user-images.githubusercontent.com/5201798/47539254-f5648380-d901-11e8-9446-8a4705430539.png" alt="image"><br>这个图上很多类不用看，因为都是Executors类的内部类，代理类，核心就是下图的几个接口和类。</p>
+<h2 id="JDK线程池继承层次"><a href="#JDK线程池继承层次" class="headerlink" title="JDK线程池继承层次"></a>JDK线程池继承层次</h2><h3 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h3><p><img src="https://user-images.githubusercontent.com/5201798/47539254-f5648380-d901-11e8-9446-8a4705430539.png" alt="image"></p>
+<p>这个图上很多类不用看，因为都是Executors类的内部类，代理类，核心就是下图的几个接口和类。</p>
 <p><img src="https://user-images.githubusercontent.com/5201798/47539187-a74f8000-d901-11e8-9f94-f8f4be0477a0.png" alt="image"></p>
 <h3 id="线程池核心要素"><a href="#线程池核心要素" class="headerlink" title="线程池核心要素"></a>线程池核心要素</h3><ul>
 <li><p>核心线程池大小 corePoolSize</p>
@@ -617,7 +618,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

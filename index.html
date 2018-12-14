@@ -239,6 +239,239 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/14/JAVA程序常见问题与JVM内存模型关系/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuBo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/12/14/JAVA程序常见问题与JVM内存模型关系/" itemprop="url">JAVA程序常见问题与JVM内存模型关系</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-14T10:00:00+08:00">
+                2018-12-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>本文是前段时间公司培训讲到的内容，个人做了笔记进行了总结。通过各类JAVA程序的OOM问题，结合JVM内存模型进行定位以及调优，具体调试的工具以及内容后续会进行补充。</p>
+</blockquote>
+<h1 id="OOM"><a href="#OOM" class="headerlink" title="OOM"></a>OOM</h1><h2 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h2><p><img src="/image/JVM内存模型01.png" alt="JVM内存模型01-photo"></p>
+<p><img src="/image/JVM内存模型02.png" alt="JVM内存模型02-photo"></p>
+<h2 id="非堆内存"><a href="#非堆内存" class="headerlink" title="非堆内存"></a>非堆内存</h2><h3 id="调优参数"><a href="#调优参数" class="headerlink" title="调优参数"></a>调优参数</h3><p>-XX:MaxPremSize=256MB</p>
+<ul>
+<li>jdk1.7 持久代 使用的虚拟机内存</li>
+<li>jdk1.8之后 源空间 使用的是本地内存<h3 id="对应OOM错误信息"><a href="#对应OOM错误信息" class="headerlink" title="对应OOM错误信息"></a>对应OOM错误信息</h3>PremGen Space<h3 id="问题处理"><a href="#问题处理" class="headerlink" title="问题处理"></a>问题处理</h3></li>
+</ul>
+<ol>
+<li>调大PermSize</li>
+<li>是否有动态加载Groovy脚本</li>
+<li>是否有大量动态生成类的逻辑，如字节码框、或动态代理的使用。</li>
+</ol>
+<h2 id="堆内存"><a href="#堆内存" class="headerlink" title="堆内存"></a>堆内存</h2><h3 id="调优参数-1"><a href="#调优参数-1" class="headerlink" title="调优参数"></a>调优参数</h3><p>-Xmx2G</p>
+<ul>
+<li>年轻代：Eden Survior</li>
+<li>老年代<h3 id="对应OOM错误信息-1"><a href="#对应OOM错误信息-1" class="headerlink" title="对应OOM错误信息"></a>对应OOM错误信息</h3>Java heap space/GC overhead limit exceeded<h3 id="问题处理-1"><a href="#问题处理-1" class="headerlink" title="问题处理"></a>问题处理</h3></li>
+</ul>
+<ol>
+<li><p>产生heapdump </p>
+<p> 1) 启动参数-XX:+HeapDumpOnOutOfMemoryError XX:HeapDumpPath=</p>
+<p> 2) jmap -dump:format=b,file=文件名 [pid] </p>
+</li>
+<li>使用mat工具分析heapdump</li>
+<li>确定内存占用的代码进行优化</li>
+<li><p>如果内存占用不多</p>
+<p> 1) 可能是创建了一个大对象导致，根据日志分析何时会创建大对象。</p>
+<p> 2) 死循环，jstack分析。</p>
+</li>
+</ol>
+<h2 id="栈内存"><a href="#栈内存" class="headerlink" title="栈内存"></a>栈内存</h2><h3 id="调优参数-2"><a href="#调优参数-2" class="headerlink" title="调优参数"></a>调优参数</h3><p>-Xss128，默认2m</p>
+<ul>
+<li>使用的是操作系统的剩余内存，与其他JVM内存区域无关<h3 id="对应OOM错误信息-2"><a href="#对应OOM错误信息-2" class="headerlink" title="对应OOM错误信息"></a>对应OOM错误信息</h3>StackOverflowError,unable to create new native thread<h3 id="问题处理-2"><a href="#问题处理-2" class="headerlink" title="问题处理"></a>问题处理</h3></li>
+</ul>
+<ol>
+<li>调大-Xss，使每个线程栈的内存增大</li>
+<li>调小-Xmx 等参数，给栈留更多内存空间</li>
+<li>分析是否代码中有不合理的递归</li>
+</ol>
+<h2 id="堆外内存"><a href="#堆外内存" class="headerlink" title="堆外内存"></a>堆外内存</h2><h3 id="调优参数-3"><a href="#调优参数-3" class="headerlink" title="调优参数"></a>调优参数</h3><p>-XX:MaxDirectMemorySize=1G</p>
+<ul>
+<li>DiectBuffer</li>
+<li>如netty直接缓冲区，io操作不需要进行内存的拷贝，性能较优<h3 id="对应OOM错误信息-3"><a href="#对应OOM错误信息-3" class="headerlink" title="对应OOM错误信息"></a>对应OOM错误信息</h3>direct buffer memory<h3 id="问题处理-3"><a href="#问题处理-3" class="headerlink" title="问题处理"></a>问题处理</h3></li>
+</ul>
+<ol>
+<li>默认占用-Xmx相同内存，可以通过增加参数XX:MaxDirectMemorySize=1G设定</li>
+<li>络通信使用Netty但是未限流</li>
+<li>分析代码中是否使用DirectBuffer未合理控制</li>
+</ol>
+<h2 id="最终占用内存-MaxPermSize-Xmx-MaxDirectMemorySize-n-xss"><a href="#最终占用内存-MaxPermSize-Xmx-MaxDirectMemorySize-n-xss" class="headerlink" title="最终占用内存=MaxPermSize+Xmx+MaxDirectMemorySize+n*xss"></a>最终占用内存=MaxPermSize+Xmx+MaxDirectMemorySize+n*xss</h2><h2 id="OutofMemory-Out-of-swap-space解决方案"><a href="#OutofMemory-Out-of-swap-space解决方案" class="headerlink" title="OutofMemory-Out of swap space解决方案"></a>OutofMemory-Out of swap space解决方案</h2><h3 id="问题处理-4"><a href="#问题处理-4" class="headerlink" title="问题处理"></a>问题处理</h3><ol>
+<li>地址空间不够，调整系统为64位</li>
+<li><p>物理内存不足</p>
+<p> 1) jmap -histo:live pid，如果内存明显减少说明是DirectBuffer问题，通过设置-XX:MaxDirectMemorySize=1G设定</p>
+<p> 2) btrace Inflater/Deflater</p>
+</li>
+</ol>
+<h2 id="OutofMemory-unable-to-create-new-native-thread解决方"><a href="#OutofMemory-unable-to-create-new-native-thread解决方" class="headerlink" title="OutofMemory- unable to create new native thread解决方"></a>OutofMemory- unable to create new native thread解决方</h2><ol>
+<li><p>线程数超过ulimit限制</p>
+<p> 1) ulimit -a 查看max user process</p>
+<p> 2) 临时调大ulimit -u unlimited</p>
+<p> 3) 永久增加 </p>
+<pre><code>a. * vi /etc/security/limits.conf # 添加如下的行
+
+b. * soft noproc 11000
+
+c. * hard noproc 11000
+
+d. * soft nofile 4100
+
+e. * hard nofile 4100
+</code></pre></li>
+<li><p>线程数超过kernel.pid_max</p>
+<p> 1) /proc/sys/kernel/pid_max #操作系统线程数限制</p>
+<p> 2) /proc/sys/vm/max_map_count #单进程mmap的限制会影响当个进程可创建的线程数</p>
+</li>
+<li><p>线程创建太多</p>
+<p> 1) jstack、pstree查看线程数量，排查谁创建过多线程</p>
+<p> 2) 调小-xss，使每个栈内存占用变小</p>
+</li>
+</ol>
+<h2 id="OutofMemory-补充"><a href="#OutofMemory-补充" class="headerlink" title="OutofMemory-补充"></a>OutofMemory-补充</h2><ol>
+<li>只有heap或Perm区满，才会产生heapDump，其他oom不会产生</li>
+<li><p>如何分析定位问题</p>
+<p> 1) Jvm监控工具（JavaMelody）</p>
+<p> 2) 其他工具 </p>
+<pre><code>a. Greys https://github.com/oldmanpushcart/greys-anatomy
+
+b. TProfile https://github.com/alibaba/TProfiler
+</code></pre></li>
+</ol>
+<h1 id="Java进程退出"><a href="#Java进程退出" class="headerlink" title="Java进程退出"></a>Java进程退出</h1><h1 id="CPU占用高"><a href="#CPU占用高" class="headerlink" title="CPU占用高"></a>CPU占用高</h1><h1 id="应用无响应"><a href="#应用无响应" class="headerlink" title="应用无响应"></a>应用无响应</h1><h1 id="环境变量异常"><a href="#环境变量异常" class="headerlink" title="环境变量异常"></a>环境变量异常</h1><h1 id="调用超时"><a href="#调用超时" class="headerlink" title="调用超时"></a>调用超时</h1>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/12/proxy_pattern/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1536,7 +1769,7 @@ volatile无法描述属性进行同步处理，只是一种直接内存的处理
 </ol>
 <ul>
 <li><strong>stop</strong> 会立即杀死线程，可能导致执行一半的程序被终结导致数据不一致的风险</li>
-<li><strong>suspend</strong> 会挂起线程，但是不会释放锁，可能会造成思索</li>
+<li><strong>suspend</strong> 会挂起线程，但是不会释放锁，可能会造成死锁</li>
 <li>线程池有个 <strong>shutdown</strong> 方法只是阻止线程池接受新的线程 ，并不会停止已存在的线程。</li>
 </ul>
 <ol start="2">
@@ -1546,7 +1779,8 @@ volatile无法描述属性进行同步处理，只是一种直接内存的处理
 <li>线程自己运行完成</li>
 <li>设置终止标志，在循环中检查这个标志</li>
 </ul>
-<h2 id="JDK线程池继承层次"><a href="#JDK线程池继承层次" class="headerlink" title="JDK线程池继承层次"></a>JDK线程池继承层次</h2><h3 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h3><p><img src="https://user-images.githubusercontent.com/5201798/47539254-f5648380-d901-11e8-9446-8a4705430539.png" alt="image"><br>这个图上很多类不用看，因为都是Executors类的内部类，代理类，核心就是下图的几个接口和类。</p>
+<h2 id="JDK线程池继承层次"><a href="#JDK线程池继承层次" class="headerlink" title="JDK线程池继承层次"></a>JDK线程池继承层次</h2><h3 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h3><p><img src="https://user-images.githubusercontent.com/5201798/47539254-f5648380-d901-11e8-9446-8a4705430539.png" alt="image"></p>
+<p>这个图上很多类不用看，因为都是Executors类的内部类，代理类，核心就是下图的几个接口和类。</p>
 <p><img src="https://user-images.githubusercontent.com/5201798/47539187-a74f8000-d901-11e8-9f94-f8f4be0477a0.png" alt="image"></p>
 <h3 id="线程池核心要素"><a href="#线程池核心要素" class="headerlink" title="线程池核心要素"></a>线程池核心要素</h3><ul>
 <li><p>核心线程池大小 corePoolSize</p>
@@ -2347,7 +2581,7 @@ volatile无法描述属性进行同步处理，只是一种直接内存的处理
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
