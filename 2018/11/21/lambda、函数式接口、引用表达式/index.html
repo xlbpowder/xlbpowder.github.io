@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="Lambda、函数式接口、引用表达式写在前面 最近在学习Stream的api，发现Java推出的函数式接口、Lambda表达式、引用表达式等大都服务于Stream的api使用，但其实并不一定，所以收集整理了下关于相关特性的用法。在这只会讲解下基本的用法，关于函数编程框架的详细解读，大家可以参考下这篇 Java8 函数式编程探秘，介绍的非常全面。  函数式接口先讲一个注解 @FunctionalIn">
+<meta name="description" content="Lambda、函数式接口、引用表达式写在前面 最近在学习Stream的api，发现Java推出的函数式接口、Lambda表达式、引用表达式等大都服务于Stream的api使用，但其实并不一定，所以收集整理了下关于相关特性的用法。在这只会讲解下基本的用法，关于函数编程框架的详细解读，大家可以参考下这篇 Java8 函数式编程探秘，介绍的非常全面。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Lambda、函数式接口、引用表达式">
 <meta property="og:url" content="http://yoursite.com/2018/11/21/lambda、函数式接口、引用表达式/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
-<meta property="og:description" content="Lambda、函数式接口、引用表达式写在前面 最近在学习Stream的api，发现Java推出的函数式接口、Lambda表达式、引用表达式等大都服务于Stream的api使用，但其实并不一定，所以收集整理了下关于相关特性的用法。在这只会讲解下基本的用法，关于函数编程框架的详细解读，大家可以参考下这篇 Java8 函数式编程探秘，介绍的非常全面。  函数式接口先讲一个注解 @FunctionalIn">
+<meta property="og:description" content="Lambda、函数式接口、引用表达式写在前面 最近在学习Stream的api，发现Java推出的函数式接口、Lambda表达式、引用表达式等大都服务于Stream的api使用，但其实并不一定，所以收集整理了下关于相关特性的用法。在这只会讲解下基本的用法，关于函数编程框架的详细解读，大家可以参考下这篇 Java8 函数式编程探秘，介绍的非常全面。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-21T09:35:15.981Z">
+<meta property="og:updated_time" content="2018-12-21T05:57:35.105Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Lambda、函数式接口、引用表达式">
-<meta name="twitter:description" content="Lambda、函数式接口、引用表达式写在前面 最近在学习Stream的api，发现Java推出的函数式接口、Lambda表达式、引用表达式等大都服务于Stream的api使用，但其实并不一定，所以收集整理了下关于相关特性的用法。在这只会讲解下基本的用法，关于函数编程框架的详细解读，大家可以参考下这篇 Java8 函数式编程探秘，介绍的非常全面。  函数式接口先讲一个注解 @FunctionalIn">
+<meta name="twitter:description" content="Lambda、函数式接口、引用表达式写在前面 最近在学习Stream的api，发现Java推出的函数式接口、Lambda表达式、引用表达式等大都服务于Stream的api使用，但其实并不一定，所以收集整理了下关于相关特性的用法。在这只会讲解下基本的用法，关于函数编程框架的详细解读，大家可以参考下这篇 Java8 函数式编程探秘，介绍的非常全面。">
 
 
 
@@ -334,6 +334,7 @@
         <h1 id="Lambda、函数式接口、引用表达式"><a href="#Lambda、函数式接口、引用表达式" class="headerlink" title="Lambda、函数式接口、引用表达式"></a>Lambda、函数式接口、引用表达式</h1><h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><blockquote>
 <p>最近在学习Stream的api，发现Java推出的函数式接口、Lambda表达式、引用表达式等大都服务于Stream的api使用，但其实并不一定，所以收集整理了下关于相关特性的用法。<br>在这只会讲解下基本的用法，关于函数编程框架的详细解读，大家可以参考下这篇 <a href="http://www.importnew.com/27901.html" title="Java8 函数式编程探秘" target="_blank" rel="noopener">Java8 函数式编程探秘</a>，介绍的非常全面。</p>
 </blockquote>
+<a id="more"></a>
 <h2 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h2><p>先讲一个注解 <strong><em>@FunctionalInterface</em></strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> FunctionalInterface &#123;&#125;</span><br></pre></td></tr></table></figure>
 <p>@FunctionalInterface 注解要求接口有且只有一个抽象方法，JDK中有许多类用到该注解，比如 Runnable，它只有一个 Run 方法。（注：默认方法并不是抽象方法）</p>

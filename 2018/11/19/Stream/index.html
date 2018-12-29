@@ -87,7 +87,7 @@
 <meta property="og:description" content="最近在学习JAVA8 Stream的API，找到了这篇文章，觉得内容很好就抄了过来，文章来源：https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/  为什么需要 StreamStream 作为 Java 8 的一大亮点，它与 java.io 包里的 InputStream 和 OutputStream 是完全不同的概念。它">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/img001.png">
-<meta property="og:updated_time" content="2018-11-21T06:06:07.158Z">
+<meta property="og:updated_time" content="2018-12-26T08:42:27.281Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Stream">
 <meta name="twitter:description" content="最近在学习JAVA8 Stream的API，找到了这篇文章，觉得内容很好就抄了过来，文章来源：https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/  为什么需要 StreamStream 作为 Java 8 的一大亮点，它与 java.io 包里的 InputStream 和 OutputStream 是完全不同的概念。它">
@@ -337,6 +337,7 @@
 <p>最近在学习JAVA8 Stream的API，找到了这篇文章，觉得内容很好就抄了过来，文章来源：<a href="https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/</a></p>
 </blockquote>
 <h1 id="为什么需要-Stream"><a href="#为什么需要-Stream" class="headerlink" title="为什么需要 Stream"></a>为什么需要 Stream</h1><p>Stream 作为 Java 8 的一大亮点，它与 java.io 包里的 InputStream 和 OutputStream 是完全不同的概念。它也不同于 StAX 对 XML 解析的 Stream，也不是 Amazon Kinesis 对大数据实时处理的 Stream。Java 8 中的 Stream 是对集合（Collection）对象功能的增强，它专注于对集合对象进行各种非常便利、高效的聚合操作（aggregate operation），或者大批量数据操作 (bulk data operation)。Stream API 借助于同样新出现的 Lambda 表达式，极大的提高编程效率和程序可读性。同时它提供串行和并行两种模式进行汇聚操作，并发模式能够充分利用多核处理器的优势，使用 fork/join 并行方式来拆分任务和加速处理过程。通常编写并行代码很难而且容易出错, 但使用 Stream API 无需编写一行多线程的代码，就可以很方便地写出高性能的并发程序。所以说，Java 8 中首次出现的 java.util.stream 是一个函数式语言+多核时代综合影响的产物。</p>
+<a id="more"></a>
 <h2 id="什么是聚合操作"><a href="#什么是聚合操作" class="headerlink" title="什么是聚合操作"></a>什么是聚合操作</h2><p>在传统的 J2EE 应用中，Java 代码经常不得不依赖于关系型数据库的聚合操作来完成诸如：</p>
 <ul>
 <li>客户每月平均消费金额</li>
@@ -499,7 +500,8 @@
 <p>在使用条件“年龄小于 18”进行分组后可以看到，不到 18 岁的未成年人是一组，成年人是另外一组。partitioningBy 其实是一种特殊的 groupingBy，它依照条件测试的是否两种结果来构造返回的数据结构，get(true) 和 get(false) 能即为全部的元素对象。</p>
 <h1 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h1><p>总之，Stream 的特性可以归纳为：</p>
 <ul>
-<li><p>不是数据结构<br>  它没有内部存储，它只是用操作管道从 source（数据结构、数组、generator function、IO channel）抓取数据。</p>
+<li><p>不是数据结构</p>
+<p>  它没有内部存储，它只是用操作管道从 source（数据结构、数组、generator function、IO channel）抓取数据。</p>
 <p>  它也绝不修改自己所封装的底层数据结构的数据。例如 Stream 的 filter 操作会产生一个不包含被过滤元素的新 Stream，而不是从 source 删除那些元素。</p>
 </li>
 <li><p>所有 Stream 的操作必须以 lambda 表达式为参数</p>
