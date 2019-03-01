@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文为近期学习JDK源码中集合类相关记录的笔记，因为是学习过程中的随笔，没有很仔细整理过。虽然在日常使用中只需要关注这些类的api如何使用即可，但是对于进阶的提升，可以在源码中更加熟悉各类的使用方式，以及学习到更多好的设计和处理问题的思路。ps：公司内网已经不能访问github等开源网站，代码一直提不上去github，写了一些笔记都不能及时更新。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="集合容器框架源码学习笔记">
+<meta property="og:url" content="http://yoursite.com/2019/02/01/集合容器框架笔记/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="本文为近期学习JDK源码中集合类相关记录的笔记，因为是学习过程中的随笔，没有很仔细整理过。虽然在日常使用中只需要关注这些类的api如何使用即可，但是对于进阶的提升，可以在源码中更加熟悉各类的使用方式，以及学习到更多好的设计和处理问题的思路。ps：公司内网已经不能访问github等开源网站，代码一直提不上去github，写了一些笔记都不能及时更新。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-02-27T07:05:01.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="集合容器框架源码学习笔记">
+<meta name="twitter:description" content="本文为近期学习JDK源码中集合类相关记录的笔记，因为是学习过程中的随笔，没有很仔细整理过。虽然在日常使用中只需要关注这些类的api如何使用即可，但是对于进阶的提升，可以在源码中更加熟悉各类的使用方式，以及学习到更多好的设计和处理问题的思路。ps：公司内网已经不能访问github等开源网站，代码一直提不上去github，写了一些笔记都不能及时更新。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/02/01/集合容器框架笔记/"/>
+
+
+
+
+
+  <title>集合容器框架源码学习笔记 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/01/集合容器框架笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuBo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">集合容器框架源码学习笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-01T14:48:00+08:00">
+                2019-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本文为近期学习JDK源码中集合类相关记录的笔记，因为是学习过程中的随笔，没有很仔细整理过。<br><br>虽然在日常使用中只需要关注这些类的api如何使用即可，但是对于进阶的提升，可以在源码中更加熟悉各类的使用方式，以及学习到更多好的设计和处理问题的思路。<br><br>ps：公司内网已经不能访问github等开源网站，代码一直提不上去github，写了一些笔记都不能及时更新。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h1><h2 id="jdk1-7"><a href="#jdk1-7" class="headerlink" title="jdk1.7"></a>jdk1.7</h2><p>HashMap 里面是一个数组，然后数组中每个元素是一个单向链表。</p>
+<ul>
+<li>capacity：当前数组容量，始终保持 2^n，可以扩容，扩容后数组大小为当前的 2 倍。</li>
+<li>loadFactor：负载因子，默认为 0.75。</li>
+<li>threshold：扩容的阈值，等于 capacity * loadFactor<br>HashMap扩容是长度的2倍，且长度永远是2的次幂，存储下标：index = h&amp;(length-1)</li>
+</ul>
+<h3 id="put过程"><a href="#put过程" class="headerlink" title="put过程"></a>put过程</h3><ol>
+<li>判断当前数组是否需要初始化</li>
+<li>如果key为null则put一个null进去</li>
+<li>根据key计算出hashcode</li>
+<li>根据hashcode得出table的下标所在位置的桶</li>
+<li>如果桶是链表则遍历里面每个对象的hashcode、key和传入的key是否相当，相等则覆盖</li>
+<li>如果桶是空新增一个entry写入到当前位置（addEntry）</li>
+<li>addEntry：判断是否需要扩容，计算公式如上，<br>需要扩容则两倍扩容，并且将当前key重新hash定位,扩容后的位置要么是再原下标的位置，另一种是在下标为 &lt;原下标+原容量&gt; 的位置。</li>
+<li>createEntry：当前位置的桶传入到新建的桶中，如果当位置有桶则生成链表</li>
+</ol>
+<h3 id="get过程"><a href="#get过程" class="headerlink" title="get过程"></a>get过程</h3><ol>
+<li>根据key计算出heshcode，然后得到对应的下标</li>
+<li>判断是否为链表，不是链表就根据key的hashcode进行比较，是则返回值；如果是链表则遍历链表同上进行比较。</li>
+<li>没获取到返回null</li>
+</ol>
+<h2 id="jdk1-7的缺点"><a href="#jdk1-7的缺点" class="headerlink" title="jdk1.7的缺点"></a>jdk1.7的缺点</h2><p>当Hash冲突严重时，在Node上形成的链表会变的越来越长，这样在查询时的效率就会越来越低；时间复杂度为O(N)。jdk1.8主要优化的就是这个。</p>
+<h2 id="jdk1-8"><a href="#jdk1-8" class="headerlink" title="jdk1.8"></a>jdk1.8</h2><p>数据结构修改，数组+链表/红黑树<br>当链表长度超过8之后，会转换为红黑树，如果低于6会转换回链表<br>7中用entry标识每一个数据节点，8中修改为Node</p>
+<h3 id="put过程-1"><a href="#put过程-1" class="headerlink" title="put过程"></a>put过程</h3><ol>
+<li>判断当前table是否为空，空则进行初始化（resize中会判断是否进行初始化）</li>
+<li>根据key得到hashcode定位到具体桶的位置，为空则没有hash冲突创建一个新的node。</li>
+<li>如果有hash冲突，则比较entry的hashcode与当前位置的key的hashcode是否相等，相等则进行赋值。</li>
+<li>如果当前桶为红黑树则按照红黑树的写入方式进行写入，如果是链表则在当前entry下创建形成链表。</li>
+<li>判断当前链表大小是否超过预设阈值（TREEIFY_THRESHOLD）8，超过则转换为红黑树。</li>
+<li>最后判断是否扩容</li>
+</ol>
+<h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><ol>
+<li>根据key得到hashcode定位到桶的位置，为空直接返回null。</li>
+<li>遍历table的每一个entry，比较key是否相等，相等则返回value。</li>
+<li>如果是红黑树则按照红黑树的方法进行查找，如果是链表则遍历进行查找。</li>
+</ol>
+<h2 id="HashMap在多线程并发时的问题是什么，哪里线程不安全"><a href="#HashMap在多线程并发时的问题是什么，哪里线程不安全" class="headerlink" title="HashMap在多线程并发时的问题是什么，哪里线程不安全"></a>HashMap在多线程并发时的问题是什么，哪里线程不安全</h2><p>在HashMap扩容的时候会调用resize()方法，就是这里的并发操作容易在一个桶上形成环形链表；这样当获取一个不存在的 key时，计算出的index正好是环形链表的下标就会出现死循环。</p>
+<h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><h2 id="jdk1-7-1"><a href="#jdk1-7-1" class="headerlink" title="jdk1.7"></a>jdk1.7</h2><p>由segment组成，每一个segment继承自reentrantlock（重入锁），所以每次加锁是对于每一个段进行加锁，从而保证全局的线程安全。</p>
+<ul>
+<li>concurrencyLevel：并行并发数、segment数，默认是16，是控制ConcurrentHashMap的segment的数量，不可扩容。</li>
+<li>initialCapacity：初始容量，这个值指的是整个 ConcurrentHashMap 的初始容量，实际操作的时候需要平均分给每个 Segment。</li>
+<li>loadFactor：负载因子，因为Segment 数组不可以扩容，所以这个负载因子是给每个Segment 内部使用的。</li>
+</ul>
+<p>HashEntry、value都是由volatile修饰的。</p>
+<h3 id="put过程-2"><a href="#put过程-2" class="headerlink" title="put过程"></a>put过程</h3><ol>
+<li>尝试获取自旋获取锁</li>
+<li>如果重试次数达到了MAX_SCAN_RETRIES则改为阻塞锁获取，保证能获取成功</li>
+<li>根据key得到hashcode定位到segments中HashEntry的下标</li>
+<li>遍历HashEntry（链表）不为空则判断传入的key是否相等，相等则覆盖value</li>
+<li>为空则新建HashEntry并加入到segments中，同时会先判断是否需要进行扩容</li>
+<li>最后解除获取的锁</li>
+</ol>
+<h3 id="get过程-1"><a href="#get过程-1" class="headerlink" title="get过程"></a>get过程</h3><ol>
+<li>根据key得到hashcode并且计算得到segments中的下标，获取到HashEntry</li>
+<li>遍历HashEntry中key，相等则获取value<br>由于HashEntry的value是用volatile修饰的，保证了其可见性，所以每次获取都是最新的值</li>
+</ol>
+<h2 id="jdk1-8-1"><a href="#jdk1-8-1" class="headerlink" title="jdk1.8"></a>jdk1.8</h2><p>CocurrentHashMap抛弃了原有的Segment分段锁，采用了CAS + synchronized关键字来保证并发安全性。与HashMap1.7的问题一样，链表过长后查询效率低的问题。</p>
+<p>HashEntry修改为Node，其中的val,next都用了volatile修饰，保证了可见性</p>
+<p>对sizeCtl的控制都是用 CAS 来实现的:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Table initialization and resizing control.  When negative, the</span></span><br><span class="line"><span class="comment"> * table is being initialized or resized: -1 for initialization,</span></span><br><span class="line"><span class="comment"> * else -(1 + the number of active resizing threads).  Otherwise,</span></span><br><span class="line"><span class="comment"> * when table is null, holds the initial table size to use upon</span></span><br><span class="line"><span class="comment"> * creation, or 0 for default. After initialization, holds the</span></span><br><span class="line"><span class="comment"> * next element count value upon which to resize the table.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">int</span> sizeCtl;</span><br></pre></td></tr></table></figure></p>
+<p>下面是翻译：</p>
+<p>-1代表table正在初始化，N表示有 -N-1 个线程正在进行扩容操作。</p>
+<p>如果table未初始化，表示table需要初始化的大小。</p>
+<p>如果table初始化完成，表示table的容量，默认是table大小的0.75倍，用这个公式算 0.75（n – (n &gt;&gt;&gt; 2)）。</p>
+<p>CAS 会出现的问题：ABA</p>
+<p>解决：对变量增加一个版本号，每次修改，版本号加1，比较的时候比较版本号。</p>
+<p>put过程：</p>
+<ol>
+<li>根据key的hashcode计算得处table的下标</li>
+<li>判断是否需要进行初始化</li>
+<li>获取table对应下标的Node，如果为空表示当前位置可以写入数据，利用CAS 尝试写入，失败则自旋保证成功</li>
+<li>如果当前位置的 hashcode == MOVED == -1,则需要进行扩容</li>
+<li>如果都不满足，则利用synchronized锁写入数据（此处锁的对象是Node）</li>
+<li>如果数量大于TREEIFY_THRESHOLD则要转换为红黑树</li>
+</ol>
+<p>get过程：</p>
+<ol>
+<li>根据key的hashcode计算得到table的下标，得到Node</li>
+<li>如果是红黑树则按照树的方式获取值</li>
+<li>如果不是则按照链表的方式遍历获取值</li>
+</ol>
+<h1 id="ArrayList"><a href="#ArrayList" class="headerlink" title="ArrayList"></a>ArrayList</h1><p>默认容量10</p>
+<p>int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1)</p>
+<p>其中oldCapacity是原来的容量大小，oldCapacity &gt;&gt; 1为位运算的右移操作，右移一位相当于除以2，所以这句代码就等于</p>
+<p>int newCapacity = oldCapacity + oldCapacity / 2；</p>
+<p>即容量扩大为原来的1.5倍，获取newCapacity后再对newCapacity的大小进行判断，如果仍然小于minCapacity，则直接让newCapacity 等于minCapacity，而不再计算1.5倍的扩容。然后还要再进行一步判断，即判断当前新容量是否超过最大的容量 </p>
+<p>if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</p>
+<p>如果超过，则调用hugeCapacity方法，传进去的是minCapacity，即新增元素后需要的最小容量：<br>如果minCapacity大于MAX_ARRAY_SIZE，则返回Integer的最大值。否则返回MAX_ARRAY_SIZE。</p>
+<p>调用Arrays.copyof方法，即复制原数组内容到一个新容量的大数组里。这里Arrays.copyof方法实际是调用System.arraycopy方法。</p>
+<h1 id="相关问题"><a href="#相关问题" class="headerlink" title="相关问题"></a>相关问题</h1><h2 id="追问1：ArrayList和LinkedList有什么区别？"><a href="#追问1：ArrayList和LinkedList有什么区别？" class="headerlink" title="追问1：ArrayList和LinkedList有什么区别？"></a>追问1：ArrayList和LinkedList有什么区别？</h2><h2 id="追问2：ArrayList底层使用一个数组，它是怎么进行扩容的？"><a href="#追问2：ArrayList底层使用一个数组，它是怎么进行扩容的？" class="headerlink" title="追问2：ArrayList底层使用一个数组，它是怎么进行扩容的？"></a>追问2：ArrayList底层使用一个数组，它是怎么进行扩容的？</h2><h2 id="追问3-HashMap和Hashtable有什么区别"><a href="#追问3-HashMap和Hashtable有什么区别" class="headerlink" title="追问3: HashMap和Hashtable有什么区别?"></a>追问3: HashMap和Hashtable有什么区别?</h2><h2 id="追问4-HashMap的put和get方法是怎么实现的"><a href="#追问4-HashMap的put和get方法是怎么实现的" class="headerlink" title="追问4: HashMap的put和get方法是怎么实现的?"></a>追问4: HashMap的put和get方法是怎么实现的?</h2><h2 id="jdk1-7-jdk1-8-HashMap的变化？"><a href="#jdk1-7-jdk1-8-HashMap的变化？" class="headerlink" title="jdk1.7-.jdk1.8 HashMap的变化？"></a>jdk1.7-.jdk1.8 HashMap的变化？</h2><h2 id="HashTable是通过synchronized实现线程安全，那么具体同步了哪些资源？"><a href="#HashTable是通过synchronized实现线程安全，那么具体同步了哪些资源？" class="headerlink" title="HashTable是通过synchronized实现线程安全，那么具体同步了哪些资源？"></a>HashTable是通过synchronized实现线程安全，那么具体同步了哪些资源？</h2><p>对修改Hashtable内部共享数据的方法添加了synchronized，保证线程安全。<br>包括put、get、remove、clear、size等方法都有同步。<br>总的来说就是所有对Hashtable的所有数据操作的行为都进行了同步。</p>
+<h2 id="追问5-线程安全的集合类包括哪些，它们是怎么实现线程安全的"><a href="#追问5-线程安全的集合类包括哪些，它们是怎么实现线程安全的" class="headerlink" title="追问5: 线程安全的集合类包括哪些，它们是怎么实现线程安全的?"></a>追问5: 线程安全的集合类包括哪些，它们是怎么实现线程安全的?</h2><h2 id="追问6-Hashtable和ConcurrentHashMap的区别？"><a href="#追问6-Hashtable和ConcurrentHashMap的区别？" class="headerlink" title="追问6: Hashtable和ConcurrentHashMap的区别？"></a>追问6: Hashtable和ConcurrentHashMap的区别？</h2><h1 id="涉及其他知识点"><a href="#涉及其他知识点" class="headerlink" title="涉及其他知识点"></a>涉及其他知识点</h1><h2 id="红黑树，平衡二叉树"><a href="#红黑树，平衡二叉树" class="headerlink" title="红黑树，平衡二叉树"></a>红黑树，平衡二叉树</h2><h2 id="hash算法，下标计算如何计算"><a href="#hash算法，下标计算如何计算" class="headerlink" title="hash算法，下标计算如何计算"></a>hash算法，下标计算如何计算</h2><p>直接看下HashMap中的hash方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Computes key.hashCode() and spreads (XORs) higher bits of hash</span></span><br><span class="line"><span class="comment"> * to lower.  Because the table uses power-of-two masking, sets of</span></span><br><span class="line"><span class="comment"> * hashes that vary only in bits above the current mask will</span></span><br><span class="line"><span class="comment"> * always collide. (Among known examples are sets of Float keys</span></span><br><span class="line"><span class="comment"> * holding consecutive whole numbers in small tables.)  So we</span></span><br><span class="line"><span class="comment"> * apply a transform that spreads the impact of higher bits</span></span><br><span class="line"><span class="comment"> * downward. There is a tradeoff between speed, utility, and</span></span><br><span class="line"><span class="comment"> * quality of bit-spreading. Because many common sets of hashes</span></span><br><span class="line"><span class="comment"> * are already reasonably distributed (so don't benefit from</span></span><br><span class="line"><span class="comment"> * spreading), and because we use trees to handle large sets of</span></span><br><span class="line"><span class="comment"> * collisions in bins, we just XOR some shifted bits in the</span></span><br><span class="line"><span class="comment"> * cheapest possible way to reduce systematic lossage, as well as</span></span><br><span class="line"><span class="comment"> * to incorporate impact of the highest bits that would otherwise</span></span><br><span class="line"><span class="comment"> * never be used in index calculations because of table bounds.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>key==null直接返回0;</li>
+<li>hash为(h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);</li>
+</ul>
+<p>以下为put方法的片段代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line"><span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">    n = (tab = resize()).length;</span><br><span class="line"><span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">    tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>n为table扩容后的长度</li>
+<li>p为当前节点</li>
+<li>得到table下标位置(n - 1) &amp; hash ;</li>
+</ul>
+<h2 id="扩容细节"><a href="#扩容细节" class="headerlink" title="扩容细节"></a>扩容细节</h2><p>默认容量：DEFAULT_INITIAL_CAPACITY 1&lt;&lt;4 = 16;</p>
+<h2 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h2><p>借助Unsafe来实现native code。CAS有3个操作数，内存值V、旧的预期值A、要修改的新值B。当且仅当预期值A和内存值V相同时，将内存值V修改为B，否则什么都不做。Unsafe借助CPU指令cmpxchg来实现。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/16/pattern/" rel="next" title="设计模式六大原则">
+                <i class="fa fa-chevron-left"></i> 设计模式六大原则
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/10/领域模型类型/" rel="prev" title="领域模型类型">
+                领域模型类型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">LiuBo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap"><span class="nav-number">1.</span> <span class="nav-text">HashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#jdk1-7"><span class="nav-number">1.1.</span> <span class="nav-text">jdk1.7</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#put过程"><span class="nav-number">1.1.1.</span> <span class="nav-text">put过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get过程"><span class="nav-number">1.1.2.</span> <span class="nav-text">get过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jdk1-7的缺点"><span class="nav-number">1.2.</span> <span class="nav-text">jdk1.7的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jdk1-8"><span class="nav-number">1.3.</span> <span class="nav-text">jdk1.8</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#put过程-1"><span class="nav-number">1.3.1.</span> <span class="nav-text">put过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get"><span class="nav-number">1.3.2.</span> <span class="nav-text">get</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashMap在多线程并发时的问题是什么，哪里线程不安全"><span class="nav-number">1.4.</span> <span class="nav-text">HashMap在多线程并发时的问题是什么，哪里线程不安全</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-number">2.</span> <span class="nav-text">ConcurrentHashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#jdk1-7-1"><span class="nav-number">2.1.</span> <span class="nav-text">jdk1.7</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#put过程-2"><span class="nav-number">2.1.1.</span> <span class="nav-text">put过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get过程-1"><span class="nav-number">2.1.2.</span> <span class="nav-text">get过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jdk1-8-1"><span class="nav-number">2.2.</span> <span class="nav-text">jdk1.8</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ArrayList"><span class="nav-number">3.</span> <span class="nav-text">ArrayList</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关问题"><span class="nav-number">4.</span> <span class="nav-text">相关问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#追问1：ArrayList和LinkedList有什么区别？"><span class="nav-number">4.1.</span> <span class="nav-text">追问1：ArrayList和LinkedList有什么区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#追问2：ArrayList底层使用一个数组，它是怎么进行扩容的？"><span class="nav-number">4.2.</span> <span class="nav-text">追问2：ArrayList底层使用一个数组，它是怎么进行扩容的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#追问3-HashMap和Hashtable有什么区别"><span class="nav-number">4.3.</span> <span class="nav-text">追问3: HashMap和Hashtable有什么区别?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#追问4-HashMap的put和get方法是怎么实现的"><span class="nav-number">4.4.</span> <span class="nav-text">追问4: HashMap的put和get方法是怎么实现的?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jdk1-7-jdk1-8-HashMap的变化？"><span class="nav-number">4.5.</span> <span class="nav-text">jdk1.7-.jdk1.8 HashMap的变化？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashTable是通过synchronized实现线程安全，那么具体同步了哪些资源？"><span class="nav-number">4.6.</span> <span class="nav-text">HashTable是通过synchronized实现线程安全，那么具体同步了哪些资源？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#追问5-线程安全的集合类包括哪些，它们是怎么实现线程安全的"><span class="nav-number">4.7.</span> <span class="nav-text">追问5: 线程安全的集合类包括哪些，它们是怎么实现线程安全的?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#追问6-Hashtable和ConcurrentHashMap的区别？"><span class="nav-number">4.8.</span> <span class="nav-text">追问6: Hashtable和ConcurrentHashMap的区别？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#涉及其他知识点"><span class="nav-number">5.</span> <span class="nav-text">涉及其他知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#红黑树，平衡二叉树"><span class="nav-number">5.1.</span> <span class="nav-text">红黑树，平衡二叉树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash算法，下标计算如何计算"><span class="nav-number">5.2.</span> <span class="nav-text">hash算法，下标计算如何计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩容细节"><span class="nav-number">5.3.</span> <span class="nav-text">扩容细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAS"><span class="nav-number">5.4.</span> <span class="nav-text">CAS</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuBo</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
