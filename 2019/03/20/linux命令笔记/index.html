@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="一直都在说要好好学习下linux命令，最近在学习docker的时候真的发现自己linux的能力太差了，基础也不行，暂时先记下学习docker过程中用到的一些命令行。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-21T08:04:31.696Z">
+<meta property="og:updated_time" content="2019-04-25T07:59:51.245Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux命令笔记">
 <meta name="twitter:description" content="一直都在说要好好学习下linux命令，最近在学习docker的时候真的发现自己linux的能力太差了，基础也不行，暂时先记下学习docker过程中用到的一些命令行。">
@@ -336,7 +336,7 @@
 </blockquote>
 <a id="more"></a>
 <p>首先要先了解下自己的linux系统的操作版本，预防之后遇到的很多坑。</p>
-<h4 id="查看Linux系统版本与内核版本"><a href="#查看Linux系统版本与内核版本" class="headerlink" title="查看Linux系统版本与内核版本"></a>查看Linux系统版本与内核版本</h4><ul>
+<h2 id="查看Linux系统版本与内核版本"><a href="#查看Linux系统版本与内核版本" class="headerlink" title="查看Linux系统版本与内核版本"></a>查看Linux系统版本与内核版本</h2><ul>
 <li>查看内核版本的方式</li>
 </ul>
 <ol>
@@ -360,6 +360,8 @@
 </ol>
 <p>还查到了一个说是cat /etc/issue但是这个文件打开后没什么东西，不清楚是不是我这个系统有问题。。</p>
 <p>我这个是一个阿里云的服务器，系统内核是CentOS linux 7.4.1708 x86 64位，linux版本Linux version 3.10.0。</p>
+<h2 id="用户"><a href="#用户" class="headerlink" title="用户"></a>用户</h2><p>今天在记笔记的时候，看到有的会是$ xxx的指令，而有的是# xxx，后来查了下才知道，原来root用户就会是#开头，而非root用户则是$开头。</p>
+<p>一直用root用户其实也是有一定风险的，当然个人使用的话是没问题的，但是如果有多人使用，root用户权限会非常大，并不安全。所以先学习了下如何创建用户，并且分配相关权限。</p>
 
       
     </div>
@@ -384,8 +386,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/10/缓存应用基础知识/" rel="next" title="缓存应用基础知识">
-                <i class="fa fa-chevron-left"></i> 缓存应用基础知识
+              <a href="/2019/03/20/网络IO模型/" rel="next" title="网络IO模型">
+                <i class="fa fa-chevron-left"></i> 网络IO模型
               </a>
             
           </div>
@@ -394,8 +396,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/03/20/网络IO模型/" rel="prev" title="网络IO模型">
-                网络IO模型 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/03/21/docker_01_简介/" rel="prev" title="docker简介">
+                docker简介 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -473,7 +475,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -535,7 +537,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#查看Linux系统版本与内核版本"><span class="nav-number">1.</span> <span class="nav-text">查看Linux系统版本与内核版本</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看Linux系统版本与内核版本"><span class="nav-number">1.</span> <span class="nav-text">查看Linux系统版本与内核版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户"><span class="nav-number">2.</span> <span class="nav-text">用户</span></a></li></ol></div>
             
 
           </div>
