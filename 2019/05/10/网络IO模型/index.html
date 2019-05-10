@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在学习JAVA NIO的时候有学习到相关的BIO、NIO、AIO的概念，以及一直对阻塞、非阻塞、异步等IO模型的知识感到非常模糊，要清楚JAVA的NIO是什么，以及基础的操作系统的网络IO模型，在此总结下网络IO模型的基础知识。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络IO模型">
+<meta property="og:url" content="http://yoursite.com/2019/05/10/网络IO模型/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="在学习JAVA NIO的时候有学习到相关的BIO、NIO、AIO的概念，以及一直对阻塞、非阻塞、异步等IO模型的知识感到非常模糊，要清楚JAVA的NIO是什么，以及基础的操作系统的网络IO模型，在此总结下网络IO模型的基础知识。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/image/IO/IO模型00.png">
+<meta property="og:image" content="http://yoursite.com/image/IO/IO模型01.png">
+<meta property="og:image" content="http://yoursite.com/image/IO/IO模型02.png">
+<meta property="og:image" content="http://yoursite.com/image/IO/IO模型04.png">
+<meta property="og:image" content="http://yoursite.com/image/IO/IO模型03.png">
+<meta property="og:image" content="http://yoursite.com/image/IO/IO模型05.png">
+<meta property="og:updated_time" content="2019-05-10T10:09:05.091Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络IO模型">
+<meta name="twitter:description" content="在学习JAVA NIO的时候有学习到相关的BIO、NIO、AIO的概念，以及一直对阻塞、非阻塞、异步等IO模型的知识感到非常模糊，要清楚JAVA的NIO是什么，以及基础的操作系统的网络IO模型，在此总结下网络IO模型的基础知识。">
+<meta name="twitter:image" content="http://yoursite.com/image/IO/IO模型00.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/10/网络IO模型/"/>
+
+
+
+
+
+  <title>网络IO模型 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/10/网络IO模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuBo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">网络IO模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-10T11:00:00+08:00">
+                2019-05-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Others/" itemprop="url" rel="index">
+                    <span itemprop="name">Others</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在学习JAVA NIO的时候有学习到相关的BIO、NIO、AIO的概念，以及一直对阻塞、非阻塞、异步等IO模型的知识感到非常模糊，要清楚JAVA的NIO是什么，以及基础的操作系统的网络IO模型，在此总结下网络IO模型的基础知识。</p>
+<a id="more"></a>
+<h1 id="几个基础概念"><a href="#几个基础概念" class="headerlink" title="几个基础概念"></a>几个基础概念</h1><h2 id="IO模型"><a href="#IO模型" class="headerlink" title="IO模型"></a>IO模型</h2><p>linux系统IO分为内核准备数据和将数据从内核拷贝到用户空间两个阶段。<br><img src="/image/IO/IO模型00.png" alt="IO模型00"><br>这张图大致描述了数据从外部磁盘向运行中程序的内存中移动的过程。</p>
+<h2 id="用户空间、内核空间"><a href="#用户空间、内核空间" class="headerlink" title="用户空间、内核空间"></a>用户空间、内核空间</h2><p>现在操作系统都是采用虚拟存储器，那么对32位操作系统而言，它的寻址空间（虚拟储存空间）为4G（2的32次方）。操作系统的核心是内核，独立于普通的应用程序，可以访问受保护的内存空间，也有访问底层硬件设备的所有权限。为了保证用户进程不能直接操作内核，保证内核的安全，操作系统将虚拟空间划分为两个部分，一个部分为内核空间，一部分为用户空间。</p>
+<p>如何分配这两个空间的大小也是有讲究的，如windows 32位操作系统，默认的用户空间：内核空间的比例是1:1;而在32位Linux系统中的默认比例是3:1（3G用户空间，1G内核空间）。</p>
+<h2 id="进程切换"><a href="#进程切换" class="headerlink" title="进程切换"></a>进程切换</h2><p>为了控制进程的执行，内核必须要有能力挂起正在CPU上运行的进程，并恢复以前挂起的某个进程的执行。这种行为成为进程的切换。任何进程都是在操作系统内核的支持下运行的，是与内核紧密相关的。</p>
+<p>进程切换的过程，会经过下面这些变化：</p>
+<ol>
+<li>保存处理机上下文，包括程序计数器和其他寄存器。</li>
+<li>更新PCB信息。</li>
+<li>将进程的PCB移入相应的队列，如就绪、在某事件阻塞等队列。</li>
+<li>选择另外一个进程执行，并更新PCB</li>
+<li>更新内存管理的数据结构。</li>
+<li>恢复处理机上下文</li>
+</ol>
+<h2 id="缓存IO"><a href="#缓存IO" class="headerlink" title="缓存IO"></a>缓存IO</h2><p>缓存IO又称称为标准IO，大多数文件系统的默认IO操作都是缓存IO。在Linux的缓存IO机制中，操作系统会将IO的数据缓存在文件系统的页缓存（page cache）。也就是说，数据会先被拷贝到操作系统内核的缓冲区中，然后才会从操作系统内核的缓存区拷贝到应用程序的地址空间中。</p>
+<p>这种做法的缺点就是，需要在应用程序地址空间和内核进行多次拷贝，这些拷贝动作所带来的CPU以及内存开销是非常大的。</p>
+<h2 id="同步、异步、阻塞、非阻塞"><a href="#同步、异步、阻塞、非阻塞" class="headerlink" title="同步、异步、阻塞、非阻塞"></a>同步、异步、阻塞、非阻塞</h2><p>同步与异步：描述的是用户线程与内核的交互方式，同步指用户线程发起IO请求后需要等待或者轮询内核IO操作完成后才能继续执行；而异步是指用户线程发起IO请求后仍然继续执行，当内核IO操作完成后会通知用户线程，或者调用用户线程注册的回调函数。</p>
+<p>阻塞与非阻塞：描述是用户线程调用内核IO操作的方式，阻塞是指IO操作需要彻底完成后才返回到用户空间；而非阻塞是指IO操作被调用后立即返回给用户一个状态值，无需等到IO操作彻底完成。</p>
+<h1 id="Linux-IO模型"><a href="#Linux-IO模型" class="headerlink" title="Linux IO模型"></a>Linux IO模型</h1><p>网络IO的本质就是socket的读取，socket在linux系统被抽象为流，IO可以理解为对流的操作。文章开始的时候也提到了，对于一次IO访问（以read为例），数据会先被拷贝到操作系统内核的缓冲区，然后才会从操作系统内核的缓冲区拷贝到应用程序的地址空间中。所以说，当一个read操作发生时，它会经历两个阶段：</p>
+<ul>
+<li>第一个阶段：等待数据准备。</li>
+<li>第二个阶段：将数据从内核拷贝到进程中</li>
+</ul>
+<p>对于socket流而言：</p>
+<ul>
+<li>第一步：通常涉及等待网络上的数据分组到达，然后复制到内核的某个缓冲区。</li>
+<li>第二步：把数据从内核缓冲区复制到应用进程缓冲区。</li>
+</ul>
+<p>当然，如果内核空间的缓冲区中已经有数据了，那么就可以省略第一步。至于为什么不能直接让磁盘控制器把数据送到应用程序的地址空间中呢？最简单的一个原因就是应用程序不能直接操作底层硬件。</p>
+<p>网络应用需要处理的无非就是两大类问题，网络IO，数据计算。相对于后者，网络IO的延迟，给应用带来的性能瓶颈大于后者。网络IO的模型大致分为如下五种：</p>
+<h2 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h2><p>通俗点描述：A拿着一支鱼竿在河边钓鱼，并且一直在鱼竿前等，在等的时候不做其他的事情，十分专心。只有鱼上钩的时，才结束掉等的动作，把鱼钓上来。</p>
+<p>在这个模型中，应用程序为了执行这个read操作，会调用相应的一个system call，将系统控制权交给内核，然后就进行等待（这个等待的过程就是被阻塞了），内核开始执行这个system call，执行完毕后会向应用程序返回响应，应用程序得到响应后，就不再阻塞，并进行后面的工作。</p>
+<ul>
+<li>优点：能够及时返回数据，无延迟。</li>
+<li>缺点：对用户来说处于等待就要付出性能代价。</li>
+</ul>
+<p><img src="/image/IO/IO模型01.png" alt="IO模型01"></p>
+<h2 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h2><p>通俗点描述：B也在河边钓鱼，但是B不想将自己的所有时间都花费在钓鱼上，在等鱼上钩这个时间段中，B也在做其他的事情（一会看看书，一会读读报纸，一会又去看其他人的钓鱼等），但B在做这些事情的时候，每隔一个固定的时间检查鱼是否上钩。一旦检查到有鱼上钩，就停下手中的事情，把鱼钓上来。</p>
+<p>当用户进程发出read操作时，调用相应的system call，这个system call会立即从内核中返回。但是在返回的这个时间点，内核中的数据可能还没有准备好，也就是说内核只是很快就返回了system call，只有这样才不会阻塞用户进程，对于应用程序，虽然这个IO操作很快就返回了，但是它并不知道这个IO操作是否真的成功了，为了知道IO操作是否成功，应用程序需要主动的循环去问内核。</p>
+<ul>
+<li>优点：能够在等待的时间里去做其他的事情。</li>
+<li>缺点：任务完成的响应延迟增大了，因为每过一段时间去轮询一次read操作，而任务可能在两次轮询之间的任意时间完成，这对导致整体数据吞吐量的降低。</li>
+</ul>
+<p><img src="/image/IO/IO模型02.png" alt="IO模型02"></p>
+<h2 id="多路复用IO（I-O-multiplexing）"><a href="#多路复用IO（I-O-multiplexing）" class="headerlink" title="多路复用IO（I/O multiplexing）"></a>多路复用IO（I/O multiplexing）</h2><p><img src="/image/IO/IO模型04.png" alt="IO模型04"></p>
+<h2 id="信号驱动IO（signal-blocking-I-O）"><a href="#信号驱动IO（signal-blocking-I-O）" class="headerlink" title="信号驱动IO（signal blocking I/O）"></a>信号驱动IO（signal blocking I/O）</h2><p><img src="/image/IO/IO模型03.png" alt="IO模型03"></p>
+<h2 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h2><p><img src="/image/IO/IO模型05.png" alt="IO模型05"></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a href="https://www.cnblogs.com/dongguacai/p/5770287.html" target="_blank" rel="noopener">https://www.cnblogs.com/dongguacai/p/5770287.html</a></li>
+<li><a href="https://blog.csdn.net/ZWE7616175/article/details/80591587" target="_blank" rel="noopener">https://blog.csdn.net/ZWE7616175/article/details/80591587</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/26/parallelStream/" rel="next" title="关于parallelStream并发安全的思考">
+                <i class="fa fa-chevron-left"></i> 关于parallelStream并发安全的思考
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/10/lock/" rel="prev" title="锁的基础知识">
+                锁的基础知识 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">LiuBo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#几个基础概念"><span class="nav-number">1.</span> <span class="nav-text">几个基础概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IO模型"><span class="nav-number">1.1.</span> <span class="nav-text">IO模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户空间、内核空间"><span class="nav-number">1.2.</span> <span class="nav-text">用户空间、内核空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程切换"><span class="nav-number">1.3.</span> <span class="nav-text">进程切换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存IO"><span class="nav-number">1.4.</span> <span class="nav-text">缓存IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同步、异步、阻塞、非阻塞"><span class="nav-number">1.5.</span> <span class="nav-text">同步、异步、阻塞、非阻塞</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux-IO模型"><span class="nav-number">2.</span> <span class="nav-text">Linux IO模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#阻塞IO（blocking-I-O）"><span class="nav-number">2.1.</span> <span class="nav-text">阻塞IO（blocking I/O）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非阻塞IO（noblocking-I-O）"><span class="nav-number">2.2.</span> <span class="nav-text">非阻塞IO（noblocking I/O）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多路复用IO（I-O-multiplexing）"><span class="nav-number">2.3.</span> <span class="nav-text">多路复用IO（I/O multiplexing）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#信号驱动IO（signal-blocking-I-O）"><span class="nav-number">2.4.</span> <span class="nav-text">信号驱动IO（signal blocking I/O）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异步IO（asynchronous-I-O）"><span class="nav-number">2.5.</span> <span class="nav-text">异步IO（asynchronous I/O）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuBo</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

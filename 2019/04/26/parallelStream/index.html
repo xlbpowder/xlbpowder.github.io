@@ -87,7 +87,7 @@
 <meta property="og:description" content="今天工作中遇到了关于使用parallelStream导致的并发安全问题，使用三个ArrayList容器进行数据交集等处理时，由于数据较多，希望通过并行流提高处理效率，但没考虑过线程安全问题。 解决的方法非常简单，正确的使用map、collect、reduce，或者使用线程安全容器、加锁即可。 但其实是使用时没有仔细了解相关的使用知识导致应用出现问题。搜了下确实有很多相关资料，需要仔细了解相关API">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/image/parallelStream_01.png">
-<meta property="og:updated_time" content="2019-04-29T06:18:07.569Z">
+<meta property="og:updated_time" content="2019-04-29T16:01:27.878Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于parallelStream并发安全的思考">
 <meta name="twitter:description" content="今天工作中遇到了关于使用parallelStream导致的并发安全问题，使用三个ArrayList容器进行数据交集等处理时，由于数据较多，希望通过并行流提高处理效率，但没考虑过线程安全问题。 解决的方法非常简单，正确的使用map、collect、reduce，或者使用线程安全容器、加锁即可。 但其实是使用时没有仔细了解相关的使用知识导致应用出现问题。搜了下确实有很多相关资料，需要仔细了解相关API">
@@ -422,6 +422,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/05/10/网络IO模型/" rel="prev" title="网络IO模型">
+                网络IO模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -497,7 +501,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
