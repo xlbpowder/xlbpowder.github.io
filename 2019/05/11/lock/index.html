@@ -79,13 +79,17 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="LiuBo&#39;s Notes">
-<meta property="og:url" content="http://yoursite.com/categories/Database/index.html">
+<meta name="description" content="之前已经温习了事务相关的基础知识和概念，在实现事务和关于线程安全等问题时，经常会用到锁，但是并没有对锁的基础知识和概念有一个系统的学习，本文是对锁的基础知识概念学习的一个总结。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="锁的基础知识">
+<meta property="og:url" content="http://yoursite.com/2019/05/11/lock/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="之前已经温习了事务相关的基础知识和概念，在实现事务和关于线程安全等问题时，经常会用到锁，但是并没有对锁的基础知识和概念有一个系统的学习，本文是对锁的基础知识概念学习的一个总结。">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-25T03:22:57.657Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LiuBo&#39;s Notes">
+<meta name="twitter:title" content="锁的基础知识">
+<meta name="twitter:description" content="之前已经温习了事务相关的基础知识和概念，在实现事务和关于线程安全等问题时，经常会用到锁，但是并没有对锁的基础知识和概念有一个系统的学习，本文是对锁的基础知识概念学习的一个总结。">
 
 
 
@@ -115,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/categories/Database/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/05/11/lock/"/>
 
 
 
 
 
-  <title>Category: Database | LiuBo's Notes</title>
+  <title>锁的基础知识 | LiuBo's Notes</title>
   
 
 
@@ -140,7 +144,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -224,55 +228,185 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block category">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>Database<small>Category</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/11/lock/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuBo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/04/26/数据库三范式/" itemprop="url">
-              
-                <span itemprop="name">数据库设计三范式&五大约束</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">锁的基础知识</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-04-26T10:00:00+08:00"
-              content="2019-04-26" >
-          04-26
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-11T11:37:00+08:00">
+                2019-05-11
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Others/" itemprop="url" rel="index">
+                    <span itemprop="name">Others</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前已经温习了事务相关的基础知识和概念，在实现事务和关于线程安全等问题时，经常会用到锁，但是并没有对锁的基础知识和概念有一个系统的学习，本文是对锁的基础知识概念学习的一个总结。</p>
+<a id="more"></a>
+<p>锁的基础概念</p>
+<p>锁设计的点</p>
+<p>可重入性</p>
+<p>公平性</p>
+<p>锁的种类</p>
+<ol>
+<li>公平锁/非公平锁</li>
+<li>可重入锁</li>
+<li>独享锁/共享锁</li>
+<li>互斥锁/读写锁</li>
+<li>乐观锁/悲观锁</li>
+<li>分段锁</li>
+<li>偏向锁/轻量级锁/重量级锁</li>
+<li>自旋锁</li>
+</ol>
+<p>死锁</p>
+<p>如何避免死锁</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/10/网络IO模型/" rel="next" title="网络IO模型">
+                <i class="fa fa-chevron-left"></i> 网络IO模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/20/elasticsearch/" rel="prev" title="ElasticSearch入门">
+                ElasticSearch入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -280,6 +414,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -495,6 +633,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
