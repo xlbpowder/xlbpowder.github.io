@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang="">
+<html class="theme-next muse use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="设计模式," />
 
 
 
@@ -80,15 +80,16 @@
 
 
 <meta name="description" content="代理模式/JAVA动态代理 在学习Spring AOP与RPC的实现时，总会与代理模式密不可分，而日常编码中代理模式也是常用的设计模式之一。学习代理模式与动态代理的实现与作用是非常有益于理解框架的源码实现，并且可以提高抽象思维。本文是个人在学习代理模式以及动态代理的一个小总结，没有过深的探讨。本文不会提及具体动态代理底层字节码框架的实现，之后有机会会补充Javassist和ASM字节码框架的文章。">
+<meta name="keywords" content="设计模式">
 <meta property="og:type" content="article">
 <meta property="og:title" content="代理模式&#x2F;JAVA动态代理">
 <meta property="og:url" content="http://yoursite.com/2018/12/12/proxy_pattern/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="代理模式/JAVA动态代理 在学习Spring AOP与RPC的实现时，总会与代理模式密不可分，而日常编码中代理模式也是常用的设计模式之一。学习代理模式与动态代理的实现与作用是非常有益于理解框架的源码实现，并且可以提高抽象思维。本文是个人在学习代理模式以及动态代理的一个小总结，没有过深的探讨。本文不会提及具体动态代理底层字节码框架的实现，之后有机会会补充Javassist和ASM字节码框架的文章。">
-<meta property="og:locale" content="default">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/image/W3sDesign_Proxy_Design_Pattern_UML.jpg">
 <meta property="og:image" content="http://yoursite.com/image/cglib_callback.png">
-<meta property="og:updated_time" content="2019-08-21T06:28:29.557Z">
+<meta property="og:updated_time" content="2019-08-26T07:53:01.213Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="代理模式&#x2F;JAVA动态代理">
 <meta name="twitter:description" content="代理模式/JAVA动态代理 在学习Spring AOP与RPC的实现时，总会与代理模式密不可分，而日常编码中代理模式也是常用的设计模式之一。学习代理模式与动态代理的实现与作用是非常有益于理解框架的源码实现，并且可以提高抽象思维。本文是个人在学习代理模式以及动态代理的一个小总结，没有过深的探讨。本文不会提及具体动态代理底层字节码框架的实现，之后有机会会补充Javassist和ASM字节码框架的文章。">
@@ -108,7 +109,7 @@
     motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     duoshuo: {
       userId: '0',
-      author: 'Author'
+      author: '博主'
     },
     algolia: {
       applicationID: '',
@@ -140,7 +141,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
   
   
@@ -188,7 +189,27 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
           </a>
         </li>
       
@@ -198,7 +219,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
-            Categories
+            分类
           </a>
         </li>
       
@@ -208,7 +229,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            归档
           </a>
         </li>
       
@@ -248,7 +269,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/12/proxy_pattern/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="LiuBo">
+      <meta itemprop="name" content="Claim Your Destiny">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
@@ -272,9 +293,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-12T15:01:00+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-12T15:01:00+08:00">
                 2018-12-12
               </time>
             
@@ -293,7 +314,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -315,6 +336,11 @@
           
           
 
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
           
 
           
@@ -436,6 +462,12 @@ net.sf.cglib.proxy.MethodInterceptor：是最常用的回调类型，在基于�
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+        </div>
+      
 
       
       
@@ -511,10 +543,10 @@ net.sf.cglib.proxy.MethodInterceptor：是最常用的回调类型，在基于�
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
+            文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
+            站点概览
           </li>
         </ul>
       
@@ -523,7 +555,7 @@ net.sf.cglib.proxy.MethodInterceptor：是最常用的回调类型，在基于�
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <p class="site-author-name" itemprop="name">LiuBo</p>
+              <p class="site-author-name" itemprop="name">Claim Your Destiny</p>
               <p class="site-description motion-element" itemprop="description"></p>
           </div>
 
@@ -534,8 +566,8 @@ net.sf.cglib.proxy.MethodInterceptor：是最常用的回调类型，在基于�
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">29</span>
-                  <span class="site-state-item-name">posts</span>
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
@@ -546,11 +578,20 @@ net.sf.cglib.proxy.MethodInterceptor：是最常用的回调类型，在基于�
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
                   <span class="site-state-item-count">8</span>
-                  <span class="site-state-item-name">categories</span>
+                  <span class="site-state-item-name">分类</span>
                 </a>
               </div>
             
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
             
 
           </nav>
@@ -620,9 +661,20 @@ net.sf.cglib.proxy.MethodInterceptor：是最常用的回调类型，在基于�
   <span class="with-love">
     <i class="fa fa-snowflake-o"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">LiuBo</span>
+  <span class="author" itemprop="copyrightHolder">Claim Your Destiny</span>
 
   
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
 </div>
 
 
@@ -634,10 +686,36 @@ net.sf.cglib.proxy.MethodInterceptor：是最常用的回调类型，在基于�
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
 
 
 
 
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
 
 
 

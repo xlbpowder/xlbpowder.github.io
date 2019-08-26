@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang="">
+<html class="theme-next muse use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="docker," />
 
 
 
@@ -79,12 +79,13 @@
 
 
 
+<meta name="keywords" content="docker">
 <meta property="og:type" content="article">
 <meta property="og:title" content="docker 容器使用">
 <meta property="og:url" content="http://yoursite.com/2019/08/21/docker_05_容器的使用/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-23T06:26:11.624Z">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-08-26T07:50:50.678Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker 容器使用">
 
@@ -102,7 +103,7 @@
     motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     duoshuo: {
       userId: '0',
-      author: 'Author'
+      author: '博主'
     },
     algolia: {
       applicationID: '',
@@ -134,7 +135,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
   
   
@@ -182,7 +183,27 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
           </a>
         </li>
       
@@ -192,7 +213,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
-            Categories
+            分类
           </a>
         </li>
       
@@ -202,7 +223,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            归档
           </a>
         </li>
       
@@ -242,7 +263,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/21/docker_05_容器的使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="LiuBo">
+      <meta itemprop="name" content="Claim Your Destiny">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
@@ -266,9 +287,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-21T17:00:00+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-21T17:00:00+08:00">
                 2019-08-21
               </time>
             
@@ -287,12 +308,12 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index">
-                    <span itemprop="name">docker</span>
+                  <a href="/categories/DevOps/" itemprop="url" rel="index">
+                    <span itemprop="name">DevOps</span>
                   </a>
                 </span>
 
@@ -309,6 +330,11 @@
           
           
 
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
           
 
           
@@ -342,9 +368,13 @@
 <li>PORTS 0.0.0.0:32768-&gt;5000/tcp，5000是容器监听的端口，映射到宿主机的32768端口。</li>
 </ul>
 <p>这时候通过docker宿主机的ip:32768就可以直接访问了</p>
-<p>也可以通过-p参数设置不同的端口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker run -d -p 5000:5000 training/webapp python app.py</span><br><span class="line">1d7a7e33cdf674a0374e908613f1bd0ebe08a649d2b681e2afab6d25550ca6ba</span><br></pre></td></tr></table></figure></p>
+<h2 id="运行镜像并修改监听端口"><a href="#运行镜像并修改监听端口" class="headerlink" title="运行镜像并修改监听端口"></a>运行镜像并修改监听端口</h2><p>也可以通过-p参数设置不同的端口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker run -d -p 5000:5000 training/webapp python app.py</span><br><span class="line">1d7a7e33cdf674a0374e908613f1bd0ebe08a649d2b681e2afab6d25550ca6ba</span><br></pre></td></tr></table></figure></p>
 <p>再查看下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker ps</span><br><span class="line">CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                     NAMES</span><br><span class="line">1d7a7e33cdf6        training/webapp     &quot;python app.py&quot;     5 seconds ago       Up 4 seconds        0.0.0.0:5000-&gt;5000/tcp    vigorous_murdock</span><br><span class="line">76fd8c273818        training/webapp     &quot;python app.py&quot;     31 minutes ago      Up 31 minutes       0.0.0.0:32768-&gt;5000/tcp   dreamy_burnell</span><br></pre></td></tr></table></figure></p>
 <p>这时候通过ip:5000也是可以访问的</p>
+<h2 id="观察容器状态"><a href="#观察容器状态" class="headerlink" title="观察容器状态"></a>观察容器状态</h2><h3 id="网络端口"><a href="#网络端口" class="headerlink" title="网络端口"></a>网络端口</h3><p>这时候可以先查下网络端口映射<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker port 1d7a7e33cdf6</span><br><span class="line">0.0.0.0:5000-&gt;5000/tcp</span><br><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker port 76fd8c273818</span><br><span class="line">0.0.0.0:32768-&gt;5000/tcp</span><br></pre></td></tr></table></figure></p>
+<h3 id="应用程序日志"><a href="#应用程序日志" class="headerlink" title="应用程序日志"></a>应用程序日志</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker logs 006fdd129e49</span><br><span class="line"> * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)</span><br></pre></td></tr></table></figure>
+<p>也可以加参数-f追踪查看最新打印的日志。</p>
+<h3 id="查看容器进程"><a href="#查看容器进程" class="headerlink" title="查看容器进程"></a>查看容器进程</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker top 006fdd129e49</span><br><span class="line">UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD</span><br><span class="line">root                30384               30366               0                   10:15               ?                   00:00:00            python app.py</span><br></pre></td></tr></table></figure>
 <h2 id="停止容器"><a href="#停止容器" class="headerlink" title="停止容器"></a>停止容器</h2><p>我们可以通过docker stop container_id来停止指定的容器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker stop 1d7a7e33cdf6</span><br></pre></td></tr></table></figure></p>
 <p>这时再通过docker ps发现5000端口的webapp的容器已经没有了。</p>
 
@@ -361,6 +391,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+        </div>
       
 
       
@@ -437,10 +473,10 @@
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
+            文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
+            站点概览
           </li>
         </ul>
       
@@ -449,7 +485,7 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <p class="site-author-name" itemprop="name">LiuBo</p>
+              <p class="site-author-name" itemprop="name">Claim Your Destiny</p>
               <p class="site-description motion-element" itemprop="description"></p>
           </div>
 
@@ -460,8 +496,8 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">29</span>
-                  <span class="site-state-item-name">posts</span>
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
@@ -472,11 +508,20 @@
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
                   <span class="site-state-item-count">8</span>
-                  <span class="site-state-item-name">categories</span>
+                  <span class="site-state-item-name">分类</span>
                 </a>
               </div>
             
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
             
 
           </nav>
@@ -522,7 +567,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#运行WEB应用"><span class="nav-number">1.</span> <span class="nav-text">运行WEB应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#拉取测试镜像"><span class="nav-number">1.1.</span> <span class="nav-text">拉取测试镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行镜像"><span class="nav-number">1.2.</span> <span class="nav-text">运行镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看运行中的容器"><span class="nav-number">1.3.</span> <span class="nav-text">查看运行中的容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#停止容器"><span class="nav-number">1.4.</span> <span class="nav-text">停止容器</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#运行WEB应用"><span class="nav-number">1.</span> <span class="nav-text">运行WEB应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#拉取测试镜像"><span class="nav-number">1.1.</span> <span class="nav-text">拉取测试镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行镜像"><span class="nav-number">1.2.</span> <span class="nav-text">运行镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看运行中的容器"><span class="nav-number">1.3.</span> <span class="nav-text">查看运行中的容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行镜像并修改监听端口"><span class="nav-number">1.4.</span> <span class="nav-text">运行镜像并修改监听端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#观察容器状态"><span class="nav-number">1.5.</span> <span class="nav-text">观察容器状态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络端口"><span class="nav-number">1.5.1.</span> <span class="nav-text">网络端口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用程序日志"><span class="nav-number">1.5.2.</span> <span class="nav-text">应用程序日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看容器进程"><span class="nav-number">1.5.3.</span> <span class="nav-text">查看容器进程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#停止容器"><span class="nav-number">1.6.</span> <span class="nav-text">停止容器</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -546,9 +591,20 @@
   <span class="with-love">
     <i class="fa fa-snowflake-o"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">LiuBo</span>
+  <span class="author" itemprop="copyrightHolder">Claim Your Destiny</span>
 
   
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
 </div>
 
 
@@ -560,10 +616,36 @@
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
 
 
 
 
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
 
 
 
