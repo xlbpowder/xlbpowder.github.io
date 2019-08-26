@@ -87,13 +87,13 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="来自有凡分享的前端性能优化">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/948614-1752f5c8993cc1a0.jpeg">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/5797628-b2cd3a2d463b05fd">
-<meta property="og:updated_time" content="2019-08-26T07:56:13.219Z">
+<meta property="og:image" content="http://yoursite.com/image/performance_optimization_01.jpeg">
+<meta property="og:image" content="http://yoursite.com/image/performance_optimization_02.jpg">
+<meta property="og:updated_time" content="2019-08-26T08:34:56.633Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="前端性能优化">
 <meta name="twitter:description" content="来自有凡分享的前端性能优化">
-<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/948614-1752f5c8993cc1a0.jpeg">
+<meta name="twitter:image" content="http://yoursite.com/image/performance_optimization_01.jpeg">
 
 
 
@@ -362,7 +362,7 @@
       
         <p>来自有凡分享的前端性能优化</p>
 <a id="more"></a>
-<p><img src="https://upload-images.jianshu.io/upload_images/948614-1752f5c8993cc1a0.jpeg" alt="前端性能优化" title="前端性能优化"></p>
+<p><img src="/image/performance_optimization_01.jpeg" alt="前端性能优化" title="前端性能优化"></p>
 <p>性能优化可以准确地分为：网络方面、DOM操作及渲染方面、数据方面。</p>
 <h2 id="网络方面"><a href="#网络方面" class="headerlink" title="网络方面"></a>网络方面</h2><p>web应用，总是会有一部分的时间浪费在网络连接和资源下载方面。往往建立一次网络连接是需要时间成本的。而且浏览器同一时间所发送的网络请求数是有限的。</p>
 <ol>
@@ -398,7 +398,7 @@
 </li>
 </ol>
 <h2 id="渲染和DOM操作方面"><a href="#渲染和DOM操作方面" class="headerlink" title="渲染和DOM操作方面"></a>渲染和DOM操作方面</h2><p>在网页初步加载时，获取到HTML文件之后，最初的工作是构建DOM和构建CSSOM两个树，之后将他们合并形成渲染树，最后对其进行打印。我们可以通过图片来看一下，简单的过程：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/5797628-b2cd3a2d463b05fd" alt="优化渲染" title="优化渲染"></p>
+<p><img src="/image/performance_optimization_02.jpg" alt="优化渲染" title="优化渲染"></p>
 <ol>
 <li><p><strong>优化网页渲染</strong>：</p>
 <ul>
@@ -528,6 +528,35 @@
 
     
 
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="Claim Your Destiny 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="Claim Your Destiny 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
     
 
     
@@ -680,9 +709,9 @@
                   </span>
                 
                   <span class="links-of-author-item">
-                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="微博">
                       
-                        <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                        <i class="fa fa-fw fa-globe"></i>微博</a>
                   </span>
                 
             </div>
