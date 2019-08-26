@@ -87,7 +87,7 @@
 <meta property="og:description" content="欢迎造访个人小站，本站仅记录和分享个人学习过程。   96后，2016年开始从事软件编程工作，目前就读于华南理工大学（学习成绩太差了，成教专升本 - - 爱打电子游戏、看动漫、插画、喜欢雕像手办、偶尔看看电影（不应该先说热爱编程、热爱互联网么？？误！ 主要从事JAVA Web应用开发，目前主要从事后端开发。精简主义，有一丢丢极客精神，追求简洁高效的代码（但自己写的并不怎么样Ctrl C+V 也">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/image/QRcode/wechat_qrcode.jpg">
-<meta property="og:updated_time" content="2019-08-26T12:10:17.004Z">
+<meta property="og:updated_time" content="2019-08-26T12:10:43.509Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LiuBo&#39;s Notes">
 <meta name="twitter:description" content="欢迎造访个人小站，本站仅记录和分享个人学习过程。   96后，2016年开始从事软件编程工作，目前就读于华南理工大学（学习成绩太差了，成教专升本 - - 爱打电子游戏、看动漫、插画、喜欢雕像手办、偶尔看看电影（不应该先说热爱编程、热爱互联网么？？误！ 主要从事JAVA Web应用开发，目前主要从事后端开发。精简主义，有一丢丢极客精神，追求简洁高效的代码（但自己写的并不怎么样Ctrl C+V 也">
@@ -300,6 +300,8 @@
 
           
 
+  
+     <div id="gitalk-container"></div>
   
 
 
@@ -608,6 +610,21 @@
 
 
 
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
 
   
 
