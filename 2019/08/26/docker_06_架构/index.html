@@ -53,16 +53,16 @@
 <link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/new_favicon_source_02_32x32.jpg?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/new_favicon_source_02_16x16.jpg?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
 
 
 
@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/image/DevOps/docker_01.png">
 <meta property="og:image" content="http://yoursite.com/image/DevOps/docker_02.png">
-<meta property="og:updated_time" content="2019-08-26T09:22:32.527Z">
+<meta property="og:updated_time" content="2019-08-27T05:54:38.350Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker 架构">
 <meta name="twitter:description" content="前段时间公司培训，运维大佬提供的材料，有列举出docker的基本架构，在学习docker和Kubernetes的时候，其实先学习内部架构和对象的话，更有助于提升对整体应用的理解。">
@@ -271,7 +271,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xlbpowder">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/new_favicon_source_02.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -376,7 +376,7 @@
 <p><img src="/image/DevOps/docker_01.png" alt=""></p>
 <h3 id="流程描述"><a href="#流程描述" class="headerlink" title="流程描述"></a>流程描述</h3><p><img src="/image/DevOps/docker_02.png" alt=""></p>
 <h2 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h2><h3 id="镜像"><a href="#镜像" class="headerlink" title="镜像"></a>镜像</h3><p>镜像是一个用来构建容器的只读模版，通常一个镜像会依赖其他的镜像。例如我们编写的一个Node程序需要依赖Node环境，那在构建这个应用镜像时就需要依赖基础的Node镜像。</p>
-<p>我们可以创建自己的镜像，也可以使用仓库中已经创建好的镜像。创建镜像需要创建一个Dockerfile文件。每个Dockerfile定义镜像文件中的一层，当定义发生变化的时候，只需要更新着一层的文件即可。</p>
+<p>我们可以创建自己的镜像，也可以使用仓库中已经创建好的镜像。创建镜像需要创建一个Dockerfile文件。每个Dockerfile定义镜像文件中的一层，当定义发生变化的时候，只需要更新这一层的文件即可。</p>
 <h3 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h3><p>容器是一个运行时状态下的镜像，通过docker命令我们可以创建、启动、停止、删除容器</p>
 <blockquote>
 <p>启动我们的第一个容器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm hello-world</span><br></pre></td></tr></table></figure></p>
@@ -637,6 +637,10 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02.jpg"
+                alt="xlbpowder" />
+            
               <p class="site-author-name" itemprop="name">xlbpowder</p>
               <p class="site-description motion-element" itemprop="description"></p>
           </div>
@@ -690,9 +694,15 @@
                   </span>
                 
                   <span class="links-of-author-item">
-                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="微博">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
                       
-                        <i class="fa fa-fw fa-globe"></i>微博</a>
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
                   </span>
                 
             </div>
