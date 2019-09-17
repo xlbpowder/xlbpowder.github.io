@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/image/JVM内存模型01.png">
 <meta property="og:image" content="http://yoursite.com/image/JVM内存模型02.png">
-<meta property="og:updated_time" content="2019-08-26T07:51:57.502Z">
+<meta property="og:updated_time" content="2019-09-07T07:22:36.934Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JAVA程序常见问题与JVM内存模型关系">
 <meta name="twitter:description" content="本文是前段时间公司培训讲到的内容，个人做了笔记进行了总结。通过各类JAVA程序的OOM问题，结合JVM内存模型进行定位以及调优，具体调试的工具以及内容后续会进行补充。">
@@ -271,7 +271,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xlbpowder">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/new_favicon_source_02.jpg">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -366,8 +366,7 @@
 <a id="more"></a>
 <h1 id="OOM"><a href="#OOM" class="headerlink" title="OOM"></a>OOM</h1><h2 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h2><p><img src="/image/JVM内存模型01.png" alt="JVM内存模型01-photo"></p>
 <p><img src="/image/JVM内存模型02.png" alt="JVM内存模型02-photo"></p>
-<h2 id="非堆内存"><a href="#非堆内存" class="headerlink" title="非堆内存"></a>非堆内存</h2><p>#</p>
-<h2 id="调优参数"><a href="#调优参数" class="headerlink" title="调优参数"></a>调优参数</h2><p>-XX:MaxPremSize=256MB</p>
+<h2 id="非堆内存"><a href="#非堆内存" class="headerlink" title="非堆内存"></a>非堆内存</h2><h2 id="调优参数"><a href="#调优参数" class="headerlink" title="调优参数"></a>调优参数</h2><p>-XX:MaxPremSize=256MB</p>
 <ul>
 <li>jdk1.7 持久代 使用的虚拟机内存</li>
 <li>jdk1.8之后 源空间 使用的是本地内存<h3 id="对应OOM错误信息"><a href="#对应OOM错误信息" class="headerlink" title="对应OOM错误信息"></a>对应OOM错误信息</h3>PremGen Space<h3 id="问题处理"><a href="#问题处理" class="headerlink" title="问题处理"></a>问题处理</h3></li>
@@ -594,7 +593,7 @@ b. TProfile https://github.com/alibaba/TProfiler
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <img class="site-author-image" itemprop="image"
-                src="/images/new_favicon_source_02.jpg"
+                src="/images/new_favicon_source_02_180x180.jpg"
                 alt="xlbpowder" />
             
               <p class="site-author-name" itemprop="name">xlbpowder</p>
@@ -608,7 +607,7 @@ b. TProfile https://github.com/alibaba/TProfiler
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

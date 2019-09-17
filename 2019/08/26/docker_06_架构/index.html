@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/image/DevOps/docker_01.png">
 <meta property="og:image" content="http://yoursite.com/image/DevOps/docker_02.png">
-<meta property="og:updated_time" content="2019-08-27T05:54:38.350Z">
+<meta property="og:updated_time" content="2019-08-29T08:56:36.451Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker 架构">
 <meta name="twitter:description" content="前段时间公司培训，运维大佬提供的材料，有列举出docker的基本架构，在学习docker和Kubernetes的时候，其实先学习内部架构和对象的话，更有助于提升对整体应用的理解。">
@@ -271,7 +271,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xlbpowder">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/new_favicon_source_02.jpg">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -393,7 +393,7 @@
 <h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><p>Docker的网络子系统是可插拔的，支持bridge、host、overlay、macvlan、none等网络模式</p>
 <ul>
 <li><p>bridge模式是Docker默认的网络设置，此模式会为每一个容器分配Network Namespace、设置IP等，并将主机上的Docker容器连接到docker0虚拟网桥上，docker0网桥由docker后台服务启动时创建，默认在172.17.0.0/16段每一个容器运行时会生成一对veth网络设备直连，再通过网桥使得同一个主机上的容器间可以相互通信</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------------------------------------------------------------+</span><br><span class="line">|                                                                               |</span><br><span class="line">|       +---------------------------------------------------------------+       |</span><br><span class="line">|       |                           docker0                             |       |</span><br><span class="line">|       +---------------------------------------------------------------+       |</span><br><span class="line">|                             ↑               ↑                                 |</span><br><span class="line">|.............................|...............|.................................|</span><br><span class="line">|                             ↓               ↓                                 |</span><br><span class="line">|        +----------+    +-----------+   +-----------+    +-----------+         |</span><br><span class="line">|        |   vth2   |&lt;--&gt;|   veth1   |   |   veth3   |&lt;--&gt;|   veth4   |         |</span><br><span class="line">|        +----------+    +-----------+   +-----------+    +-----------+         |</span><br><span class="line">|             ↑                                                 ↑               |</span><br><span class="line">|             +-------------------------------------------------+               |</span><br><span class="line">|        172.16.17.2                                       172.16.17.3          |</span><br><span class="line">+-------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------------------------------------------------------------+</span><br><span class="line">|                                                                               |</span><br><span class="line">|       +---------------------------------------------------------------+       |</span><br><span class="line">|       |                           docker0                             |       |</span><br><span class="line">|       +---------------------------------------------------------------+       |</span><br><span class="line">|                             ↑               ↑                                 |</span><br><span class="line">|.............................|...............|.................................|</span><br><span class="line">|                             ↓               ↓                                 |</span><br><span class="line">|        +----------+    +-----------+   +-----------+    +-----------+         |</span><br><span class="line">|        |   veth2  |&lt;--&gt;|   veth1   |   |   veth3   |&lt;--&gt;|   veth4   |         |</span><br><span class="line">|        +----------+    +-----------+   +-----------+    +-----------+         |</span><br><span class="line">|             ↑                                                 ↑               |</span><br><span class="line">|             +-------------------------------------------------+               |</span><br><span class="line">|        172.16.17.2                                       172.16.17.3          |</span><br><span class="line">+-------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>host模式下，容器会共享主机的network namespace，所以拥有主机的全部网络通信能力，通常用于docker容器测试</p>
 </li>
@@ -571,6 +571,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/08/28/docker_07_网络/" rel="prev" title="docker 网络模式">
+                docker 网络模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -638,7 +642,7 @@
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <img class="site-author-image" itemprop="image"
-                src="/images/new_favicon_source_02.jpg"
+                src="/images/new_favicon_source_02_180x180.jpg"
                 alt="xlbpowder" />
             
               <p class="site-author-name" itemprop="name">xlbpowder</p>
@@ -652,7 +656,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

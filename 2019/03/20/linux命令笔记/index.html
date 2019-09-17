@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="一直都在说要好好学习下linux命令，最近在学习docker的时候真的发现自己linux的能力太差了，基础也不行，暂时先记下学习docker过程中用到的一些命令行。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-26T07:52:18.811Z">
+<meta property="og:updated_time" content="2019-09-02T01:26:27.232Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux命令笔记">
 <meta name="twitter:description" content="一直都在说要好好学习下linux命令，最近在学习docker的时候真的发现自己linux的能力太差了，基础也不行，暂时先记下学习docker过程中用到的一些命令行。">
@@ -268,7 +268,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xlbpowder">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/new_favicon_source_02.jpg">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -388,6 +388,11 @@
 <p>我这个是一个阿里云的服务器，系统内核是CentOS linux 7.4.1708 x86 64位，linux版本Linux version 3.10.0。</p>
 <h2 id="用户"><a href="#用户" class="headerlink" title="用户"></a>用户</h2><p>今天在记笔记的时候，看到有的会是$ xxx的指令，而有的是# xxx，后来查了下才知道，原来root用户就会是#开头，而非root用户则是$开头。</p>
 <p>一直用root用户其实也是有一定风险的，当然个人使用的话是没问题的，但是如果有多人使用，root用户权限会非常大，并不安全。所以先学习了下如何创建用户，并且分配相关权限。</p>
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><p>在windows中是使用ipconfig查看IP网络信息的，但是在linux系统中会提示没有这个指令，那相同能力的指令是什么呢，其实是ifconfig。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#ifconfig</span><br><span class="line">docker0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255</span><br><span class="line">        ether 02:42:f9:91:0c:70  txqueuelen 0  (Ethernet)</span><br><span class="line">        RX packets 3385  bytes 233447 (227.9 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 7300  bytes 448669 (438.1 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 172.18.149.46  netmask 255.255.240.0  broadcast 172.18.159.255</span><br><span class="line">        ether 00:16:3e:02:d1:f0  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 5062352  bytes 1452046450 (1.3 GiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 3885791  bytes 441227116 (420.7 MiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536</span><br><span class="line">        inet 127.0.0.1  netmask 255.0.0.0</span><br><span class="line">        loop  txqueuelen 1  (Local Loopback)</span><br><span class="line">        RX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">vethe8247e8: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        ether 76:33:08:8d:a1:f0  txqueuelen 0  (Ethernet)</span><br><span class="line">        RX packets 3204  bytes 265137 (258.9 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 7105  bytes 434120 (423.9 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">vethfcf581a: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        ether d6:5a:8c:29:23:7e  txqueuelen 0  (Ethernet)</span><br><span class="line">        RX packets 133  bytes 11230 (10.9 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 231  bytes 14338 (14.0 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br></pre></td></tr></table></figure></p>
+<h3 id="iptables"><a href="#iptables" class="headerlink" title="iptables"></a>iptables</h3><p>防火墙配置规则</p>
+<p>iptables –list-rules</p>
+<h3 id="brctl"><a href="#brctl" class="headerlink" title="brctl"></a>brctl</h3><p>先引入工具包：yum install bridge-utils</p>
+<p>brctl show</p>
 
       
     </div>
@@ -528,7 +533,7 @@
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <img class="site-author-image" itemprop="image"
-                src="/images/new_favicon_source_02.jpg"
+                src="/images/new_favicon_source_02_180x180.jpg"
                 alt="xlbpowder" />
             
               <p class="site-author-name" itemprop="name">xlbpowder</p>
@@ -542,7 +547,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -619,7 +624,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看Linux系统版本与内核版本"><span class="nav-number">1.</span> <span class="nav-text">查看Linux系统版本与内核版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户"><span class="nav-number">2.</span> <span class="nav-text">用户</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看Linux系统版本与内核版本"><span class="nav-number">1.</span> <span class="nav-text">查看Linux系统版本与内核版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户"><span class="nav-number">2.</span> <span class="nav-text">用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络"><span class="nav-number">3.</span> <span class="nav-text">网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#iptables"><span class="nav-number">3.1.</span> <span class="nav-text">iptables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#brctl"><span class="nav-number">3.2.</span> <span class="nav-text">brctl</span></a></li></ol></li></ol></div>
             
 
           </div>

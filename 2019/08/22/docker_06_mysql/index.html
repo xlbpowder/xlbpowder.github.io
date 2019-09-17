@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="最近被安排做数据迁移，因为刚换电脑，正好需要装一个mysql，想着正好直接用docker装一个试试">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-26T07:50:54.198Z">
+<meta property="og:updated_time" content="2019-09-05T03:16:31.805Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker 安装MySql">
 <meta name="twitter:description" content="最近被安排做数据迁移，因为刚换电脑，正好需要装一个mysql，想着正好直接用docker装一个试试">
@@ -268,7 +268,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xlbpowder">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/new_favicon_source_02.jpg">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -367,16 +367,28 @@
 <p>因为我们使用的mysql是5.5版本的，所以直接就pull 5.5版本的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker pull mysql:5.5</span><br><span class="line">5.5: Pulling from library/mysql</span><br><span class="line">743f2d6c1f65: Pull complete</span><br><span class="line">3f0c413ee255: Pull complete</span><br><span class="line">aef1ef8f1aac: Pull complete</span><br><span class="line">f9ee573e34cb: Pull complete</span><br><span class="line">3f237e01f153: Pull complete</span><br><span class="line">03da1e065b16: Pull complete</span><br><span class="line">04087a801070: Pull complete</span><br><span class="line">7efd5395ab31: Pull complete</span><br><span class="line">1b5cc03aaac8: Pull complete</span><br><span class="line">2b7adaec9998: Pull complete</span><br><span class="line">385b8f96a9ba: Pull complete</span><br><span class="line">Digest: sha256:12da85ab88aedfdf39455872fb044f607c32fdc233cd59f1d26769fbf439b045</span><br><span class="line">Status: Downloaded newer image for mysql:5.5</span><br></pre></td></tr></table></figure></p>
 <p>这里如果下载的很慢，可以参考上一节文末讲到的如果修改公共仓库地址的那个。</p>
 <p>现在看下本地镜像仓库，已经存在了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker images</span><br><span class="line">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">mysql               5.6                 732765f8c7d2        8 days ago          257MB</span><br><span class="line">mysql               5.5                 d404d78aa797        3 months ago        205MB</span><br><span class="line">hello-world         latest              fce289e99eb9        7 months ago        1.84kB</span><br><span class="line">ubuntu              15.10               9b9cb95443b5        3 years ago         137MB</span><br><span class="line">training/webapp     latest              6fae60ef3446        4 years ago         349MB</span><br></pre></td></tr></table></figure></p>
-<h2 id="使用镜像"><a href="#使用镜像" class="headerlink" title="使用镜像"></a>使用镜像</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker run -p 3306:3306 --name mymysql -v $PWD/conf:/etc/mysql/conf.d -v $PWD/logs:/logs -v $PWD/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.5</span><br><span class="line">11e8f339f568</span><br></pre></td></tr></table></figure>
+<h2 id="使用镜像"><a href="#使用镜像" class="headerlink" title="使用镜像"></a>使用镜像</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker run -d -p 3306:3306 --privileged=true --name mymysql -v $PWD/mysql/conf.d:/etc/mysql/conf.d -v $PWD/mysql/mysql.conf.d:/etc/mysql/mysql.conf.d -v $PWD/mysql/logs:/logs -v $PWD/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 mysql:5.5</span><br><span class="line">11e8f339f568</span><br></pre></td></tr></table></figure>
 <p>这里我是直接学习了别人启动使用的参数</p>
 <ul>
+<li>-d 后台运行</li>
 <li>-p 3306:3306：将容器的 3306 端口映射到主机的 3306 端口。</li>
-<li>-v $PWD/conf:/etc/mysql/conf.d：将主机当前目录下的 conf/my.cnf 挂载到容器的 /etc/mysql/my.cnf。</li>
-<li>-v $PWD/logs:/logs：将主机当前目录下的 logs 目录挂载到容器的 /logs。</li>
-<li>-v $PWD/data:/var/lib/mysql ：将主机当前目录下的data目录挂载到容器的 /var/lib/mysql 。</li>
+<li>–privileged=true：容器内的root拥有真正root权限，否则容器内root只是外部普通用户权限</li>
+<li>–name 容器命名</li>
+<li>-v $PWD/mysql/conf:/etc/mysql/conf.d：将主机当前目录下的 /mysql/conf 挂载到容器的 /etc/mysql/conf.d。</li>
+<li>-v $PWD/mysql/mysql.conf.d:/etc/mysql/mysql.conf.d：将主机当前目录下的/mysql/mysql.conf.d 挂载到容器的 /mysql/mysql.conf.d。</li>
+<li>-v $PWD/logs:/logs：将主机当前目录下的 /mysql/logs 目录挂载到容器的 /logs。</li>
+<li>-v $PWD/data:/var/lib/mysql ：将主机当前目录下的/mysql/data目录挂载到容器的 /var/lib/mysql 。</li>
 <li>-e MYSQL_ROOT_PASSWORD=123456：初始化 root 用户的密码。</li>
 </ul>
+<p>这里为什么要将logs、data、conf挂在到宿主机的硬盘呢，是因为容器的存储是与容器的生命周期有关的，如果该mysql所属的容器关闭或出现其他问题，可能会导致数据丢失，数据库对于数据十分敏感，所以可以使用这种方式解决docker容器数据持久化的问题。</p>
+<p>mysql5.6的这个镜像的配置文件中有!includedir /etc/mysql/conf.d/ !includedir /etc/mysql/mysql.conf.d/，这两个路径就是上面挂载的路径。所以和平时修改my.cnf不同，只修改挂载卷目录下的配置文件也是可以达到同样效果的。</p>
+<p>之后会单独学习下docker的存储相关的知识。</p>
+<h3 id="其他配置方式"><a href="#其他配置方式" class="headerlink" title="其他配置方式"></a>其他配置方式</h3><p>关于配置，其实还可以通过标签（flags）传递至mysql进程。这样就可以脱离cnf配置文件，对容器进行弹性的定制。</p>
+<p>比如，如果需要修改默认编码方式，将所有编码方式修改为utf8mb4，则可以用下面这行命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker run --name mymysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:tag --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure></p>
+<p>如果需要查看可用选项的完整列表，可以执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker run -it --rm mysql:tag --verbose --help</span><br></pre></td></tr></table></figure></p>
 <h2 id="查看运行容器"><a href="#查看运行容器" class="headerlink" title="查看运行容器"></a>查看运行容器</h2><p>查看下已经启动好了，现在可以通过外部客户端工具链接访问下看看了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker ps</span><br><span class="line">CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES</span><br><span class="line">11e8f339f568        mysql:5.5           &quot;docker-entrypoint.s…&quot;   6 hours ago         Up 6 hours          0.0.0.0:3306-&gt;3306/tcp   mymysql</span><br></pre></td></tr></table></figure></p>
+<p>因为我提前在/mysql/conf.d和/mysql/mysql.conf.d/配置四个配置文件，主要是客户端和服务端的编码格式的，所以先访问容器，查看下mysql的配置有没有生效。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root]#docker exec -it mymysql bash</span><br><span class="line">root@1254821edc4c:/# mysql -uroot -p123456</span><br><span class="line">Warning: Using a password on the command line interface can be insecure.</span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 5</span><br><span class="line">Server version: 5.6.45 MySQL Community Server (GPL)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2019, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like &apos;%char%&apos;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8mb4                    |</span><br><span class="line">| character_set_connection | utf8mb4                    |</span><br><span class="line">| character_set_database   | utf8mb4                    |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8mb4                    |</span><br><span class="line">| character_set_server     | utf8mb4                    |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | /usr/share/mysql/charsets/ |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">8 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
+<p>可以看出是已经生效的了。</p>
 
       
     </div>
@@ -517,7 +529,7 @@
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <img class="site-author-image" itemprop="image"
-                src="/images/new_favicon_source_02.jpg"
+                src="/images/new_favicon_source_02_180x180.jpg"
                 alt="xlbpowder" />
             
               <p class="site-author-name" itemprop="name">xlbpowder</p>
@@ -531,7 +543,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -608,7 +620,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取镜像"><span class="nav-number">1.</span> <span class="nav-text">获取镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用镜像"><span class="nav-number">2.</span> <span class="nav-text">使用镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看运行容器"><span class="nav-number">3.</span> <span class="nav-text">查看运行容器</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取镜像"><span class="nav-number">1.</span> <span class="nav-text">获取镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用镜像"><span class="nav-number">2.</span> <span class="nav-text">使用镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#其他配置方式"><span class="nav-number">2.1.</span> <span class="nav-text">其他配置方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看运行容器"><span class="nav-number">3.</span> <span class="nav-text">查看运行容器</span></a></li></ol></div>
             
 
           </div>
