@@ -56,10 +56,10 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/new_favicon_source_02_32x32.jpg?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/new_favicon_source_02_16x16.jpg?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
 
 
   <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="一直都在说要好好学习下linux命令，最近在学习docker的时候真的发现自己linux的能力太差了，基础也不行，暂时先记下学习docker过程中用到的一些命令行。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-02T01:26:27.232Z">
+<meta property="og:updated_time" content="2019-09-24T08:31:16.108Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux命令笔记">
 <meta name="twitter:description" content="一直都在说要好好学习下linux命令，最近在学习docker的时候真的发现自己linux的能力太差了，基础也不行，暂时先记下学习docker过程中用到的一些命令行。">
@@ -393,6 +393,30 @@
 <p>iptables –list-rules</p>
 <h3 id="brctl"><a href="#brctl" class="headerlink" title="brctl"></a>brctl</h3><p>先引入工具包：yum install bridge-utils</p>
 <p>brctl show</p>
+<h3 id="查看端口占用情况"><a href="#查看端口占用情况" class="headerlink" title="查看端口占用情况"></a>查看端口占用情况</h3><p>netstat -tunlp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root/elasticsearch]#netstat -tunlp</span><br><span class="line">Active Internet connections (only servers)</span><br><span class="line">Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name</span><br><span class="line">tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      31413/sshd</span><br><span class="line">tcp6       0      0 :::3306                 :::*                    LISTEN      28980/docker-proxy</span><br><span class="line">udp        0      0 0.0.0.0:25940           0.0.0.0:*                           724/dhclient</span><br><span class="line">udp        0      0 0.0.0.0:68              0.0.0.0:*                           724/dhclient</span><br><span class="line">udp        0      0 172.20.0.1:123          0.0.0.0:*                           7939/ntpd</span><br><span class="line">udp        0      0 172.19.0.1:123          0.0.0.0:*                           7939/ntpd</span><br><span class="line">udp        0      0 172.17.0.1:123          0.0.0.0:*                           7939/ntpd</span><br><span class="line">udp        0      0 172.18.149.46:123       0.0.0.0:*                           7939/ntpd</span><br><span class="line">udp        0      0 127.0.0.1:123           0.0.0.0:*                           7939/ntpd</span><br><span class="line">udp        0      0 0.0.0.0:123             0.0.0.0:*                           7939/ntpd</span><br><span class="line">udp6       0      0 :::50357                :::*                                724/dhclient</span><br><span class="line">udp6       0      0 :::123                  :::*                                7939/ntpd</span><br></pre></td></tr></table></figure></p>
+<h2 id="硬盘使用情况"><a href="#硬盘使用情况" class="headerlink" title="硬盘使用情况"></a>硬盘使用情况</h2><blockquote>
+<p>df [OPTION]… [FILE]…</p>
+<ul>
+<li>-a, –all 包含所有的具有 0 Blocks 的文件系统</li>
+<li>–block-size={SIZE} 使用 {SIZE} 大小的 Blocks</li>
+<li>-h, –human-readable 使用人类可读的格式(预设值是不加这个选项的…)</li>
+<li>-H, –si 很像 -h, 但是用 1000 为单位而不是用 1024</li>
+<li>-i, –inodes 列出 inode 资讯，不列出已使用 block</li>
+<li>-k, –kilobytes 就像是 –block-size=1024</li>
+<li>-l, –local 限制列出的文件结构</li>
+<li>-m, –megabytes 就像 –block-size=1048576</li>
+<li>–no-sync 取得资讯前不 sync (预设值)</li>
+<li>-P, –portability 使用 POSIX 输出格式</li>
+<li>–sync 在取得资讯前 sync</li>
+<li>-t, –type=TYPE 限制列出文件系统的 TYPE</li>
+<li>-T, –print-type 显示文件系统的形式</li>
+<li>-x, –exclude-type=TYPE 限制列出文件系统不要显示 TYPE</li>
+<li>-v (忽略)</li>
+<li>–help 显示这个帮手并且离开</li>
+<li>–version 输出版本资讯并且离开<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root/elasticsearch]#df -hl</span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/vda1        40G   16G   22G  43% /</span><br><span class="line">devtmpfs        1.9G     0  1.9G   0% /dev</span><br><span class="line">tmpfs           1.9G     0  1.9G   0% /dev/shm</span><br><span class="line">tmpfs           1.9G  428K  1.9G   1% /run</span><br><span class="line">tmpfs           1.9G     0  1.9G   0% /sys/fs/cgroup</span><br><span class="line">overlay          40G   16G   22G  43% /var/lib/docker/overlay2/15c11eb5a1a871c9e41ce861b6fcd11063a2d5dec965b75985b1068cf05f9ce5/merged</span><br><span class="line">shm              64M     0   64M   0% /var/lib/docker/containers/1254821edc4c200cd6e899a70347623bb38276bde0db1591f7c9c4dbc208a692/mounts/shm</span><br><span class="line">tmpfs           380M     0  380M   0% /run/user/0</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</blockquote>
 
       
     </div>
@@ -547,7 +571,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -624,7 +648,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看Linux系统版本与内核版本"><span class="nav-number">1.</span> <span class="nav-text">查看Linux系统版本与内核版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户"><span class="nav-number">2.</span> <span class="nav-text">用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络"><span class="nav-number">3.</span> <span class="nav-text">网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#iptables"><span class="nav-number">3.1.</span> <span class="nav-text">iptables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#brctl"><span class="nav-number">3.2.</span> <span class="nav-text">brctl</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看Linux系统版本与内核版本"><span class="nav-number">1.</span> <span class="nav-text">查看Linux系统版本与内核版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户"><span class="nav-number">2.</span> <span class="nav-text">用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络"><span class="nav-number">3.</span> <span class="nav-text">网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#iptables"><span class="nav-number">3.1.</span> <span class="nav-text">iptables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#brctl"><span class="nav-number">3.2.</span> <span class="nav-text">brctl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看端口占用情况"><span class="nav-number">3.3.</span> <span class="nav-text">查看端口占用情况</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#硬盘使用情况"><span class="nav-number">4.</span> <span class="nav-text">硬盘使用情况</span></a></li></ol></div>
             
 
           </div>

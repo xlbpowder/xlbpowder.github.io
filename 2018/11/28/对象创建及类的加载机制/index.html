@@ -56,10 +56,10 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/new_favicon_source_02_32x32.jpg?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/new_favicon_source_02_16x16.jpg?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
 
 
   <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/image/classloader01.png">
 <meta property="og:image" content="http://yoursite.com/image/classloader02.jpg">
-<meta property="og:updated_time" content="2019-08-26T07:53:17.508Z">
+<meta property="og:updated_time" content="2019-10-08T10:10:39.936Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="对象的创建及类的加载机制">
 <meta name="twitter:description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。">
@@ -374,7 +374,7 @@
 </ol>
 <p>总结起来有对象的实例化方式分为：</p>
 <p>new关键字进行实例化、反射机制进行实例化、克隆对象实例化、反序列化方式实例化，以及以上几种方式的最基本的类加载器加载对象。</p>
-<p>注：clazz.newInstance在JDK1.9之后变为了Deprecated，推荐使用<br>clazz.getDeclearedConstructor().newInstance()，通过构造器类进行实例化。</p>
+<p>注：clazz.newInstance在JDK1.9之后变为了Deprecated，不推荐使用。<br>clazz.getDeclearedConstructor().newInstance()，通过构造器类进行实例化。</p>
 <h2 id="ClassLoader"><a href="#ClassLoader" class="headerlink" title="ClassLoader"></a>ClassLoader</h2><blockquote>
 <p>我们都知道JAVA程序是运行在JVM中，我们编写的.java文件编译后生成.class文件，而该文件用于描述类的数据结构，以及通过CLASSPATH加载其他相关类的支持。而.class文件加载到JVM内存中这个过程，就是由ClassLoader完成的。</p>
 </blockquote>
@@ -581,7 +581,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

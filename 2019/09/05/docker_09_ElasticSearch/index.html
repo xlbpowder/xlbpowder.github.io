@@ -56,10 +56,10 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/new_favicon_source_02_32x32.jpg?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/new_favicon_source_02_16x16.jpg?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
 
 
   <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="最近公司项目组要使用ElasticSearch，自己先学习一下，记录通过docker搭建的过程。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-09T01:34:07.909Z">
+<meta property="og:updated_time" content="2019-09-25T01:05:38.567Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker ElasticSearch">
 <meta name="twitter:description" content="最近公司项目组要使用ElasticSearch，自己先学习一下，记录通过docker搭建的过程。">
@@ -371,6 +371,21 @@
 <li>配置文件: /usr/share/elasticsearch/config</li>
 <li>存储数据: /usr/share/elasticsearch/data</li>
 </ul>
+<h1 id="elasticsearch目录结构"><a href="#elasticsearch目录结构" class="headerlink" title="elasticsearch目录结构"></a>elasticsearch目录结构</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">bin：可执行文件，运行es的命令</span><br><span class="line">config：配置文件目录</span><br><span class="line"> config/elasticsearch.yml：ES启动基础配置</span><br><span class="line"> config/jvm.options：ES启动时JVM配置</span><br><span class="line"> config/log4j2.properties：ES日志输出配置文件</span><br><span class="line">lib：依赖的jar</span><br><span class="line">logs：日志文件夹</span><br><span class="line">modules：es模块</span><br><span class="line">plugins：可以自己开发的插件</span><br><span class="line">data：我们自己创建的，存放es存储文件</span><br></pre></td></tr></table></figure>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>所以我们挂载的elasticsearch主要有一下几个配置文件：</p>
+<ul>
+<li>config/elasticsearch.yml   主配置文件</li>
+<li>config/jvm.options         jvm参数配置文件</li>
+<li>cofnig/log4j2.properties   日志配置文件</li>
+</ul>
+<h2 id="运行elasticsearch镜像"><a href="#运行elasticsearch镜像" class="headerlink" title="运行elasticsearch镜像"></a>运行elasticsearch镜像</h2><p>我是直接拉取了最新的elasticsearch:7.2.0<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root/elasticsearch]#docker run -d -p 9200:9200 -p 9300:9300 --name es -v $PWD/config:/usr/share/elasticsearch/config -v $PWD/data:/usr/share/elasticsearch/data elasticsearch:7.2.0</span><br><span class="line">f22048b5909fe4ddb4c1a72bc30c375def5595c075eedcf8801bfd13bc06fae3</span><br><span class="line">[root@iZwz91w0kp029z0dmueicoZ /root/elasticsearch]#docker ps -a</span><br><span class="line">CONTAINER ID        IMAGE                                                 COMMAND                  CREATED             STATUS                       PORTS                    NAMES</span><br><span class="line">f22048b5909f        elasticsearch:7.2.0                                   &quot;/usr/local/bin/dock…&quot;   44 seconds ago      Exited (1) 42 seconds ago                             es</span><br></pre></td></tr></table></figure></p>
+<p>直接run发现没有启动成功，这时候需要查看下启动日志<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ERROR: [1] bootstrap checks failed</span><br><span class="line">[1]: the default discovery settings are unsuitable for production use; at least one of [discovery.seed_hosts, discovery.seed_providers, cluster.initial_master_nodes] must be configured</span><br></pre></td></tr></table></figure></p>
+<p>大概的意思就是：默认发现设置不适合生产使用； 必须配置[discovery.seed_hosts，discovery.seed_providers，cluster.initial_master_nodes]中的至少一个。</p>
+<ul>
+<li>discovery.seed_hosts</li>
+<li>discovery.seed_providers</li>
+<li>cluster.initial_master_nodes</li>
+</ul>
 
       
     </div>
@@ -440,6 +455,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/09/24/docker_10_dockerfile/" rel="prev" title="dockerfile实践总结">
+                dockerfile实践总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -492,8 +511,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -512,7 +540,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -579,6 +607,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#elasticsearch目录结构"><span class="nav-number">1.</span> <span class="nav-text">elasticsearch目录结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件"><span class="nav-number">1.1.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行elasticsearch镜像"><span class="nav-number">1.2.</span> <span class="nav-text">运行elasticsearch镜像</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
