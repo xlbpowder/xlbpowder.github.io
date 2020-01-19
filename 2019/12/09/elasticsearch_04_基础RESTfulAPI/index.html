@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="在学习Elasticsearch相关的api使用中，大多数其实可以通过kibana、cerebro来使用，很方便，但是当通过客户端应用程序连接的时候，其实还是要了解各个RESTfulAPI的细节，方便出现问题排查，所以记录了一下学习的基础API。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-08T08:45:45.583Z">
+<meta property="og:updated_time" content="2019-12-09T01:14:18.262Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ElasticSearch基础RESTfulAPI">
 <meta name="twitter:description" content="在学习Elasticsearch相关的api使用中，大多数其实可以通过kibana、cerebro来使用，很方便，但是当通过客户端应用程序连接的时候，其实还是要了解各个RESTfulAPI的细节，方便出现问题排查，所以记录了一下学习的基础API。">
@@ -404,7 +404,7 @@
 <h2 id="创建文档"><a href="#创建文档" class="headerlink" title="创建文档"></a>创建文档</h2><p>有两种方式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST /my_index/_doc                       自动生成ID创建文档</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PUT /my_index/_create/$&#123;id&#125;               指定ID创建文档</span><br></pre></td></tr></table></figure>
 <p>通过index操作，指定操作类型进行创建<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PUT /my_index/_doc/$&#123;id&#125;/?op_type=create  指定ID创建文档</span><br></pre></td></tr></table></figure></p>
-<h2 id="Index文档"><a href="#Index文档" class="headerlink" title="Index文档"></a>Index文档</h2><p>如果文档不存在，就会索引新文档，否则，现有的文档会被珊瑚，新的文档被索引，版本信息+1。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">PUT /my_index/_doc/$&#123;id&#125;                  根据ID更新文档，如果不存在则创建文档</span><br><span class="line">&#123;</span><br><span class="line">    // 要更新的内容</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Index文档"><a href="#Index文档" class="headerlink" title="Index文档"></a>Index文档</h2><p>如果文档不存在，就会索引新文档，否则，现有的文档会被删除，新的文档被索引，版本信息+1。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">PUT /my_index/_doc/$&#123;id&#125;                  根据ID更新文档，如果不存在则创建文档</span><br><span class="line">&#123;</span><br><span class="line">    // 要更新的内容</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="获取文档"><a href="#获取文档" class="headerlink" title="获取文档"></a>获取文档</h2><p>找到文档会返回HTTP 200，找不到则会返回HTTP 404<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /my_index/_doc/$&#123;id&#125;                  获取文档</span><br></pre></td></tr></table></figure></p>
 <h2 id="更新文档"><a href="#更新文档" class="headerlink" title="更新文档"></a>更新文档</h2><p>更新的信息必须包含在”doc”中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST /my_index/_update/$&#123;id&#125;/             更新文档</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;:&#123;</span><br><span class="line">        // 要更新的内容</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h1 id="Bulk-API"><a href="#Bulk-API" class="headerlink" title="Bulk API"></a>Bulk API</h1><p>每次RESTfulAPI都会进行一次网络开销，如果多次调用会非常损耗性能。</p>
@@ -519,6 +519,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2020/01/01/CAS/" rel="prev" title="CAS">
+                CAS <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -600,7 +604,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -611,7 +615,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -622,7 +626,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -697,7 +701,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-snowflake-o"></i>
   </span>
