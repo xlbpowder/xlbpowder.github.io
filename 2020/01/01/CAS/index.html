@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="转眼间就2020年了，去年学习的东西甚少，今年要多看看书了。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-01-08T02:00:09.186Z">
+<meta property="og:updated_time" content="2020-02-17T08:28:55.070Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CAS">
 <meta name="twitter:description" content="转眼间就2020年了，去年学习的东西甚少，今年要多看看书了。">
@@ -410,11 +410,10 @@
 <li>线程P1从内存中取出A</li>
 <li>线程P2也从内存中取出A</li>
 <li>线程P2进行操作并且将值修改为B，而后又修改为A。</li>
-<li><p>线程P1进行CAS操作时候发现值仍为A，便可以进行操作。</p>
+<li>线程P1进行CAS操作时候发现值仍为A，便可以进行操作。</li>
+</ul>
 <p>其实在一般情况下，看似以最终结果来看可以认为是没有问题的，但是整个操作的过程是有问题的，比如：链表的头在变化了两次后恢复了原值，但并不代表链表没有发生过变化。</p>
 <h3 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h3><p>Tagged state reference 标记状态参考：使用某个标识来表示是否有过变更的版本信息。JDK中有提供AtomicStampedReference/AtomicMarkableReference用于解决ABA问题。</p>
-</li>
-</ul>
 <p>还有两种不常用的解决方案：</p>
 <ul>
 <li>Intermediate nodes 中间节点</li>
@@ -579,7 +578,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">41</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -590,7 +589,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -601,7 +600,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
