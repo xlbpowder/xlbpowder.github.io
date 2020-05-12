@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="缓存," />
+  <meta name="keywords" content="redis," />
 
 
 
@@ -80,14 +80,14 @@
 
 
 <meta name="description" content="记录了一些学习缓存时的一些基础知识，主要是对于缓存使用要考虑到的一些问题，面试中也会经常问到。">
-<meta name="keywords" content="缓存">
+<meta name="keywords" content="redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="缓存应用基础知识">
 <meta property="og:url" content="http://yoursite.com/2019/03/10/缓存应用基础知识/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="记录了一些学习缓存时的一些基础知识，主要是对于缓存使用要考虑到的一些问题，面试中也会经常问到。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-26T07:57:05.806Z">
+<meta property="og:updated_time" content="2020-05-11T06:31:54.994Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="缓存应用基础知识">
 <meta name="twitter:description" content="记录了一些学习缓存时的一些基础知识，主要是对于缓存使用要考虑到的一些问题，面试中也会经常问到。">
@@ -315,8 +315,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/其他/" itemprop="url" rel="index">
-                    <span itemprop="name">其他</span>
+                  <a href="/categories/中间件/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
                   </a>
                 </span>
 
@@ -361,20 +361,19 @@
 <p>记录了一些学习缓存时的一些基础知识，主要是对于缓存使用要考虑到的一些问题，面试中也会经常问到。</p>
 </blockquote>
 <a id="more"></a>
-<h3 id="缓存一般应用流程"><a href="#缓存一般应用流程" class="headerlink" title="缓存一般应用流程"></a>缓存一般应用流程</h3><p>后台先从缓存中取数据，取到直接返回结果，取不到时从数据库中取，数据库取到更新缓存，并返回结果，数据库也没取到，那直接返回空结果。</p>
-<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>缓存穿透是指缓存和数据库中都没有的数据，而用户不断发起请求，如发起为id为“-1”的数据或id为特别大不存在的数据。这时的用户很可能是攻击者，攻击会导致数据库压力过大。</p>
+<h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>缓存穿透是指缓存和数据库中都没有的数据，而用户不断发起请求，如发起为id为“-1”的数据或id为特别大不存在的数据。这时的用户很可能是攻击者，攻击会导致数据库压力过大。</p>
 <p>解决方法：从缓存取不到的数据，在数据库中也没有取到，这时也可以将key-value对写为key-null，缓存有效时间可以设置短点，如30秒（设置太长会导致正常情况也没法使用）。这样可以防止攻击用户反复用同一个id暴力攻击。</p>
-<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>缓存击穿是指缓存中没有但数据库中有的数据（一般是缓存时间到期），这时由于并发用户特别多，同时读缓存没读到数据，又同时去数据库去取数据，引起数据库压力瞬间增大，造成过大压力</p>
+<h2 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h2><p>缓存击穿是指缓存中没有但数据库中有的数据（一般是缓存时间到期），这时由于并发用户特别多，同时读缓存没读到数据，又同时去数据库去取数据，引起数据库压力瞬间增大，造成过大压力</p>
 <p>解决方案：</p>
 <ol>
 <li>设置热点数据永远不过期。</li>
-<li>加互斥锁，互斥锁参考代码如下：</li>
+<li>加互斥锁。</li>
 </ol>
-<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>缓存雪崩是指缓存中数据大批量到过期时间，而查询数据量巨大，引起数据库压力过大甚至down机。和缓存击穿不同的是，缓存击穿指并发查同一条数据，缓存雪崩是不同数据都过期了，很多数据都查不到从而查数据库。</p>
+<h2 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h2><p>缓存雪崩是指缓存中数据大批量到过期时间，而查询数据量巨大，引起数据库压力过大甚至down机。和缓存击穿不同的是，缓存击穿指并发查同一条数据，缓存雪崩是不同数据都过期了，很多数据都查不到从而查数据库。</p>
 <p>解决方案：</p>
 <ol>
 <li>缓存数据的过期时间设置随机，防止同一时间大量数据过期现象发生。</li>
-<li>如果缓存数据库是分布式部署，将热点数据均匀分布在不同搞得缓存数据库中。</li>
+<li>如果缓存数据库是分布式部署，将热点数据均匀分布在不同的缓存数据库中。</li>
 <li>设置热点数据永远不过期。</li>
 </ol>
 
@@ -423,7 +422,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/缓存/" rel="tag"># 缓存</a>
+            <a href="/tags/redis/" rel="tag"># redis</a>
           
         </div>
       
@@ -446,8 +445,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/03/20/linux命令笔记/" rel="prev" title="linux命令笔记">
-                linux命令笔记 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/03/11/redis_01_基础指令/" rel="prev" title="redis基础指令">
+                redis基础指令 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -531,7 +530,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -608,7 +607,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存一般应用流程"><span class="nav-number">1.</span> <span class="nav-text">缓存一般应用流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存穿透"><span class="nav-number">2.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存击穿"><span class="nav-number">3.</span> <span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">4.</span> <span class="nav-text">缓存雪崩</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存穿透"><span class="nav-number">1.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存击穿"><span class="nav-number">2.</span> <span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">3.</span> <span class="nav-text">缓存雪崩</span></a></li></ol></div>
             
 
           </div>
