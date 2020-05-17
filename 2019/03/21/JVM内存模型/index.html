@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JVM," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="摘自公司培训资料，记录下主要学习的有关JVM的内容。纯手打的，手都要抽筋了。">
+<meta name="keywords" content="JVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM内存模型、调优与相关工具">
+<meta property="og:url" content="http://yoursite.com/2019/03/21/JVM内存模型/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="摘自公司培训资料，记录下主要学习的有关JVM的内容。纯手打的，手都要抽筋了。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/image/jvm/JVM7内存模型.png">
+<meta property="og:image" content="http://yoursite.com/image/jvm/JVM8内存模型.png">
+<meta property="og:image" content="http://yoursite.com/image/jvm/GC.png">
+<meta property="og:image" content="http://yoursite.com/image/jvm/profile_01.png">
+<meta property="og:image" content="http://yoursite.com/image/jvm/profile_02.png">
+<meta property="og:image" content="http://yoursite.com/image/jvm/profile_03.png">
+<meta property="og:updated_time" content="2020-05-17T06:40:20.690Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVM内存模型、调优与相关工具">
+<meta name="twitter:description" content="摘自公司培训资料，记录下主要学习的有关JVM的内容。纯手打的，手都要抽筋了。">
+<meta name="twitter:image" content="http://yoursite.com/image/jvm/JVM7内存模型.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/21/JVM内存模型/"/>
+
+
+
+
+
+  <title>JVM内存模型、调优与相关工具 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/21/JVM内存模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JVM内存模型、调优与相关工具</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-21T10:00:00+08:00">
+                2019-03-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>摘自公司培训资料，记录下主要学习的有关JVM的内容。纯手打的，手都要抽筋了。<br><a id="more"></a></p>
+<h1 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h1><p><img src="/image/jvm/JVM7内存模型.png" alt="JVM内存模型01-photo"></p>
+<p><img src="/image/jvm/JVM8内存模型.png" alt="JVM内存模型02-photo"></p>
+<p>1.7中堆分为永久代、新生代、旧生代。1.8与1.7最显著的区别就是去除了永久代，将永久代分为了常量池和方法区，方法区移动到了堆外称之为元空间，占用机器内存，不再占用堆内存。</p>
+<p>新生代：<br>JDK1.7和1.8中绿色的部分称为新生代，新生代又分为Eden Space和2个Survivor Space，也叫From Space和To Space。其中Eden Space一般我们new的对象都会放在此处，Survivor Space用于Young GC时的存放还需要继续引用的对象。Eden:From:To的默认比例为8:1:1，由启动参数-XX:SurvivorRatio，默认为8。</p>
+<p>旧生代：<br>JDK1.7和1.8中蓝色部分，用于存放在新生代中经过多次垃圾回收仍然存活的对象/继续引用的对象，从To Space全部移动到Old Generation。有一种情况当生成某个大对象，Eden Space空间不足，进行Young GC，此时如果Survivor空间不足，对象会直接放入Old Generation。</p>
+<p>注：线程分配内存不在堆内，而是在堆外，-Xss是在JVM方法栈中划分，所以对于线程比较多的应用应预留相对较多的堆外内存。一般Xmx设置为总机器内存的3/5（个人经验）,-Xmn为Xmx的3/8（sun推荐）。</p>
+<h1 id="GC"><a href="#GC" class="headerlink" title="GC"></a>GC</h1><p><img src="/image/jvm/GC.png" alt="GC01-photo"></p>
+<h2 id="YoungGGC"><a href="#YoungGGC" class="headerlink" title="YoungGGC"></a>YoungGGC</h2><p>发生在新生代，会造成应用的暂停，发生过程：</p>
+<ol>
+<li>每个对象Eden Space分配内存，当Eden Space空间满，或者不能放入新产生的对象后，进行Young GC进行回收，并将回收后剩余的对象放入To Space，如果To Space空间不足以放入剩余的对象，超出空间的部分对象将直接放入Old Space。</li>
+<li>第二次Young GC时，To Space会转换为From Space，将To Space和Eden Space的对象垃圾回收后放入From Space，此时From Space变为To Space</li>
+<li>运行一段时间后，经过指定次数Young GC仍然存活（被引用）的对象，会放入到Old Space，次数由-XX:MaxTenuringThreshold决定，默认值15。</li>
+</ol>
+<h2 id="CMS-GC"><a href="#CMS-GC" class="headerlink" title="CMS GC"></a>CMS GC</h2><p>发生在老年代，触发情况为</p>
+<ol>
+<li>请求进行一次Full GC，如调用System.gc时</li>
+<li>当没有设置UseCMSInitiationgOccupancyOnly时，会动态计算。如果完成CMS回收所需要的预计时间小于预计的CMS回收的分代填满的时间，就进行回收</li>
+<li>调用should_concurrent_collect()方法返回true</li>
+<li>如果预计增量式回收会失败时，也会触发一次回收</li>
+<li>如果MetaSpace认为需要回收MetaSpace区域，也会触发一次CMS回收</li>
+</ol>
+<p>CMS GC是并发GC，可以和应用并发进行，所以大部分时间不会造成程序暂停。</p>
+<h2 id="Full-GC"><a href="#Full-GC" class="headerlink" title="Full GC"></a>Full GC</h2><p>对新生代和老年代都按其GC配置类型进行GC。Full GC产生时，会造成应用暂停，且时间远远大于Young GC，是我们需要尽量避免或减少其触发频率。</p>
+<p>触发情况如下：</p>
+<ol>
+<li>调用System.gc()</li>
+<li>旧生代空间不足。旧生代在新生代转入对象、大数组时会出现空间不足现象，此时会进行Full GC。当Full GC后仍不能存放时，会抛出OOM。因此为了避免这两种情况下Full GC的产生，调优时应尽量让对象在Young GC时回收，即让对象在新生代多存活一段时间，使其能回收;不要创建过大的对象和数组。</li>
+<li><p>CMS GC时出现promotion failed和concurrent mode failure</p>
+<ul>
+<li>promotion filed：在进行Young GC时，Survivor Space放不下，对象只能放入旧生代，而此时旧生代也放不下，此时就会出现promotion failed错误。</li>
+<li><p>concurrent mode failure：在执行CMS GC过程中同时由对象放入Old Space，而此时Old Space空间不足，会粗线此类错误</p>
+<p>优化措施：增加Survivor Space、Old Space空间，降低CMS GC产生的几率</p>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="各代大小调优"><a href="#各代大小调优" class="headerlink" title="各代大小调优"></a>各代大小调优</h1><p>各代大小的调优，会直接影响Young GC和Full GC触发的时机和触发的频率，在代大小的调优上，最关键的几个参数为：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-Xms –Xmx</td>
+<td>JVM能使用的最小内存和最大内存，通常设置为相同的值，避免运行时要不断的扩展JVM空间，造成性能上的损失</td>
+<td></td>
+</tr>
+<tr>
+<td>–Xmn</td>
+<td>新生代大小</td>
+<td></td>
+</tr>
+<tr>
+<td>–XX:SurvivorRatio</td>
+<td>新生代中Eden、From、To的比例，默认8</td>
+<td></td>
+</tr>
+<tr>
+<td>–XX:MaxTenuringThreshold</td>
+<td>对象经历多少次Young GC后放入Old Space，默认15</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>设置这些值时，应考虑的方面：</p>
+<ol>
+<li>避免新生代设置过小<ul>
+<li>Young GC频率过高</li>
+<li>可能导致Young GC的对象直接进入旧年代，若此时进入旧年代的对象大于旧年代剩余空间，将会触发Full GC</li>
+</ul>
+</li>
+<li>避免新生代设置过大<ul>
+<li>Old Space变小，Full GC频繁发生</li>
+<li>Young GC耗时大幅度增长</li>
+</ul>
+</li>
+<li>避免Survivor区过小/过大<ul>
+<li>调大SurvivorRatio值，Young GC的频率会下降，也会造成Survivor Space过小，如有Young GC后的对象没有被回收且大于Survivor空间，则会直接放入Old Space，引发Full GC的频率提高</li>
+</ul>
+</li>
+<li>适当设置新生代对象的存活周期，可充分的回收对象，避免对象进入Old Space</li>
+</ol>
+<h1 id="调优工具"><a href="#调优工具" class="headerlink" title="调优工具"></a>调优工具</h1><p>以前在华为使用的IBM JDK，IHS生成的dump文件比较特别，要用IBM的HeapAnalyzer分析dump文件，用JavaCoreAnalyzer分析JavaCore文件。后来脱离了IBM后，还是要找一些可以更通用的分析调优工具。</p>
+<h2 id="profile"><a href="#profile" class="headerlink" title="profile"></a>profile</h2><p>对JVM调优时，JDK提供的工具不细致，推荐一款工具profile，既可实施监控JVM应用运行情况，也可以对Jmap抓取的内存文件进行分析。</p>
+<ol>
+<li>抓取当前JVM内存快照： jmap -F -dump:live,file=jmap.heap[PID]</li>
+<li>OutOfMemoryError时自动生成dump文件，启动参数中加入：-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/path</li>
+</ol>
+<p>使用起来比较简单<br><img src="/image/jvm/profile_01.png" alt="profile_01-photo"></p>
+<p><img src="/image/jvm/profile_02.png" alt="profile_02-photo"></p>
+<p><img src="/image/jvm/profile_03.png" alt="profile_03-photo"></p>
+<h2 id="jstack"><a href="#jstack" class="headerlink" title="jstack"></a>jstack</h2><p>JDK自带的分析工具</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JVM/" rel="tag"># JVM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/21/docker_01_简介/" rel="next" title="docker 简介">
+                <i class="fa fa-chevron-left"></i> docker 简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/22/docker_02_安装/" rel="prev" title="docker 安装">
+                docker 安装 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#内存模型"><span class="nav-number">1.</span> <span class="nav-text">内存模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GC"><span class="nav-number">2.</span> <span class="nav-text">GC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#YoungGGC"><span class="nav-number">2.1.</span> <span class="nav-text">YoungGGC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CMS-GC"><span class="nav-number">2.2.</span> <span class="nav-text">CMS GC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Full-GC"><span class="nav-number">2.3.</span> <span class="nav-text">Full GC</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#各代大小调优"><span class="nav-number">3.</span> <span class="nav-text">各代大小调优</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调优工具"><span class="nav-number">4.</span> <span class="nav-text">调优工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#profile"><span class="nav-number">4.1.</span> <span class="nav-text">profile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jstack"><span class="nav-number">4.2.</span> <span class="nav-text">jstack</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>
