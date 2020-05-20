@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/image/classloader01.png">
 <meta property="og:image" content="http://yoursite.com/image/classloader02.jpg">
-<meta property="og:updated_time" content="2019-10-08T10:10:39.936Z">
+<meta property="og:updated_time" content="2020-05-20T03:05:38.588Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="对象的创建及类的加载机制">
 <meta name="twitter:description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。">
@@ -421,11 +421,28 @@
 <h4 id="java-security-SecureClassLoader"><a href="#java-security-SecureClassLoader" class="headerlink" title="java.security.SecureClassLoader"></a>java.security.SecureClassLoader</h4><p>增加了一层权限验证，因为关注点不在安全，所以暂不讨论。</p>
 <h4 id="java-net-URLClassLoader"><a href="#java-net-URLClassLoader" class="headerlink" title="java.net.URLClassLoader"></a>java.net.URLClassLoader</h4><p>该类加载器用来加载URL指定的JAR文件或目录中的类和资源，以/结尾的URL认为是目录，否则认为是JAR文件。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 尝试通过 URLClassLoader 来加载桌面下的 Test 类。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        URL[] urls = <span class="keyword">new</span> URL[<span class="number">1</span>];</span><br><span class="line">        URLStreamHandler streamHandler = <span class="keyword">null</span>;</span><br><span class="line">        File classPath = <span class="keyword">new</span> File(<span class="string">"/home/chen/Desktop/"</span>);</span><br><span class="line">        String repository = (<span class="keyword">new</span> URL(<span class="string">"file"</span>, <span class="keyword">null</span>,</span><br><span class="line">                classPath.getCanonicalPath() + File.separator))</span><br><span class="line">                .toString();</span><br><span class="line">        urls[<span class="number">0</span>] = <span class="keyword">new</span> URL(<span class="keyword">null</span>, repository, streamHandler);</span><br><span class="line"></span><br><span class="line">        ClassLoader loader = <span class="keyword">new</span> URLClassLoader(urls);</span><br><span class="line"></span><br><span class="line">        Class testClass = loader.loadClass(<span class="string">"Test"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// output:  java.net.URLClassLoader@7f31245a</span></span><br><span class="line">        System.out.println(testClass.getClassLoader());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (MalformedURLException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="破坏双亲委派机制"><a href="#破坏双亲委派机制" class="headerlink" title="破坏双亲委派机制"></a>破坏双亲委派机制</h2><p>可以看出双亲委派机制是一种至下而上的加载方式，那么SPI是如何打破这种关系？</p>
+<p>以JDBC加载驱动为例：<br>在JDBC4.0之后支持SPI方式加载java.sql.Driver的实现类。SPI实现方式为，通过ServiceLoader.load(Driver.class)方法，去各自实现Driver接口的lib的META-INF/services/java.sql.Driver文件里找到实现类的名字，通过Thread.currentThread().getContextClassLoader()类加载器加载实现类并返回实例。</p>
+<p>先看下如果不用Thread.currentThread().getContextClassLoader()加载器加载，整个流程会怎么样。</p>
+<ul>
+<li>从META-INF/services/java.sql.Driver文件得到实现类名字DriverA</li>
+<li>Class.forName(“xx.xx.DriverA”)来加载实现类</li>
+<li>Class.forName()方法默认使用当前类的ClassLoader，JDBC是在DriverManager类里调用Driver的，当前类也就是DriverManager，它的加载器是BootstrapClassLoader。</li>
+</ul>
+<p>用BootstrapClassLoader去加载非rt.jar包里的类xx.xx.DriverA，就会找不到。要加载xx.xx.DriverA需要用到AppClassLoader或其他自定义ClassLoader</p>
+<p>最终矛盾出现在，要在BootstrapClassLoader加载的类里，调用AppClassLoader去加载实现类。这样就出现了一个问题：如何在父加载器加载的类中，去调用子加载器去加载类？</p>
+<p>jdk提供了两种方式，</p>
+<ul>
+<li>Thread.currentThread().getContextClassLoader()</li>
+<li>ClassLoader.getSystemClassLoader()<br>一般都指向AppClassLoader，他们能加载classpath中的类</li>
+</ul>
+<p>SPI则用Thread.currentThread().getContextClassLoader()来加载实现类，实现在核心包里的基础类调用用户代码</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
 <li><a href="https://github.com/c-rainstorm/blog/blob/master/java" target="_blank" rel="noopener">https://github.com/c-rainstorm/blog/blob/master/java</a></li>
 <li><a href="https://mp.weixin.qq.com/s/HIiy7Q5UoPySFn3ge8Y-Ow" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/HIiy7Q5UoPySFn3ge8Y-Ow</a></li>
 <li><a href="https://docs.oracle.com/javase/tutorial/ext/basics/load.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/ext/basics/load.html</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Java_Classloader" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Java_Classloader</a></li>
+<li><a href="https://www.jianshu.com/p/9cf306550b0a" target="_blank" rel="noopener">https://www.jianshu.com/p/9cf306550b0a</a></li>
 </ul>
 
       
@@ -581,7 +598,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">49</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -603,7 +620,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -658,7 +675,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#类加载的各种几种方式和区别"><span class="nav-number">1.</span> <span class="nav-text">类加载的各种几种方式和区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ClassLoader"><span class="nav-number">2.</span> <span class="nav-text">ClassLoader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK-默认提供三种类加载器："><span class="nav-number">2.1.</span> <span class="nav-text">JDK 默认提供三种类加载器：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用户自定义的类加载器"><span class="nav-number">2.2.</span> <span class="nav-text">用户自定义的类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ClassLoader的API"><span class="nav-number">2.3.</span> <span class="nav-text">ClassLoader的API</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#java-lang-ClassLoader"><span class="nav-number">2.3.1.</span> <span class="nav-text">java.lang.ClassLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java-security-SecureClassLoader"><span class="nav-number">2.3.2.</span> <span class="nav-text">java.security.SecureClassLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java-net-URLClassLoader"><span class="nav-number">2.3.3.</span> <span class="nav-text">java.net.URLClassLoader</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#类加载的各种几种方式和区别"><span class="nav-number">1.</span> <span class="nav-text">类加载的各种几种方式和区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ClassLoader"><span class="nav-number">2.</span> <span class="nav-text">ClassLoader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK-默认提供三种类加载器："><span class="nav-number">2.1.</span> <span class="nav-text">JDK 默认提供三种类加载器：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用户自定义的类加载器"><span class="nav-number">2.2.</span> <span class="nav-text">用户自定义的类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ClassLoader的API"><span class="nav-number">2.3.</span> <span class="nav-text">ClassLoader的API</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#java-lang-ClassLoader"><span class="nav-number">2.3.1.</span> <span class="nav-text">java.lang.ClassLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java-security-SecureClassLoader"><span class="nav-number">2.3.2.</span> <span class="nav-text">java.security.SecureClassLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java-net-URLClassLoader"><span class="nav-number">2.3.3.</span> <span class="nav-text">java.net.URLClassLoader</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#破坏双亲委派机制"><span class="nav-number">3.</span> <span class="nav-text">破坏双亲委派机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
