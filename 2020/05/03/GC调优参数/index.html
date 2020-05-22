@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="分布式ID," />
+  <meta name="keywords" content="JVM," />
 
 
 
@@ -79,20 +79,18 @@
 
 
 
-<meta name="description" content="记录下关于分布式ID相关知识点">
-<meta name="keywords" content="分布式ID">
+<meta name="description" content="记录下学习GC的各个收集器对应的相关调优参数">
+<meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="分布式ID">
-<meta property="og:url" content="http://yoursite.com/2020/01/09/分布式ID/index.html">
+<meta property="og:title" content="GC调优参数">
+<meta property="og:url" content="http://yoursite.com/2020/05/03/GC调优参数/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
-<meta property="og:description" content="记录下关于分布式ID相关知识点">
+<meta property="og:description" content="记录下学习GC的各个收集器对应的相关调优参数">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/image/snowflake.png">
-<meta property="og:updated_time" content="2020-01-10T03:02:18.640Z">
+<meta property="og:updated_time" content="2020-05-22T07:59:10.528Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="分布式ID">
-<meta name="twitter:description" content="记录下关于分布式ID相关知识点">
-<meta name="twitter:image" content="http://yoursite.com/image/snowflake.png">
+<meta name="twitter:title" content="GC调优参数">
+<meta name="twitter:description" content="记录下学习GC的各个收集器对应的相关调优参数">
 
 
 
@@ -122,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2020/01/09/分布式ID/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/05/03/GC调优参数/"/>
 
 
 
 
 
-  <title>分布式ID | LiuBo's Notes</title>
+  <title>GC调优参数 | LiuBo's Notes</title>
   
 
 
@@ -265,7 +263,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/09/分布式ID/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/03/GC调优参数/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xlbpowder">
@@ -282,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">分布式ID</h1>
+          <h1 class="post-title" itemprop="name headline">GC调优参数</h1>
         
 
         <div class="post-meta">
@@ -294,8 +292,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-09T11:00:00+08:00">
-                2020-01-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-03T10:00:00+08:00">
+                2020-05-03
               </time>
             
 
@@ -317,8 +315,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式</span>
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
                   </a>
                 </span>
 
@@ -359,79 +357,100 @@
       
 
       
-        <p>记录下关于分布式ID相关知识点</p>
+        <p>记录下学习GC的各个收集器对应的相关调优参数</p>
 <a id="more"></a>
-<h1 id="分布式ID基本要求"><a href="#分布式ID基本要求" class="headerlink" title="分布式ID基本要求"></a>分布式ID基本要求</h1><ol>
-<li>全局唯一性：不能出现重复的ID号，既然是唯一标识，这是最基本的要求。</li>
-<li>趋势递增：在MySQL InnoDB引擎中使用的是聚集索引，由于多数RDBMS使用B-tree的数据结构来存储索引数据，在主键的选择上面我们应该尽量使用有序的主键保证写入性能。</li>
-<li>单调递增：保证下一个ID一定大于上一个ID，例如事务版本号、IM增量消息、排序等特殊需求。</li>
-<li>信息安全：如果ID是连续的，恶意用户的扒取工作就非常容易做了，直接按照顺序下载指定URL即可；如果是订单号就更危险了，竞对可以直接知道我们一天的单量。所以在一些应用场景下，会需要ID无规则、不规则。</li>
-<li>分布式id里面最好包含时间戳，这样就能够在开发中快速了解这个分布式id的生成时间。</li>
-</ol>
-<p>上述的基本要求中，3和4点其实是互斥的，要根据实际业务要求来进行判断。</p>
-<h1 id="生成方案"><a href="#生成方案" class="headerlink" title="生成方案"></a>生成方案</h1><p>其实主要有两种方式生成，一种是根据某种算法组合生成，另外一种是依赖数据库、缓存中间件、ZK等协助生成。下面分别介绍下几种常见的生成方式。</p>
-<h2 id="snowflake"><a href="#snowflake" class="headerlink" title="snowflake"></a>snowflake</h2><p>snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的ID。其核心思想是：使用41bit作为毫秒数，10bit作为机器的ID（5个bit是数据中心，5个bit的机器ID），12bit作为毫秒内的流水号（意味着每个节点在每毫秒可以产生4096个ID），最后还有一个符号位，由于ID大都为正数，所以是0。</p>
-<p><img src="/image/snowflake.png" alt="snowflake-photo"></p>
-<h3 id="时间回拨问题"><a href="#时间回拨问题" class="headerlink" title="时间回拨问题"></a>时间回拨问题</h3><p>由于snowflake是包含时间戳组成的，如果出现了部署服务器时间回退的问题，则可能会产生重复的id。一般情况下生产环境的机器是不会随意调整时间的，但是也可能会出现特殊情况，需要对此做一些应对。</p>
-<p>每个时间段下，并不一定会在该时间段内生成达到上限，所以一定会在该短时间内有大量的id被浪费。这些被浪费的资源就可以利用起来。</p>
-<p>比如在内存中保存每个时间戳的生成id，在发生时间回拨的时候，取上一次时间最后记录的id对序列部分进行+1使用。</p>
-<p>也可以利用扩展位，因为snowflake算法的极限是每毫秒的每一个节点生成4059个id值，也就是说每毫秒的极限是生成023*4059=4 152 357个id值，这对于中小公司来说根本就是浪费，所以我们可以把这里的位数给减少一些，就比如把12位的序列号变成10位，留两位给时间回拨，这样就很容易的解决了时间回拨问题，如果发生时间回拨，那么就直接给当前id加1。</p>
-<h2 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h2><p>通用唯一标识符（UUID）是一个128位的用于在计算机系统中以识别信息的数目。通常在Microsoft创建的软件中也使用术语全球唯一标识符（GUID）。</p>
-<p>在其规范的文本表示形式中，UUID 的16 个八位字节表示为32个十六进制（基数16）数字，以5个组显示，由连字符分隔，格式为8-4-4-4-12，共36个字符（32个字母数字字符和4个连字符）。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">123e4567-e89b-12d3-a456-426655440000</span><br><span class="line">xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx</span><br></pre></td></tr></table></figure></p>
-<p>4位M和1到3位N字段编码UUID本身的格式。数字的4位M是UUID版本，数字的1至3个最高有效位对NUUID变体进行编码。（请参见下文。）在示例中，M为1，N为a（10xx 2），这意味着这是版本1，版本1的UUID。即基于时间的DCE/RFC 4122 UUID。</p>
-<p>规范的8-4-4-4-12格式字符串基于UUID的16个字节的记录布局：</p>
-<h3 id="UUID记录布局"><a href="#UUID记录布局" class="headerlink" title="UUID记录布局"></a>UUID记录布局</h3><table>
-<thead>
-<tr>
-<th>名称</th>
-<th>长度（字节）</th>
-<th>长度（十六进制数字）</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>time_low</td>
-<td>4</td>
-<td>8</td>
-<td>给出时间的低32位的整数</td>
-</tr>
-<tr>
-<td>time_mid</td>
-<td>2</td>
-<td>4</td>
-<td>给出时间的中间16位的整数</td>
-</tr>
-<tr>
-<td>time_hi_and_version</td>
-<td>2</td>
-<td>4</td>
-<td>最高有效位为4位“版本”，然后是时间的高12位</td>
-</tr>
-<tr>
-<td>clock_seq_hi_and_res clock_seq_low</td>
-<td>2</td>
-<td>4</td>
-<td>最高有效位为1至3位“变量”，随后为13至15位时钟序列</td>
-</tr>
-<tr>
-<td>节点</td>
-<td>6</td>
-<td>12</td>
-<td>48位节点ID</td>
-</tr>
-</tbody>
-</table>
-<h3 id="JDK提供的工具类"><a href="#JDK提供的工具类" class="headerlink" title="JDK提供的工具类"></a>JDK提供的工具类</h3><p>可以直接使用java.util.UUID来生成UUID<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    System.out.println(UUID.randomUUID().toString().replace(<span class="string">"-"</span>, <span class="string">""</span>).toLowerCase());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="UUID是否适合做分布式ID"><a href="#UUID是否适合做分布式ID" class="headerlink" title="UUID是否适合做分布式ID"></a>UUID是否适合做分布式ID</h3><p>如果需求是只保证唯一性，那么UUID也是可以使用的，但是按照上面的分布式id的要求， UUID其实是不能做成分布式id的，原因如下：</p>
-<ol>
-<li>首先分布式id一般都会作为主键，但是安装mysql官方推荐主键要尽量越短越好，UUID每一个都很长，所以不是很推荐</li>
-<li>既然分布式id是主键，然后主键是包含索引的，然后mysql的索引是通过b+树来实现的，每一次新的UUID数据的插入，为了查询的优化，都会对索引底层的b+树进行修改，因为UUID数据是无序的，所以每一次UUID数据的插入都会对主键地城的b+树进行很大的修改，这一点很不好</li>
-<li>信息不安全：基于MAC地址生成UUID的算法可能会造成MAC地址泄露，这个漏洞曾被用于寻找梅丽莎病毒的制作者位置。</li>
-</ol>
-<h2 id="Redis集群生成"><a href="#Redis集群生成" class="headerlink" title="Redis集群生成"></a>Redis集群生成</h2><h2 id="数据库递增"><a href="#数据库递增" class="headerlink" title="数据库递增"></a>数据库递增</h2><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
-<li><a href="https://www.jianshu.com/p/b1124283fc43" target="_blank" rel="noopener">https://www.jianshu.com/p/b1124283fc43</a></li>
-<li><a href="https://www.itqiankun.com/article/1565060480" target="_blank" rel="noopener">https://www.itqiankun.com/article/1565060480</a></li>
+<h1 id="调优的两个指标"><a href="#调优的两个指标" class="headerlink" title="调优的两个指标"></a>调优的两个指标</h1><ul>
+<li>停顿时间: 垃圾收集器做垃圾回收中断应用执行的时间。-XX:MaxGCPauseMillis</li>
+<li>吞吐量: 花在垃圾收集的时间和花在应用时间的占比 -XX:GCTimeRatio=<n>,垃圾收集时间占比：1/(1+n)</n></li>
+</ul>
+<h1 id="GC调优步骤"><a href="#GC调优步骤" class="headerlink" title="GC调优步骤"></a>GC调优步骤</h1><p>打印GC日志<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintGCDetails  -XX:+PrintGCTimeStamps  -XX:+PrintGCDateStamps  -Xloggc:./gc.log</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>分析日志得到关键性指标</li>
+<li>分析GC原因，调优JVM参数<h2 id="可视化分析"><a href="#可视化分析" class="headerlink" title="可视化分析"></a>可视化分析</h2><h3 id="GCeasy"><a href="#GCeasy" class="headerlink" title="GCeasy"></a>GCeasy</h3>一个可以对GC日志进行可视化分析的网站</li>
+</ul>
+<p><a href="https://www.gceasy.io/" target="_blank" rel="noopener">https://www.gceasy.io/</a></p>
+<h3 id="GCViewer"><a href="#GCViewer" class="headerlink" title="GCViewer"></a>GCViewer</h3><h1 id="Parallel-Scavenge收集器-默认"><a href="#Parallel-Scavenge收集器-默认" class="headerlink" title="Parallel Scavenge收集器(默认)"></a>Parallel Scavenge收集器(默认)</h1><p>设置了该收集器后，年轻代默认为Parallel Scavenge，老年代则为Parallel Old</p>
+<p>分析parallel-gc.log</p>
+<ul>
+<li>第一次调优，设置Metaspace大小：增大元空间大小-XX:MetaspaceSize=64M  -XX:MaxMetaspaceSize=64M</li>
+<li>第二次调优，添加吞吐量和停顿时间参数：-XX:MaxGCPauseMillis=100   -XX:GCTimeRatio=99</li>
+<li>第三次调优，修改动态扩容增量：-XX:YoungGenerationSizeIncrement=30</li>
+</ul>
+<h1 id="配置CMS收集器"><a href="#配置CMS收集器" class="headerlink" title="配置CMS收集器"></a>配置CMS收集器</h1><p>设置了老年代收集器为CMS后，年轻代默认为ParNew收集器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure></p>
+<p>分析cms-gc.log</p>
+<h1 id="配置G1收集器"><a href="#配置G1收集器" class="headerlink" title="配置G1收集器"></a>配置G1收集器</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseG1GC</span><br></pre></td></tr></table></figure>
+<p>分析g1-gc.log<br>查看发生MixedGC的阈值：jinfo -flag InitiatingHeapOccupancyPercent 进程id</p>
+<p>分析工具：gceasy，GCViewer </p>
+<h2 id="G1调优常用参数"><a href="#G1调优常用参数" class="headerlink" title="G1调优常用参数"></a>G1调优常用参数</h2><ul>
+<li>-XX:+UseG1GC 开启G1</li>
+<li>-XX:G1HeapRegionSize=n,region的大小，1-32M，2048个</li>
+<li>-XX:MaxGCPauseMillis=200 最大停顿时间</li>
+<li>-XX:G1NewSizePercent   -XX:G1MaxNewSizePercent</li>
+<li>-XX:G1ReservePercent=10 保留防止to space溢出（）</li>
+<li>-XX:ParallelGCThreads=n SWT线程数（停止应用程序）</li>
+<li>-XX:ConcGCThreads=n 并发线程数=1/4*并行</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>年轻代大小：避免使用-Xmn、-XX:NewRatio等显示设置Young区大小，会覆盖暂停时间目标（常用参数3）</li>
+<li>暂停时间目标：暂停时间不要太严苛，其吞吐量目标是90%的应用程序时间和10%的垃圾回收时间，太严苛会直接影响到吞吐量</li>
+</ul>
+<h2 id="是否需要切换到G1"><a href="#是否需要切换到G1" class="headerlink" title="是否需要切换到G1"></a>是否需要切换到G1</h2><ul>
+<li>50%以上的堆被存活对象占用</li>
+<li>对象分配和晋升的速度变化非常大</li>
+<li>垃圾回收时间特别长，超过1秒</li>
+</ul>
+<h2 id="G1调优目标"><a href="#G1调优目标" class="headerlink" title="G1调优目标"></a>G1调优目标</h2><ul>
+<li>6GB以上内存</li>
+<li>停顿时间是500ms以内</li>
+<li>吞吐量是90%以上</li>
+</ul>
+<h1 id="GC常用参数汇总"><a href="#GC常用参数汇总" class="headerlink" title="GC常用参数汇总"></a>GC常用参数汇总</h1><h2 id="堆栈设置"><a href="#堆栈设置" class="headerlink" title="堆栈设置"></a>堆栈设置</h2><ul>
+<li>-Xss:每个线程的栈大小</li>
+<li>-Xms:初始堆大小，默认物理内存的1/64</li>
+<li>-Xmx:最大堆大小，默认物理内存的1/4</li>
+<li>-Xmn:新生代大小</li>
+<li>-XX:NewSize:设置新生代初始大小</li>
+<li>-XX:NewRatio:默认2表示新生代占年老代的1/2，占整个堆内存的1/3。</li>
+<li>-XX:SurvivorRatio:默认8表示一个survivor区占用1/8的Eden内存，即1/10的新生代内存。</li>
+<li>-XX:MetaspaceSize:设置元空间大小</li>
+<li>-XX:MaxMetaspaceSize:设置元空间最大允许大小，默认不受限制，JVM Metaspace会进行动态扩展。<h2 id="垃圾回收统计信息"><a href="#垃圾回收统计信息" class="headerlink" title="垃圾回收统计信息"></a>垃圾回收统计信息</h2></li>
+<li>-XX:+PrintGC</li>
+<li>-XX:+PrintGCDetails</li>
+<li>-XX:+PrintGCTimeStamps </li>
+<li>-Xloggc:filename<h2 id="收集器设置"><a href="#收集器设置" class="headerlink" title="收集器设置"></a>收集器设置</h2></li>
+<li>-XX:+UseSerialGC:设置串行收集器</li>
+<li>-XX:+UseParallelGC:设置并行收集器</li>
+<li>-XX:+UseParallelOldGC:老年代使用并行回收收集器</li>
+<li>-XX:+UseParNewGC:在新生代使用并行收集器</li>
+<li>-XX:+UseParalledlOldGC:设置并行老年代收集器</li>
+<li>-XX:+UseConcMarkSweepGC:设置CMS并发收集器</li>
+<li>-XX:+UseG1GC:设置G1收集器</li>
+<li>-XX:ParallelGCThreads:设置用于垃圾回收的线程数<h2 id="并行收集器设置"><a href="#并行收集器设置" class="headerlink" title="并行收集器设置"></a>并行收集器设置</h2></li>
+<li>-XX:ParallelGCThreads:设置并行收集器收集时使用的CPU数。并行收集线程数。</li>
+<li>-XX:MaxGCPauseMillis:设置并行收集最大暂停时间</li>
+<li>-XX:GCTimeRatio:设置垃圾回收时间占程序运行时间的百分比。公式为1/(1+n)<h2 id="CMS收集器设置"><a href="#CMS收集器设置" class="headerlink" title="CMS收集器设置"></a>CMS收集器设置</h2></li>
+<li>-XX:+UseConcMarkSweepGC:设置CMS并发收集器</li>
+<li>-XX:+CMSIncrementalMode:设置为增量模式。适用于单CPU情况。</li>
+<li>-XX:ParallelGCThreads:设置并发收集器新生代收集方式为并行收集时，使用的CPU数。并行收集线程数。</li>
+<li>-XX:CMSFullGCsBeforeCompaction:设定进行多少次CMS垃圾回收后，进行一次内存压缩</li>
+<li>-XX:+CMSClassUnloadingEnabled:允许对类元数据进行回收</li>
+<li>-XX:UseCMSInitiatingOccupancyOnly:表示只在到达阀值的时候，才进行CMS回收</li>
+<li>-XX:+CMSIncrementalMode:设置为增量模式。适用于单CPU情况</li>
+<li>-XX:ParallelCMSThreads:设定CMS的线程数量</li>
+<li>-XX:CMSInitiatingOccupancyFraction:设置CMS收集器在老年代空间被使用多少后触发</li>
+<li>-XX:+UseCMSCompactAtFullCollection:设置CMS收集器在完成垃圾收集后是否要进行一次内存碎片的整理    <h2 id="G1收集器设置"><a href="#G1收集器设置" class="headerlink" title="G1收集器设置"></a>G1收集器设置</h2></li>
+<li>-XX:+UseG1GC:使用G1收集器</li>
+<li>-XX:ParallelGCThreads:指定GC工作的线程数量</li>
+<li>-XX:G1HeapRegionSize:指定分区大小(1MB~32MB，且必须是2的幂)，默认将整堆划分为2048个分区</li>
+<li>-XX:GCTimeRatio:吞吐量大小，0-100的整数(默认9)，值为n则系统将花费不超过1/(1+n)的时间用于垃圾收集</li>
+<li>-XX:MaxGCPauseMillis:目标暂停时间(默认200ms)</li>
+<li>-XX:G1NewSizePercent:新生代内存初始空间(默认整堆5%)</li>
+<li>-XX:G1MaxNewSizePercent:新生代内存最大空间</li>
+<li>-XX:TargetSurvivorRatio:Survivor填充容量(默认50%)</li>
+<li>-XX:MaxTenuringThreshold:最大任期阈值(默认15)</li>
+<li>-XX:InitiatingHeapOccupancyPercen:老年代占用空间超过整堆比IHOP阈值(默认45%),超过则执行混合收集</li>
+<li>-XX:G1HeapWastePercent:堆废物百分比(默认5%)</li>
+<li>-XX:G1MixedGCCountTarget:参数混合周期的最大总次数(默认8)</li>
 </ul>
 
       
@@ -479,7 +498,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/分布式ID/" rel="tag"># 分布式ID</a>
+            <a href="/tags/JVM/" rel="tag"># JVM</a>
           
         </div>
       
@@ -492,8 +511,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/01/01/CAS/" rel="next" title="CAS">
-                <i class="fa fa-chevron-left"></i> CAS
+              <a href="/2020/05/02/GC收集器与算法/" rel="next" title="GC收集器与算法">
+                <i class="fa fa-chevron-left"></i> GC收集器与算法
               </a>
             
           </div>
@@ -501,10 +520,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/01/15/mysql性能优化学习笔记/" rel="prev" title="MySQL存储结构和性能优化">
-                MySQL存储结构和性能优化 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -664,7 +679,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式ID基本要求"><span class="nav-number">1.</span> <span class="nav-text">分布式ID基本要求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#生成方案"><span class="nav-number">2.</span> <span class="nav-text">生成方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#snowflake"><span class="nav-number">2.1.</span> <span class="nav-text">snowflake</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#时间回拨问题"><span class="nav-number">2.1.1.</span> <span class="nav-text">时间回拨问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UUID"><span class="nav-number">2.2.</span> <span class="nav-text">UUID</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UUID记录布局"><span class="nav-number">2.2.1.</span> <span class="nav-text">UUID记录布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK提供的工具类"><span class="nav-number">2.2.2.</span> <span class="nav-text">JDK提供的工具类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UUID是否适合做分布式ID"><span class="nav-number">2.2.3.</span> <span class="nav-text">UUID是否适合做分布式ID</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis集群生成"><span class="nav-number">2.3.</span> <span class="nav-text">Redis集群生成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库递增"><span class="nav-number">2.4.</span> <span class="nav-text">数据库递增</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#调优的两个指标"><span class="nav-number">1.</span> <span class="nav-text">调优的两个指标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GC调优步骤"><span class="nav-number">2.</span> <span class="nav-text">GC调优步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#可视化分析"><span class="nav-number">2.1.</span> <span class="nav-text">可视化分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GCeasy"><span class="nav-number">2.1.1.</span> <span class="nav-text">GCeasy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCViewer"><span class="nav-number">2.1.2.</span> <span class="nav-text">GCViewer</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Parallel-Scavenge收集器-默认"><span class="nav-number">3.</span> <span class="nav-text">Parallel Scavenge收集器(默认)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置CMS收集器"><span class="nav-number">4.</span> <span class="nav-text">配置CMS收集器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置G1收集器"><span class="nav-number">5.</span> <span class="nav-text">配置G1收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#G1调优常用参数"><span class="nav-number">5.1.</span> <span class="nav-text">G1调优常用参数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#是否需要切换到G1"><span class="nav-number">6.1.</span> <span class="nav-text">是否需要切换到G1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1调优目标"><span class="nav-number">6.2.</span> <span class="nav-text">G1调优目标</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GC常用参数汇总"><span class="nav-number">7.</span> <span class="nav-text">GC常用参数汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#堆栈设置"><span class="nav-number">7.1.</span> <span class="nav-text">堆栈设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#垃圾回收统计信息"><span class="nav-number">7.2.</span> <span class="nav-text">垃圾回收统计信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#收集器设置"><span class="nav-number">7.3.</span> <span class="nav-text">收集器设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并行收集器设置"><span class="nav-number">7.4.</span> <span class="nav-text">并行收集器设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CMS收集器设置"><span class="nav-number">7.5.</span> <span class="nav-text">CMS收集器设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1收集器设置"><span class="nav-number">7.6.</span> <span class="nav-text">G1收集器设置</span></a></li></ol></li></ol></div>
             
 
           </div>
