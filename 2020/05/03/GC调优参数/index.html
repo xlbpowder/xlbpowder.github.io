@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="记录下学习GC的各个收集器对应的相关调优参数">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-05-22T07:59:10.528Z">
+<meta property="og:updated_time" content="2020-05-22T08:10:47.469Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GC调优参数">
 <meta name="twitter:description" content="记录下学习GC的各个收集器对应的相关调优参数">
@@ -366,8 +366,9 @@
 <h1 id="GC调优步骤"><a href="#GC调优步骤" class="headerlink" title="GC调优步骤"></a>GC调优步骤</h1><p>打印GC日志<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintGCDetails  -XX:+PrintGCTimeStamps  -XX:+PrintGCDateStamps  -Xloggc:./gc.log</span><br></pre></td></tr></table></figure></p>
 <ul>
 <li>分析日志得到关键性指标</li>
-<li>分析GC原因，调优JVM参数<h2 id="可视化分析"><a href="#可视化分析" class="headerlink" title="可视化分析"></a>可视化分析</h2><h3 id="GCeasy"><a href="#GCeasy" class="headerlink" title="GCeasy"></a>GCeasy</h3>一个可以对GC日志进行可视化分析的网站</li>
+<li>分析GC原因，调优JVM参数</li>
 </ul>
+<h2 id="可视化分析"><a href="#可视化分析" class="headerlink" title="可视化分析"></a>可视化分析</h2><h3 id="GCeasy"><a href="#GCeasy" class="headerlink" title="GCeasy"></a>GCeasy</h3><p>一个可以对GC日志进行可视化分析的网站</p>
 <p><a href="https://www.gceasy.io/" target="_blank" rel="noopener">https://www.gceasy.io/</a></p>
 <h3 id="GCViewer"><a href="#GCViewer" class="headerlink" title="GCViewer"></a>GCViewer</h3><h1 id="Parallel-Scavenge收集器-默认"><a href="#Parallel-Scavenge收集器-默认" class="headerlink" title="Parallel Scavenge收集器(默认)"></a>Parallel Scavenge收集器(默认)</h1><p>设置了该收集器后，年轻代默认为Parallel Scavenge，老年代则为Parallel Old</p>
 <p>分析parallel-gc.log</p>
@@ -413,11 +414,15 @@
 <li>-XX:NewRatio:默认2表示新生代占年老代的1/2，占整个堆内存的1/3。</li>
 <li>-XX:SurvivorRatio:默认8表示一个survivor区占用1/8的Eden内存，即1/10的新生代内存。</li>
 <li>-XX:MetaspaceSize:设置元空间大小</li>
-<li>-XX:MaxMetaspaceSize:设置元空间最大允许大小，默认不受限制，JVM Metaspace会进行动态扩展。<h2 id="垃圾回收统计信息"><a href="#垃圾回收统计信息" class="headerlink" title="垃圾回收统计信息"></a>垃圾回收统计信息</h2></li>
+<li>-XX:MaxMetaspaceSize:设置元空间最大允许大小，默认不受限制，JVM Metaspace会进行动态扩展。</li>
+</ul>
+<h2 id="垃圾回收统计信息"><a href="#垃圾回收统计信息" class="headerlink" title="垃圾回收统计信息"></a>垃圾回收统计信息</h2><ul>
 <li>-XX:+PrintGC</li>
 <li>-XX:+PrintGCDetails</li>
 <li>-XX:+PrintGCTimeStamps </li>
-<li>-Xloggc:filename<h2 id="收集器设置"><a href="#收集器设置" class="headerlink" title="收集器设置"></a>收集器设置</h2></li>
+<li>-Xloggc:filename</li>
+</ul>
+<h2 id="收集器设置"><a href="#收集器设置" class="headerlink" title="收集器设置"></a>收集器设置</h2><ul>
 <li>-XX:+UseSerialGC:设置串行收集器</li>
 <li>-XX:+UseParallelGC:设置并行收集器</li>
 <li>-XX:+UseParallelOldGC:老年代使用并行回收收集器</li>
@@ -425,10 +430,14 @@
 <li>-XX:+UseParalledlOldGC:设置并行老年代收集器</li>
 <li>-XX:+UseConcMarkSweepGC:设置CMS并发收集器</li>
 <li>-XX:+UseG1GC:设置G1收集器</li>
-<li>-XX:ParallelGCThreads:设置用于垃圾回收的线程数<h2 id="并行收集器设置"><a href="#并行收集器设置" class="headerlink" title="并行收集器设置"></a>并行收集器设置</h2></li>
+<li>-XX:ParallelGCThreads:设置用于垃圾回收的线程数</li>
+</ul>
+<h2 id="并行收集器设置"><a href="#并行收集器设置" class="headerlink" title="并行收集器设置"></a>并行收集器设置</h2><ul>
 <li>-XX:ParallelGCThreads:设置并行收集器收集时使用的CPU数。并行收集线程数。</li>
 <li>-XX:MaxGCPauseMillis:设置并行收集最大暂停时间</li>
-<li>-XX:GCTimeRatio:设置垃圾回收时间占程序运行时间的百分比。公式为1/(1+n)<h2 id="CMS收集器设置"><a href="#CMS收集器设置" class="headerlink" title="CMS收集器设置"></a>CMS收集器设置</h2></li>
+<li>-XX:GCTimeRatio:设置垃圾回收时间占程序运行时间的百分比。公式为1/(1+n)</li>
+</ul>
+<h2 id="CMS收集器设置"><a href="#CMS收集器设置" class="headerlink" title="CMS收集器设置"></a>CMS收集器设置</h2><ul>
 <li>-XX:+UseConcMarkSweepGC:设置CMS并发收集器</li>
 <li>-XX:+CMSIncrementalMode:设置为增量模式。适用于单CPU情况。</li>
 <li>-XX:ParallelGCThreads:设置并发收集器新生代收集方式为并行收集时，使用的CPU数。并行收集线程数。</li>
@@ -438,18 +447,20 @@
 <li>-XX:+CMSIncrementalMode:设置为增量模式。适用于单CPU情况</li>
 <li>-XX:ParallelCMSThreads:设定CMS的线程数量</li>
 <li>-XX:CMSInitiatingOccupancyFraction:设置CMS收集器在老年代空间被使用多少后触发</li>
-<li>-XX:+UseCMSCompactAtFullCollection:设置CMS收集器在完成垃圾收集后是否要进行一次内存碎片的整理    <h2 id="G1收集器设置"><a href="#G1收集器设置" class="headerlink" title="G1收集器设置"></a>G1收集器设置</h2></li>
+<li>-XX:+UseCMSCompactAtFullCollection:设置CMS收集器在完成垃圾收集后是否要进行一次内存碎片的整理</li>
+</ul>
+<h2 id="G1收集器设置"><a href="#G1收集器设置" class="headerlink" title="G1收集器设置"></a>G1收集器设置</h2><ul>
 <li>-XX:+UseG1GC:使用G1收集器</li>
 <li>-XX:ParallelGCThreads:指定GC工作的线程数量</li>
 <li>-XX:G1HeapRegionSize:指定分区大小(1MB~32MB，且必须是2的幂)，默认将整堆划分为2048个分区</li>
-<li>-XX:GCTimeRatio:吞吐量大小，0-100的整数(默认9)，值为n则系统将花费不超过1/(1+n)的时间用于垃圾收集</li>
-<li>-XX:MaxGCPauseMillis:目标暂停时间(默认200ms)</li>
+<li><strong>-XX:GCTimeRatio</strong>:吞吐量大小，0-100的整数(默认9)，值为n则系统将花费不超过1/(1+n)的时间用于垃圾收集</li>
+<li>-<strong>XX:MaxGCPauseMillis</strong>:目标暂停时间(默认200ms)</li>
 <li>-XX:G1NewSizePercent:新生代内存初始空间(默认整堆5%)</li>
 <li>-XX:G1MaxNewSizePercent:新生代内存最大空间</li>
 <li>-XX:TargetSurvivorRatio:Survivor填充容量(默认50%)</li>
 <li>-XX:MaxTenuringThreshold:最大任期阈值(默认15)</li>
-<li>-XX:InitiatingHeapOccupancyPercen:老年代占用空间超过整堆比IHOP阈值(默认45%),超过则执行混合收集</li>
-<li>-XX:G1HeapWastePercent:堆废物百分比(默认5%)</li>
+<li><strong>-XX:InitiatingHeapOccupancyPercen</strong>:老年代占用空间超过整堆比IHOP阈值(默认45%),超过则执行混合收集</li>
+<li><strong>-XX:G1HeapWastePercent</strong>:堆废物百分比(默认5%)</li>
 <li>-XX:G1MixedGCCountTarget:参数混合周期的最大总次数(默认8)</li>
 </ul>
 
@@ -520,6 +531,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/05/《Java并发编程的艺术》-  第二章、volatile和 synchronized（偏向锁、轻量级锁、重量级锁）/" rel="prev" title="volatile、synchronized">
+                volatile、synchronized <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -602,7 +617,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
