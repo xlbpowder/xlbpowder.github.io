@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="rabbitMQ," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="重新温习了AMQP协议以及rabbitMQ的知识点，做下记录。基础的东西就不记了，就记录一些关键的知识点。">
+<meta name="keywords" content="rabbitMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rabbitMQ知识点整理">
+<meta property="og:url" content="http://yoursite.com/2020/02/08/rabbitMQ知识点整理/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="重新温习了AMQP协议以及rabbitMQ的知识点，做下记录。基础的东西就不记了，就记录一些关键的知识点。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-06-19T08:31:49.569Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="rabbitMQ知识点整理">
+<meta name="twitter:description" content="重新温习了AMQP协议以及rabbitMQ的知识点，做下记录。基础的东西就不记了，就记录一些关键的知识点。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/02/08/rabbitMQ知识点整理/"/>
+
+
+
+
+
+  <title>rabbitMQ知识点整理 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/08/rabbitMQ知识点整理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">rabbitMQ知识点整理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-08T10:00:00+08:00">
+                2020-02-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/中间件/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>重新温习了AMQP协议以及rabbitMQ的知识点，做下记录。基础的东西就不记了，就记录一些关键的知识点。<br><a id="more"></a></p>
+<h1 id="channel-信道-的两种模式"><a href="#channel-信道-的两种模式" class="headerlink" title="channel(信道)的两种模式"></a>channel(信道)的两种模式</h1><h2 id="confirm模式"><a href="#confirm模式" class="headerlink" title="confirm模式"></a>confirm模式</h2><p>channel设置成confirm模式，所有在该信道上面发布的消息都会被指派一个唯一的ID(从1开始)，一旦消息被投递到所有匹配的队列之后，broker就会发送一个确认给生产者（包含消息的唯一ID）,这就使得生产者知道消息已经正确到达目的队列了，如果消息和队列是可持久化的，那么确认消息会将消息写入磁盘之后发出，broker回传给生产者的确认消息中deliver-tag域包含了确认消息的序列号，此外broker也可以设置basic.ack的multiple域，表示到这个序列号之前的所有消息都已经得到了处理。</p>
+<p>confirm模式最大的好处在于他是异步的，一旦发布一条消息，生产者应用程序就可以在等信道返回确认的同时继续发送下一条消息，当消息最终得到确认之后，生产者应用便可以通过回调方法来处理该确认消息，如果RabbitMQ因为自身内部错误导致消息丢失，就会发送一条nack消息，生产者应用程序同样可以在回调方法中处理该nack消息。</p>
+<p>在channel被设置成confirm模式之后，所有被publish的后续消息都将被confirm（即ack）或者被nack一次。但是没有对消息被confirm的快慢做任何保证，并且同一条消息不会同时被confirm和nack 。</p>
+<h3 id="如何开启confirm模式"><a href="#如何开启confirm模式" class="headerlink" title="如何开启confirm模式"></a>如何开启confirm模式</h3><p>调用channel的confirmSelect方法将channel设置为confirm模式，如果没有设置no-wait标志的话，broker会返回confirm.select-ok表示同意发送者将当前channel信道设置为confirm模式(从目前RabbitMQ最新版本3.6来看，如果调用了channel.confirmSelect方法，默认情况下是直接将no-wait设置成false的，也就是默认情况下broker是必须回传confirm.select-ok的)。</p>
+<h3 id="异步confirm模式"><a href="#异步confirm模式" class="headerlink" title="异步confirm模式"></a>异步confirm模式</h3><p>Channel对象提供的ConfirmListener()回调方法只包含deliveryTag（当前Chanel发出的消息序号），我们需要自己为每一个Channel维护一个unconfirm的消息序号集合，每publish一条数据，集合中元素加1，每回调一次handleAck方法，unconfirm集合删掉相应的一条（multiple=false）或多条（multiple=true）记录。从程序运行效率上看，这个unconfirm集合最好采用有序集合SortedSet存储结构。实际上，SDK中的waitForConfirms()方法也是通过SortedSet维护消息序号的。</p>
+<h2 id="transaction模式"><a href="#transaction模式" class="headerlink" title="transaction模式"></a>transaction模式</h2><p>提供的三个方法</p>
+<ul>
+<li>txSelect() 打开事务</li>
+<li>tCommit() 提交事务</li>
+<li>txRollback() 回滚事务</li>
+</ul>
+<p>通过txSelect开启事务之后，便可以发布消息给broker代理服务器了，如果txCommit提交成功，则消息一定到达了broker，如果在txCommit执行之前broker异常崩溃或者由于其他原因抛出异常，这个时候我们便可以捕获异常通过txRollback回滚事务。</p>
+<p>采用事务机制实现会降低RabbitMQ的消息吞吐量，且不符合消息中间件异步解耦的特性。</p>
+<h1 id="Message-Acknowledgement-ACK"><a href="#Message-Acknowledgement-ACK" class="headerlink" title="Message Acknowledgement(ACK)"></a>Message Acknowledgement(ACK)</h1><p>用于保证消息从队列中可靠的发送给订阅者，即消息回执。</p>
+<p>rabbitMQ在声明消费者的时候可以设置autoAck。</p>
+<ul>
+<li>true: 接收到消息后会自动ack，适用于对于消息吞吐量以及可靠性要求低的场景</li>
+<li>false: 接收到消息后，需要手动进行ack，适用于对消息可靠性要求较高的场景<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * Start a non-nolocal, non-exclusive consumer, with</span></span><br><span class="line"><span class="comment">  * a server-generated consumerTag.</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> queue the name of the queue</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> autoAck true if the server should consider messages</span></span><br><span class="line"><span class="comment">  * acknowledged once delivered; false if the server should expect</span></span><br><span class="line"><span class="comment">  * explicit acknowledgements</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> callback an interface to the consumer object</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span> the consumerTag generated by the server</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@throws</span> java.io.IOException if an error is encountered</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Basic.Consume</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Basic.ConsumeOk</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> #basicConsume(String, boolean, String, boolean, boolean, Map, Consumer)</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="function">String <span class="title">basicConsume</span><span class="params">(String queue, <span class="keyword">boolean</span> autoAck, Consumer callback)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>rabbitMQ提供了以下几个方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * Acknowledge one or several received</span></span><br><span class="line"><span class="comment">  * messages. Supply the deliveryTag from the &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.GetOk&#125;</span></span><br><span class="line"><span class="comment">  * or &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.Deliver&#125; method</span></span><br><span class="line"><span class="comment">  * containing the received message being acknowledged.</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Basic.Ack</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> deliveryTag the tag from the received &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.GetOk&#125; or &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.Deliver&#125;</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> multiple true to acknowledge all messages up to and</span></span><br><span class="line"><span class="comment">  * including the supplied delivery tag; false to acknowledge just</span></span><br><span class="line"><span class="comment">  * the supplied delivery tag.</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@throws</span> java.io.IOException if an error is encountered</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">basicAck</span><span class="params">(<span class="keyword">long</span> deliveryTag, <span class="keyword">boolean</span> multiple)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * Reject one or several received messages.</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * Supply the &lt;code&gt;deliveryTag&lt;/code&gt; from the &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.GetOk&#125;</span></span><br><span class="line"><span class="comment">  * or &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.GetOk&#125; method containing the message to be rejected.</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Basic.Nack</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> deliveryTag the tag from the received &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.GetOk&#125; or &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.Deliver&#125;</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> multiple true to reject all messages up to and including</span></span><br><span class="line"><span class="comment">  * the supplied delivery tag; false to reject just the supplied</span></span><br><span class="line"><span class="comment">  * delivery tag.</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> requeue true if the rejected message(s) should be requeued rather</span></span><br><span class="line"><span class="comment">  * than discarded/dead-lettered</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@throws</span> java.io.IOException if an error is encountered</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">basicNack</span><span class="params">(<span class="keyword">long</span> deliveryTag, <span class="keyword">boolean</span> multiple, <span class="keyword">boolean</span> requeue)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@throws</span> java.io.IOException if an error is encountered</span></span><br><span class="line"><span class="comment">  * Reject a message. Supply the deliveryTag from the &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.GetOk&#125;</span></span><br><span class="line"><span class="comment">  * or &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.Deliver&#125; method</span></span><br><span class="line"><span class="comment">  * containing the received message being rejected.</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Basic.Reject</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> deliveryTag the tag from the received &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.GetOk&#125; or &#123;<span class="doctag">@link</span> com.rabbitmq.client.AMQP.Basic.Deliver&#125;</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> requeue true if the rejected message should be requeued rather than discarded/dead-lettered</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">basicReject</span><span class="params">(<span class="keyword">long</span> deliveryTag, <span class="keyword">boolean</span> requeue)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure></p>
+<h1 id="关于重试"><a href="#关于重试" class="headerlink" title="关于重试"></a>关于重试</h1><p>重试只能是宏观的从组件层面解决问题，如网络问题等，而真正的业务失败应当从业务层面去解决，所以即便是重试也无法解决。</p>
+<h2 id="show-me-code"><a href="#show-me-code" class="headerlink" title="show me code"></a>show me code</h2><p>设置autoAck为false，手动实现消息的ack和reject。通过basicNack设置requeue重入队列。，如果失败次数过多则直接reject该消息（默认业务上已经无法处理该消息）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope, BasicProperties properties, <span class="keyword">byte</span>[] body)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    MessageResponse result = MessageResponse.ERROR;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        result = <span class="keyword">this</span>.processor.process(SerializeCode.deSerialize(body, <span class="keyword">this</span>.processor.getMsgType()));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        logger.error(<span class="string">""</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> != result &amp;&amp; !<span class="string">"error"</span>.equals(result.getResultMsg())) &#123;</span><br><span class="line">        logger.info(<span class="string">"消息 &#123;&#125; 处理成功"</span>, envelope.getDeliveryTag());</span><br><span class="line">        <span class="keyword">this</span>.channel.basicAck(envelope.getDeliveryTag(), <span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">this</span>.retryCount = <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        logger.info(<span class="string">"消息 &#123;&#125; 处理失败"</span>, envelope.getDeliveryTag());</span><br><span class="line">        <span class="keyword">this</span>.dealMessageAck(envelope);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dealMessageAck</span><span class="params">(<span class="keyword">final</span> Envelope envelope)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    ++<span class="keyword">this</span>.retryCount;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.retryCount &lt; <span class="number">10</span>) &#123;</span><br><span class="line">        logger.info(<span class="string">"消费消息 &#123;&#125; 失败.第&#123;&#125;次 重新放入队列"</span>, envelope.getDeliveryTag(), <span class="keyword">this</span>.retryCount);</span><br><span class="line">        <span class="keyword">this</span>.channel.basicNack(envelope.getDeliveryTag(), <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        logger.info(<span class="string">"消费消息 &#123;&#125; 处理失败已经超过10次. 拒绝该消息"</span>, envelope.getDeliveryTag(), <span class="keyword">this</span>.retryCount);</span><br><span class="line">        <span class="keyword">this</span>.channel.basicReject(envelope.getDeliveryTag(), <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><h2 id="exchange和queue的持久化"><a href="#exchange和queue的持久化" class="headerlink" title="exchange和queue的持久化"></a>exchange和queue的持久化</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * Actively declare a non-autodelete exchange with no extra arguments</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Exchange.Declare</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Exchange.DeclareOk</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> exchange the name of the exchange</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> type the exchange type</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> durable true if we are declaring a durable exchange (the exchange will survive a server restart)</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@throws</span> java.io.IOException if an error is encountered</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span> a declaration-confirm method to indicate the exchange was successfully declared</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">Exchange.<span class="function">DeclareOk <span class="title">exchangeDeclare</span><span class="params">(String exchange, String type, <span class="keyword">boolean</span> durable)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * Declare a queue</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Queue.Declare</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Queue.DeclareOk</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> queue the name of the queue</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> durable true if we are declaring a durable queue (the queue will survive a server restart)</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> exclusive true if we are declaring an exclusive queue (restricted to this connection)</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> autoDelete true if we are declaring an autodelete queue (server will delete it when no longer in use)</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> arguments other properties (construction arguments) for the queue</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span> a declaration-confirm method to indicate the queue was successfully declared</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@throws</span> java.io.IOException if an error is encountered</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">Queue.<span class="function">DeclareOk <span class="title">queueDeclare</span><span class="params">(String queue, <span class="keyword">boolean</span> durable, <span class="keyword">boolean</span> exclusive, <span class="keyword">boolean</span> autoDelete, Map&lt;String, Object&gt; arguments)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>@param durable</p>
+<ul>
+<li>true if we are declaring a durable exchange (the exchange will survive a server restart)</li>
+<li>true if we are declaring a durable queue (the queue will survive a server restart)</li>
+</ul>
+</blockquote>
+<p>声明exchange和queue的时候就可以设置durable为true进行持久化。</p>
+<h2 id="消息的持久化"><a href="#消息的持久化" class="headerlink" title="消息的持久化"></a>消息的持久化</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Publish a message.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Publishing to a non-existent exchange will result in a channel-level</span></span><br><span class="line"><span class="comment"> * protocol exception, which closes the channel.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Invocations of &lt;code&gt;Channel#basicPublish&lt;/code&gt; will eventually block if a</span></span><br><span class="line"><span class="comment"> * &lt;a href="http://www.rabbitmq.com/alarms.html"&gt;resource-driven alarm&lt;/a&gt; is in effect.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> com.rabbitmq.client.AMQP.Basic.Publish</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> &lt;a href="http://www.rabbitmq.com/alarms.html"&gt;Resource-driven alarms&lt;/a&gt;</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> exchange the exchange to publish the message to</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> routingKey the routing key</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> props other properties for the message - routing headers etc</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> body the message body</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> java.io.IOException if an error is encountered</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">basicPublish</span><span class="params">(String exchange, String routingKey, BasicProperties props, <span class="keyword">byte</span>[] body)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+<p>直接看BasicProperties，有很多属性，但是都没有注释，其实这个有定义一个常量类，com.rabbitmq.client.MessageProperties。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Copyright (c) 2007-Present Pivotal Software, Inc.  All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// This software, the RabbitMQ Java client library, is triple-licensed under the</span></span><br><span class="line"><span class="comment">// Mozilla Public License 1.1 ("MPL"), the GNU General Public License version 2</span></span><br><span class="line"><span class="comment">// ("GPL") and the Apache License version 2 ("ASL"). For the MPL, please see</span></span><br><span class="line"><span class="comment">// LICENSE-MPL-RabbitMQ. For the GPL, please see LICENSE-GPL2.  For the ASL,</span></span><br><span class="line"><span class="comment">// please see LICENSE-APACHE2.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,</span></span><br><span class="line"><span class="comment">// either express or implied. See the LICENSE file for specific language governing</span></span><br><span class="line"><span class="comment">// rights and limitations of this software.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// If you have any questions regarding licensing, please contact us at</span></span><br><span class="line"><span class="comment">// info@rabbitmq.com.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> com.rabbitmq.client;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.rabbitmq.client.AMQP.BasicProperties;</span><br><span class="line"><span class="keyword">import</span> com.rabbitmq.client.impl.AMQContentHeader;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Constant holder class with useful static instances of &#123;<span class="doctag">@link</span> AMQContentHeader&#125;.</span></span><br><span class="line"><span class="comment"> * These are intended for use with &#123;<span class="doctag">@link</span> Channel#basicPublish&#125; and other Channel methods.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageProperties</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Empty basic properties, with no fields set */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> BasicProperties MINIMAL_BASIC =</span><br><span class="line">        <span class="keyword">new</span> BasicProperties(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">    <span class="comment">/** Empty basic properties, with only deliveryMode set to 2 (persistent) */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> BasicProperties MINIMAL_PERSISTENT_BASIC =</span><br><span class="line">        <span class="keyword">new</span> BasicProperties(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="number">2</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Content-type "application/octet-stream", deliveryMode 1 (nonpersistent), priority zero */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> BasicProperties BASIC =</span><br><span class="line">        <span class="keyword">new</span> BasicProperties(<span class="string">"application/octet-stream"</span>,</span><br><span class="line">                            <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>,</span><br><span class="line">                            <span class="number">1</span>,</span><br><span class="line">                            <span class="number">0</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Content-type "application/octet-stream", deliveryMode 2 (persistent), priority zero */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> BasicProperties PERSISTENT_BASIC =</span><br><span class="line">        <span class="keyword">new</span> BasicProperties(<span class="string">"application/octet-stream"</span>,</span><br><span class="line">                            <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>,</span><br><span class="line">                            <span class="number">2</span>,</span><br><span class="line">                            <span class="number">0</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Content-type "text/plain", deliveryMode 1 (nonpersistent), priority zero */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> BasicProperties TEXT_PLAIN =</span><br><span class="line">        <span class="keyword">new</span> BasicProperties(<span class="string">"text/plain"</span>,</span><br><span class="line">                            <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>,</span><br><span class="line">                            <span class="number">1</span>,</span><br><span class="line">                            <span class="number">0</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Content-type "text/plain", deliveryMode 2 (persistent), priority zero */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> BasicProperties PERSISTENT_TEXT_PLAIN =</span><br><span class="line">        <span class="keyword">new</span> BasicProperties(<span class="string">"text/plain"</span>,</span><br><span class="line">                            <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>,</span><br><span class="line">                            <span class="number">2</span>,</span><br><span class="line">                            <span class="number">0</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>,</span><br><span class="line">                            <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>deliveryMode 1 (nonpersistent)</li>
+<li>deliveryMode 2 (persistent)<br>这里就写的，deliveryMode 2就是持久化，所以在需要持久化的时候，这里根据消息的类型使用这个常量就可以，一般是用BasicProperties.PERSISTENT_TEXT_PLAIN。</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a href="http://rabbitmq.mr-ping.com/" target="_blank" rel="noopener">http://rabbitmq.mr-ping.com/</a> </li>
+<li><a href="https://blog.csdn.net/jiao_fuyou/article/details/21594205" target="_blank" rel="noopener">https://blog.csdn.net/jiao_fuyou/article/details/21594205</a></li>
+<li><a href="https://blog.csdn.net/weixin_37641832/article/details/83270778" target="_blank" rel="noopener">https://blog.csdn.net/weixin_37641832/article/details/83270778</a></li>
+<li><a href="https://honeypps.com/mq/rabbitmq-analysis-of-message-durable/" target="_blank" rel="noopener">https://honeypps.com/mq/rabbitmq-analysis-of-message-durable/</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/rabbitMQ/" rel="tag"># rabbitMQ</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/08/redisson/" rel="next" title="Redisson">
+                <i class="fa fa-chevron-left"></i> Redisson
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/12/redis_02_进阶基础/" rel="prev" title="redis持久化、淘汰策略、高可用方案的基础">
+                redis持久化、淘汰策略、高可用方案的基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#channel-信道-的两种模式"><span class="nav-number">1.</span> <span class="nav-text">channel(信道)的两种模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#confirm模式"><span class="nav-number">1.1.</span> <span class="nav-text">confirm模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何开启confirm模式"><span class="nav-number">1.1.1.</span> <span class="nav-text">如何开启confirm模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异步confirm模式"><span class="nav-number">1.1.2.</span> <span class="nav-text">异步confirm模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#transaction模式"><span class="nav-number">1.2.</span> <span class="nav-text">transaction模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Message-Acknowledgement-ACK"><span class="nav-number">2.</span> <span class="nav-text">Message Acknowledgement(ACK)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于重试"><span class="nav-number">3.</span> <span class="nav-text">关于重试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#show-me-code"><span class="nav-number">3.1.</span> <span class="nav-text">show me code</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#持久化"><span class="nav-number">4.</span> <span class="nav-text">持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#exchange和queue的持久化"><span class="nav-number">4.1.</span> <span class="nav-text">exchange和queue的持久化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息的持久化"><span class="nav-number">4.2.</span> <span class="nav-text">消息的持久化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>

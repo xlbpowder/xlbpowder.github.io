@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ElasticSearch," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最近一直忙于工作、出差，一直没有更新内容，还是继续学习了一些Elasticsearch的知识，简单的记录一下">
+<meta name="keywords" content="ElasticSearch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ElasticSearch相关基础概念">
+<meta property="og:url" content="http://yoursite.com/2019/12/09/elasticsearch_03_基础概念/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="最近一直忙于工作、出差，一直没有更新内容，还是继续学习了一些Elasticsearch的知识，简单的记录一下">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/image/ElasticSearch/elasticsearch04.png">
+<meta property="og:updated_time" content="2020-06-19T08:31:49.567Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ElasticSearch相关基础概念">
+<meta name="twitter:description" content="最近一直忙于工作、出差，一直没有更新内容，还是继续学习了一些Elasticsearch的知识，简单的记录一下">
+<meta name="twitter:image" content="http://yoursite.com/image/ElasticSearch/elasticsearch04.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/12/09/elasticsearch_03_基础概念/"/>
+
+
+
+
+
+  <title>ElasticSearch相关基础概念 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/09/elasticsearch_03_基础概念/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ElasticSearch相关基础概念</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-09T13:00:00+08:00">
+                2019-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Elastic-Stack/" itemprop="url" rel="index">
+                    <span itemprop="name">Elastic Stack</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近一直忙于工作、出差，一直没有更新内容，还是继续学习了一些Elasticsearch的知识，简单的记录一下</p>
+<a id="more"></a>
+<h1 id="文档Document"><a href="#文档Document" class="headerlink" title="文档Document"></a>文档Document</h1><p>Elasticsearch是面向文档的，文档是所有可搜索数据的最小单位</p>
+<p>那什么是文档，可以根据不同的业务场景进行划分，比如：</p>
+<ul>
+<li>日志文件中的日志项</li>
+<li>一部电影、一张唱片的详细信息</li>
+<li>一篇PDF文档的具体内容</li>
+<li>等等</li>
+</ul>
+<p>文档会被序列化为JSON格式，保存在Elasticsearch中</p>
+<ul>
+<li>JSON对象格式</li>
+<li>每个JSON对象的属性都有对应的类型（数值、字符串、布尔类型、日期、数组等等</li>
+</ul>
+<p>每一个文档都会有一个Unique ID，生成方式有两种：</p>
+<ul>
+<li>指定文档ID</li>
+<li>ES自动生成</li>
+</ul>
+<h2 id="JSON文档"><a href="#JSON文档" class="headerlink" title="JSON文档"></a>JSON文档</h2><p>一篇文档包含一系列的字段，类似数据库表中的一行记录。</p>
+<p>JSON文档，格式灵活，不需要进行预先的格式定义。</p>
+<ul>
+<li>字段的类型可以指定，或者让ES进行自动推算</li>
+<li>支持数据、嵌套</li>
+</ul>
+<h2 id="文档的元数据"><a href="#文档的元数据" class="headerlink" title="文档的元数据"></a>文档的元数据</h2><p>元数据，用于标注文档的相关基础信息。</p>
+<ul>
+<li>_index 文档所属的索引名</li>
+<li>_type 文档所属的类型名</li>
+<li>_id 文档的唯一标识</li>
+<li>_source 文档的原始JSON数据</li>
+<li>_all 整合所有的字段内容（在之后的版本已经被废除，原本是用于对所有的文档进行检索</li>
+<li>_version 版本号，用于解决多个相同文档的冲突问题</li>
+<li>_score 相关性分数</li>
+</ul>
+<h1 id="索引Index"><a href="#索引Index" class="headerlink" title="索引Index"></a>索引Index</h1><p>索引是文档的容器，是一类文档的结合</p>
+<ul>
+<li>index体现了逻辑空间的概念：每个索引都有自己的Mapping定义，用于定义包含的文档的字段名和字段类型。</li>
+<li>shard 体现了物理空间的概念：索引中的数据分散在shard上。</li>
+</ul>
+<p>可以对index设置mapping和setting</p>
+<ul>
+<li>mapping 定义文档字段的类型</li>
+<li>setting 定义不同的数据分布</li>
+</ul>
+<h2 id="索引在Elasticsearch中的语义"><a href="#索引在Elasticsearch中的语义" class="headerlink" title="索引在Elasticsearch中的语义"></a>索引在Elasticsearch中的语义</h2><p>由于索引在不同的上下文中语义是不同的</p>
+<ul>
+<li>名词 在es的基础概念中，索引是类文档的集合</li>
+<li>动词 保存文档到es的过程也叫索引（indexing）<br>抛开es的名词概念，通常我们谈论到索引，一般指的是B树索引、倒排索引等，与ES中的索引是不同的概念</li>
+</ul>
+<h2 id="Type"><a href="#Type" class="headerlink" title="Type"></a>Type</h2><p>在7.0版本之前，一个index可以设置多个Types。但是在6.0开始，Type已经被废除不被使用了。一个索引只能创建一个Type “_doc”。</p>
+<h1 id="与RDBMS（关系型数据库）类比"><a href="#与RDBMS（关系型数据库）类比" class="headerlink" title="与RDBMS（关系型数据库）类比"></a>与RDBMS（关系型数据库）类比</h1><p>进行了一个大概的类比</p>
+<table>
+<thead>
+<tr>
+<th>RDBMS</th>
+<th>Elasticsearch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>table</td>
+<td>index(type)</td>
+</tr>
+<tr>
+<td>row</td>
+<td>document</td>
+</tr>
+<tr>
+<td>column</td>
+<td>field</td>
+</tr>
+<tr>
+<td>schema</td>
+<td>mapping</td>
+</tr>
+<tr>
+<td>SQL</td>
+<td>DSL</td>
+</tr>
+</tbody>
+</table>
+<p>与传统的关系型数据库的区别（待补充）：</p>
+<ul>
+<li>ES用于高性能的全文检索，对搜索结果进行算分。</li>
+<li>关系型数据库更注重事务性</li>
+</ul>
+<h1 id="分布式部署下的一些基础概念"><a href="#分布式部署下的一些基础概念" class="headerlink" title="分布式部署下的一些基础概念"></a>分布式部署下的一些基础概念</h1><h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><p>节点是一个Elasticsearch的实例，本质上是一个Java进程，所以可以通过JVM启动参数对配置进行修改。</p>
+<p>一台机器上可以运行多个es进程，但是一般生产环境一台机器上只运行一个es实例。</p>
+<p>每个节点在启动之后都会分配一个UID，保存在data目录下。</p>
+<h3 id="Master-eligible-nodes和Master-Node-合格主节点和主节点"><a href="#Master-eligible-nodes和Master-Node-合格主节点和主节点" class="headerlink" title="Master-eligible nodes和Master Node(合格主节点和主节点)"></a>Master-eligible nodes和Master Node(合格主节点和主节点)</h3><p>每一个节点启动后，默认就是一个Master eligible节点，可以设置node.master: false禁止。</p>
+<ul>
+<li>Master-eligible节点可以参加选主，成为Master节点。</li>
+<li>当第一个节点启动的时候，他会将自己选举成Master节点。</li>
+<li>每个节点上都保存了集群的状态，只有Master节点才能修改集群的状态信息。<ul>
+<li>集群状态(Cluster State)维护了一个集群中的必要信息<ul>
+<li>所有节点信息</li>
+<li>所有索引和其相关的Mapping和Setting信息</li>
+<li>分片的路由信息</li>
+</ul>
+</li>
+<li>任意节点修改信息都会导致数据的不一致性</li>
+</ul>
+</li>
+</ul>
+<h3 id="Data-Node和Corrdinating-Node-数据节点和协调节点"><a href="#Data-Node和Corrdinating-Node-数据节点和协调节点" class="headerlink" title="Data Node和Corrdinating Node(数据节点和协调节点)"></a>Data Node和Corrdinating Node(数据节点和协调节点)</h3><p>Data Node:</p>
+<ul>
+<li>保存数据的节点，负责保存分片的数据，在数据扩展上起到关键作用。<br>Coordinating Node</li>
+<li>负责接收Clinet的请求，将请求分发到合适的节点，最终把结果汇集到一起</li>
+<li>每个节点都默认起到了Corrdinating Node的职责</li>
+</ul>
+<h3 id="Hot-amp-Warm-Node-冷-热节点"><a href="#Hot-amp-Warm-Node-冷-热节点" class="headerlink" title="Hot&amp;Warm Node(冷/热节点)"></a>Hot&amp;Warm Node(冷/热节点)</h3><p>不同硬件配置的Data Node，用来实现冷热数据架构的，降低集群部署的成本。</p>
+<p>一般日志的case的时候，热节点用更高配置的机器，更高性能的CPU、更大存储的硬盘。冷节点用来存储旧数据，相对来讲就可以使用配置低一些的机器。</p>
+<h3 id="Machine-Learning-Node"><a href="#Machine-Learning-Node" class="headerlink" title="Machine Learning Node"></a>Machine Learning Node</h3><p>Elasticsearch可以通过配置Machine Job自动的发现数据的一些异常，及时做出一些警报</p>
+<p>所以machine learning node负责跑机器学习的Job，用来做异常检测。</p>
+<h3 id="Tribe-Node（已经被淘汰）"><a href="#Tribe-Node（已经被淘汰）" class="headerlink" title="Tribe Node（已经被淘汰）"></a>Tribe Node（已经被淘汰）</h3><p>5.3开始使用了Cross Cluster Search ，和Tribe Node一样，连接到不同的Elasticsearch集群，并且支持将这些集群当成一个单独的集群处理。</p>
+<h2 id="配置节点类型"><a href="#配置节点类型" class="headerlink" title="配置节点类型"></a>配置节点类型</h2><ul>
+<li>开发环境中一个节点可以承担多种角色</li>
+<li>生产环境中应该设置单一角色的节点</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>节点类型</th>
+<th>配置参数</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>master eligible</td>
+<td>node.master</td>
+<td>true</td>
+</tr>
+<tr>
+<td>data</td>
+<td>node.data</td>
+<td>true</td>
+</tr>
+<tr>
+<td>ingest</td>
+<td>node.ingest</td>
+<td>true</td>
+</tr>
+<tr>
+<td>coordinating only</td>
+<td>无</td>
+<td>每个节点默认都是coordinating节点，设置其他类型全部为false</td>
+</tr>
+<tr>
+<td>machine learning</td>
+<td>node.ml</td>
+<td>true(需enable x-pack)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="分片"><a href="#分片" class="headerlink" title="分片"></a>分片</h2><p>主分片(Primary Shard)，用于解决数据水平扩展的问题。通过主分片，可以将数据分布到集群内的所有节点上。</p>
+<ul>
+<li>一个分片是一个运行的lucene的实例</li>
+<li>主分片数在索引创建时指定，后续不允许修改，除非Reindex。</li>
+</ul>
+<p>副本分片(Replica Shard)，用于解决数据高可用问题，副本分片是主分片的拷贝。</p>
+<ul>
+<li>副本分片数可以动态调整</li>
+<li>增加副本数量，还可以一定程度上提高服务的可用性(独取的吞吐量)</li>
+</ul>
+<p><img src="/image/ElasticSearch/elasticsearch04.png" alt="es04"></p>
+<h2 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h2><p>不同的集群通过名字进行区分，默认是”elasticsearch”</p>
+<p>可以通过配置文件修改，或者启动命令行中增加”-E cluster.name=xxxx”指定名称。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ElasticSearch/" rel="tag"># ElasticSearch</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/24/docker_10_dockerfile/" rel="next" title="dockerfile 实践总结">
+                <i class="fa fa-chevron-left"></i> dockerfile 实践总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/09/elasticsearch_04_基础RESTfulAPI/" rel="prev" title="ElasticSearch基础RESTfulAPI">
+                ElasticSearch基础RESTfulAPI <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#文档Document"><span class="nav-number">1.</span> <span class="nav-text">文档Document</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JSON文档"><span class="nav-number">1.1.</span> <span class="nav-text">JSON文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文档的元数据"><span class="nav-number">1.2.</span> <span class="nav-text">文档的元数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引Index"><span class="nav-number">2.</span> <span class="nav-text">索引Index</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#索引在Elasticsearch中的语义"><span class="nav-number">2.1.</span> <span class="nav-text">索引在Elasticsearch中的语义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Type"><span class="nav-number">2.2.</span> <span class="nav-text">Type</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#与RDBMS（关系型数据库）类比"><span class="nav-number">3.</span> <span class="nav-text">与RDBMS（关系型数据库）类比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式部署下的一些基础概念"><span class="nav-number">4.</span> <span class="nav-text">分布式部署下的一些基础概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#节点"><span class="nav-number">4.1.</span> <span class="nav-text">节点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Master-eligible-nodes和Master-Node-合格主节点和主节点"><span class="nav-number">4.1.1.</span> <span class="nav-text">Master-eligible nodes和Master Node(合格主节点和主节点)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Node和Corrdinating-Node-数据节点和协调节点"><span class="nav-number">4.1.2.</span> <span class="nav-text">Data Node和Corrdinating Node(数据节点和协调节点)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hot-amp-Warm-Node-冷-热节点"><span class="nav-number">4.1.3.</span> <span class="nav-text">Hot&amp;Warm Node(冷/热节点)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Machine-Learning-Node"><span class="nav-number">4.1.4.</span> <span class="nav-text">Machine Learning Node</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tribe-Node（已经被淘汰）"><span class="nav-number">4.1.5.</span> <span class="nav-text">Tribe Node（已经被淘汰）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置节点类型"><span class="nav-number">4.2.</span> <span class="nav-text">配置节点类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分片"><span class="nav-number">4.3.</span> <span class="nav-text">分片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群"><span class="nav-number">4.4.</span> <span class="nav-text">集群</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>
