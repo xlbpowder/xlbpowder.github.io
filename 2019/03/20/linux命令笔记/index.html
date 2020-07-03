@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="一直都在说要好好学习下linux命令，最近在学习docker的时候真的发现自己linux的能力太差了，基础也不行，暂时先记下学习docker过程中用到的一些命令行。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-06-19T08:31:49.567Z">
+<meta property="og:updated_time" content="2020-06-30T03:46:42.791Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux命令笔记">
 <meta name="twitter:description" content="一直都在说要好好学习下linux命令，最近在学习docker的时候真的发现自己linux的能力太差了，基础也不行，暂时先记下学习docker过程中用到的一些命令行。">
@@ -417,6 +417,29 @@
 </li>
 </ul>
 </blockquote>
+<h2 id="CPU使用情况"><a href="#CPU使用情况" class="headerlink" title="CPU使用情况"></a>CPU使用情况</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz9bvlfc3n574x9ygoj9Z /root/es]$top</span><br><span class="line">[root@iZwz9bvlfc3n574x9ygoj9Z /root/es]$top -c</span><br></pre></td></tr></table></figure>
+<h2 id="内存使用"><a href="#内存使用" class="headerlink" title="内存使用"></a>内存使用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz9bvlfc3n574x9ygoj9Z ~]$free -h</span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:           7.6G        1.4G        5.9G        560K        412M        5.9G</span><br><span class="line">Swap:            0B          0B          0B</span><br></pre></td></tr></table></figure>
+<ul>
+<li>-b 以Byte为单位显示内存使用情况。</li>
+<li>-k 以KB为单位显示内存使用情况。</li>
+<li>-m 以MB为单位显示内存使用情况。</li>
+<li>-h 以合适的单位显示内存使用情况，最大为三位数，自动计算对应的单位值。单位有：<ul>
+<li>B = bytes</li>
+<li>K = kilos</li>
+<li>M = megas</li>
+<li>G = gigas</li>
+<li>T = teras</li>
+</ul>
+</li>
+<li>-o 不显示缓冲区调节列。</li>
+<li>-s &lt;间隔秒数&gt; 持续观察内存使用状况。</li>
+<li>-t 显示内存总和列。</li>
+<li>-V 显示版本信息。</li>
+</ul>
+<h2 id="buff-cache"><a href="#buff-cache" class="headerlink" title="buff/cache"></a>buff/cache</h2><p>概念知识，参考<a href="https://www.cnblogs.com/cpw6/p/11711817.html" target="_blank" rel="noopener">https://www.cnblogs.com/cpw6/p/11711817.html</a></p>
+<h3 id="如何清除"><a href="#如何清除" class="headerlink" title="如何清除"></a>如何清除</h3><p>在系统中除了内存将被耗尽的时候可以清缓存以外，我们还可以使用下面这个文件来人工触发缓存清除的操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat /proc/sys/vm/drop_caches</span><br></pre></td></tr></table></figure></p>
+<p>方法是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ echo 1 &gt; /proc/sys/vm/drop_caches</span><br></pre></td></tr></table></figure></p>
+<p>当然，这个文件可以设置的值分别为1、2、3。它们所表示的含义为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo 1 &gt; /proc/sys/vm/drop_caches:表示清除pagecache。</span><br><span class="line">echo 2 &gt; /proc/sys/vm/drop_caches:表示清除回收slab分配器中的对象（包括目录项缓存和inode缓存）。slab分配器是内核中管理内存的一种机制，其中很多缓存数据实现都是用的pagecache。</span><br><span class="line">echo 3 &gt; /proc/sys/vm/drop_caches:表示清除pagecache和slab分配器中的缓存对象。</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -571,7 +594,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -593,7 +616,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -648,7 +671,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看Linux系统版本与内核版本"><span class="nav-number">1.</span> <span class="nav-text">查看Linux系统版本与内核版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户"><span class="nav-number">2.</span> <span class="nav-text">用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络"><span class="nav-number">3.</span> <span class="nav-text">网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#iptables"><span class="nav-number">3.1.</span> <span class="nav-text">iptables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#brctl"><span class="nav-number">3.2.</span> <span class="nav-text">brctl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看端口占用情况"><span class="nav-number">3.3.</span> <span class="nav-text">查看端口占用情况</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#硬盘使用情况"><span class="nav-number">4.</span> <span class="nav-text">硬盘使用情况</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看Linux系统版本与内核版本"><span class="nav-number">1.</span> <span class="nav-text">查看Linux系统版本与内核版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户"><span class="nav-number">2.</span> <span class="nav-text">用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络"><span class="nav-number">3.</span> <span class="nav-text">网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#iptables"><span class="nav-number">3.1.</span> <span class="nav-text">iptables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#brctl"><span class="nav-number">3.2.</span> <span class="nav-text">brctl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看端口占用情况"><span class="nav-number">3.3.</span> <span class="nav-text">查看端口占用情况</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#硬盘使用情况"><span class="nav-number">4.</span> <span class="nav-text">硬盘使用情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU使用情况"><span class="nav-number">5.</span> <span class="nav-text">CPU使用情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存使用"><span class="nav-number">6.</span> <span class="nav-text">内存使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#buff-cache"><span class="nav-number">7.</span> <span class="nav-text">buff/cache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何清除"><span class="nav-number">7.1.</span> <span class="nav-text">如何清除</span></a></li></ol></li></ol></div>
             
 
           </div>
