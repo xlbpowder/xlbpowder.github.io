@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ElasticSearch," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Elasticsearch Mapping">
+<meta name="keywords" content="ElasticSearch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ElasticSearch Mapping">
+<meta property="og:url" content="http://yoursite.com/2020/07/06/elasticsearch_08_Mapping/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="Elasticsearch Mapping">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-07-15T07:41:33.339Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ElasticSearch Mapping">
+<meta name="twitter:description" content="Elasticsearch Mapping">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/07/06/elasticsearch_08_Mapping/"/>
+
+
+
+
+
+  <title>ElasticSearch Mapping | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/06/elasticsearch_08_Mapping/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ElasticSearch Mapping</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-06T16:00:00+08:00">
+                2020-07-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Elastic-Stack/" itemprop="url" rel="index">
+                    <span itemprop="name">Elastic Stack</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Elasticsearch Mapping<br><a id="more"></a></p>
+<h1 id="什么是Mapping"><a href="#什么是Mapping" class="headerlink" title="什么是Mapping"></a>什么是Mapping</h1><p>mapping类似于数据库中schema的定义，作用如下</p>
+<ul>
+<li>定义索引中字段的名称</li>
+<li>定义字段的数据类型，例如字符串，数字，布尔等</li>
+<li>字段，倒排索引的相关配置(Analyzed or Not Analyzed, Analyzer)</li>
+</ul>
+<p>Mapping会吧JSON文档映射成Lucene所需要的扁平格式</p>
+<p>一个Mapping属于一个索引的的Type</p>
+<ul>
+<li>每个文档都属于一个Type</li>
+<li>一个Type都有一个Mapping定义</li>
+<li>7.0开始不需要在Mapping定义中指定Type信息</li>
+</ul>
+<h1 id="API"><a href="#API" class="headerlink" title="API"></a>API</h1><h2 id="查看Mapping"><a href="#查看Mapping" class="headerlink" title="查看Mapping"></a>查看Mapping</h2><p>GET /my_index/_mappings</p>
+<h1 id="字段的数据类型"><a href="#字段的数据类型" class="headerlink" title="字段的数据类型"></a>字段的数据类型</h1><h2 id="简单类型"><a href="#简单类型" class="headerlink" title="简单类型"></a>简单类型</h2><ul>
+<li>Text/Keyword</li>
+<li>Date</li>
+<li>Integer/Floating</li>
+<li>Boolean</li>
+<li>IPv4/IPv6</li>
+</ul>
+<h2 id="复杂类型"><a href="#复杂类型" class="headerlink" title="复杂类型"></a>复杂类型</h2><ul>
+<li>对象类型/嵌套类型</li>
+</ul>
+<h2 id="特殊类型"><a href="#特殊类型" class="headerlink" title="特殊类型"></a>特殊类型</h2><p>地理相关信息</p>
+<ul>
+<li>geo_point/geo_shape/percolator</li>
+</ul>
+<h1 id="Dynamic-Mapping"><a href="#Dynamic-Mapping" class="headerlink" title="Dynamic Mapping"></a>Dynamic Mapping</h1><p>在写入文档的时候，如果索引不存在，会自动创建索引</p>
+<p>Dynamic Mapping的机制，使得我们无需手动定义Mappings，Elasticsearch会自动根据文档的信息，推断出字段的类型。但推断并不一定准确，例如地理位置信息</p>
+<p>当类型如果设置不对，会导致一些功能无法正常运行，例如Range查询</p>
+<h2 id="类型的自动识别"><a href="#类型的自动识别" class="headerlink" title="类型的自动识别"></a>类型的自动识别</h2><table>
+<thead>
+<tr>
+<th>JSON类型</th>
+<th>Elasticsearch类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>字符串</td>
+<td>日期格式，设置成Date; 数字格式设置为Float或者Long，该选项默认关闭; 设置为Text并且增加Keyword子字段</td>
+</tr>
+<tr>
+<td>布尔值</td>
+<td>boolean</td>
+</tr>
+<tr>
+<td>浮点数</td>
+<td>float</td>
+</tr>
+<tr>
+<td>整数</td>
+<td>long</td>
+</tr>
+<tr>
+<td>对象</td>
+<td>Object</td>
+</tr>
+<tr>
+<td>数组</td>
+<td>由第一个非空数值的类型所决定</td>
+</tr>
+<tr>
+<td>空值</td>
+<td>忽略</td>
+</tr>
+</tbody>
+</table>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h1 id="写入文档"><a href="#写入文档" class="headerlink" title="写入文档"></a>写入文档</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PUT /mapping_test/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;firstName&quot; : &quot;Bo&quot;,</span><br><span class="line">  &quot;lastName&quot;: &quot;Liu&quot;,</span><br><span class="line">  &quot;loginDate&quot;:&quot;2020-07-05T16:00:00.100Z&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="查看mapping"><a href="#查看mapping" class="headerlink" title="查看mapping"></a>查看mapping</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">GET /mapping_test/_mapping</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mapping_test&quot; : &#123;</span><br><span class="line">    &quot;mappings&quot; : &#123;</span><br><span class="line">      &quot;properties&quot; : &#123;</span><br><span class="line">        &quot;firstName&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;keyword&quot; : &#123;</span><br><span class="line">              &quot;type&quot; : &quot;keyword&quot;,</span><br><span class="line">              &quot;ignore_above&quot; : 256</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;lastName&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;keyword&quot; : &#123;</span><br><span class="line">              &quot;type&quot; : &quot;keyword&quot;,</span><br><span class="line">              &quot;ignore_above&quot; : 256</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;loginDate&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;date&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="删除mapping"><a href="#删除mapping" class="headerlink" title="删除mapping"></a>删除mapping</h1><p>DELETE mapping_test</p>
+<h1 id="写入一个新文档"><a href="#写入一个新文档" class="headerlink" title="写入一个新文档"></a>写入一个新文档</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">PUT /mapping_test/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;uid&quot; : 10001,</span><br><span class="line">  &quot;isVip&quot;: true,</span><br><span class="line">  &quot;isAdmin&quot;:&quot;false&quot;,</span><br><span class="line">  &quot;age&quot;:24,</span><br><span class="line">  &quot;heigh&quot;:170</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;mapping_test&quot; : &#123;</span><br><span class="line">    &quot;mappings&quot; : &#123;</span><br><span class="line">      &quot;properties&quot; : &#123;</span><br><span class="line">        &quot;age&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;long&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;heigh&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;long&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;isAdmin&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;keyword&quot; : &#123;</span><br><span class="line">              &quot;type&quot; : &quot;keyword&quot;,</span><br><span class="line">              &quot;ignore_above&quot; : 256</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;isVip&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;boolean&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;uid&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;long&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="控制Dynamic-Mappings"><a href="#控制Dynamic-Mappings" class="headerlink" title="控制Dynamic Mappings"></a>控制Dynamic Mappings</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PUT mapping_test_2</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;dynamic&quot; : &quot;false&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>true</th>
+<th>false</th>
+<th>strict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>文档可索引</td>
+<td>Y</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+<tr>
+<td>字段可索引</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+</tr>
+<tr>
+<td>Mapping被更新</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>当dynamic被设置成false时，已存在的字段的数据会写入并且可以被索引，但新增字段会被丢弃</li>
+<li>当dynamic被设置成strict时，数据写入会直接报错</li>
+</ul>
+<h1 id="更改Mapping的字段类型"><a href="#更改Mapping的字段类型" class="headerlink" title="更改Mapping的字段类型"></a>更改Mapping的字段类型</h1><h2 id="新增字段"><a href="#新增字段" class="headerlink" title="新增字段"></a>新增字段</h2><ul>
+<li>Dynamic为true，一旦有新增字段的文档写入，Mapping也同时会被更新</li>
+<li>Dynamic为false，Mapping不会被更新，新增字段的数据无法被索引，但是信息会出现在_source中</li>
+<li>Dynamic为Strict(严格的)，文档写入会失败</li>
+</ul>
+<p>对已有字段，一旦已经有数据写入，就不再支持修改字段定义。原因是Lucene实现的倒排索引，一旦生效后就不允许修改</p>
+<p>如果希望改变字段类型，必须Reindex API重建索引</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><ul>
+<li>如果修改了字段的数据类型，会导致无法搜索到已被索引的数据</li>
+<li>新增字段则不会有该影响</li>
+</ul>
+<h1 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h1><h2 id="keyword"><a href="#keyword" class="headerlink" title="keyword"></a>keyword</h2><p>es的每个字段可以做多字段，例如，你有一个content的字段，类型是text。你可以为他指定一个子字段叫 keyword（也可以取名字叫kw）类型设置成keword，在做term查询时，就查询content.keyword（或者叫content.kw</p>
+<p>es默认为所有文本都设置成text，并且设置keywoed的子字段</p>
+<h2 id="mapping信息位置"><a href="#mapping信息位置" class="headerlink" title="mapping信息位置"></a>mapping信息位置</h2><p>mapping信息是保存在cluster state里面的.文件应该放在 nodes/{N}/_state/global-{NNN}下面</p>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-state.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-state.html</a></p>
+<h2 id="使用动态mapping的隐患"><a href="#使用动态mapping的隐患" class="headerlink" title="使用动态mapping的隐患"></a>使用动态mapping的隐患</h2><p>设置成strict，万一有一条数据里带着不存在的字段，写入就会失败</p>
+<p>设置成true，数据可以写入，还会在mapping中增加那个字段的设置。随着时间的流逝，这类数据会导致mapping设定的膨胀</p>
+<h2 id="选择使用ES的场景，及同步数据的思路"><a href="#选择使用ES的场景，及同步数据的思路" class="headerlink" title="选择使用ES的场景，及同步数据的思路"></a>选择使用ES的场景，及同步数据的思路</h2><p>如果有全文搜索的需求。或者有统计分析的需求，都可以用es作为存储。数据可以在数据库里保存一份，定期同步到es中。然后对一些全文搜索的，对应es实现。</p>
+<p>数据库和es同步可以考虑使用logstash的jdbc connector。只需要配置就可以实现增量同步。对于你说的物理删除的记录如何同步es，在logstash中不支持这个功能。但是你可以通过为数据增加isDeleted字段的方式。标记成删除状态。同步到es后 再用程序分别删除。</p>
+<h1 id="显式Mapping设置"><a href="#显式Mapping设置" class="headerlink" title="显式Mapping设置"></a>显式Mapping设置</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PUT /mapping_test_3</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    // define your mappings here</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h2><p>参考API手册，线创建一个临时index，写入一些样本数据，通过mapping API获取dynamic mapping生成的mapping定义，而后在此基础上对错误定义的进行修改，再删除临时的index，以减少自定义错误概览</p>
+<h2 id="控制当前字段是否被索引"><a href="#控制当前字段是否被索引" class="headerlink" title="控制当前字段是否被索引"></a>控制当前字段是否被索引</h2><p>index控制当前字段是否被索引，默认为true，如果设置成false，该字段不可被搜索</p>
+<p>某些情况写部分字段不需要被搜索到，就可以减少倒排索引建立的空间开销<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">PUT user</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;properties&quot;: &#123;</span><br><span class="line">      &quot;firstName&quot;:&#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;lastName&quot;:&#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;mobile&quot;:&#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">        &quot;index&quot;: false</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Index-Options"><a href="#Index-Options" class="headerlink" title="Index Options"></a>Index Options</h2><p>ES提供了四种不同级别的倒排索引index options配置，可以控制倒排索引纪录的内容</p>
+<ul>
+<li>docs 记录doc id</li>
+<li>freqs 记录doc id和term frequencies</li>
+<li>positions 记录doc id/term frequencies/term position</li>
+<li>offsets doc id/term frequencies/term posistion/character offects</li>
+</ul>
+<p>Text类型默认记录postions，其他默认为docs。记录内容越多，占用空间越大</p>
+<h2 id="null-value"><a href="#null-value" class="headerlink" title="null_value"></a>null_value</h2><ul>
+<li>需要对null值实现搜索</li>
+<li>只有Keyword类型支持设定Null_Vaule<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">GET user/_search?q=mobile:NULL</span><br><span class="line"></span><br><span class="line">PUT user</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;properties&quot;: &#123;</span><br><span class="line">      &quot;mobile&quot;:&#123;</span><br><span class="line">        &quot;type&quot;: &quot;keyword&quot;,</span><br><span class="line">        &quot;null_value&quot;: &quot;NULL&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="copy-to设置"><a href="#copy-to设置" class="headerlink" title="copy_to设置"></a>copy_to设置</h2><p>_all在7中被copy_to替代了，满足一些特定的搜索需求，copy_to会将字段的数值拷贝到目标字段</p>
+<ul>
+<li>copy_to的目标字段不会出现在_source中<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">PUT user</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;properties&quot;: &#123;</span><br><span class="line">      &quot;firstName&quot;:&#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">        &quot;copy_to&quot;: &quot;fullName&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;lastName&quot;:&#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">        &quot;copy_to&quot;: &quot;fullName&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET user/_search?q=fullName:(firstName lastName)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="数组类型"><a href="#数组类型" class="headerlink" title="数组类型"></a>数组类型</h2><p>ES不提供专门的数组类型。但是任何字段都可以包含多个相同类型的数值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PUT user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;firstName&quot;: &quot;Bo&quot;,</span><br><span class="line">  &quot;lastName&quot;: &quot;Liu&quot;,</span><br><span class="line">  &quot;mobile&quot;: &quot;13300001111&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PUT user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;firstName&quot;: &quot;Bo&quot;,</span><br><span class="line">  &quot;lastName&quot;: &quot;Liu&quot;,</span><br><span class="line">  &quot;mobile&quot;: [&quot;13300001111&quot;, &quot;13300001112&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="Exact-Values精确词"><a href="#Exact-Values精确词" class="headerlink" title="Exact Values精确词"></a>Exact Values精确词</h1><p>包括数字、日期、具体的一个字符串，比如“Apple Store”。不需要做分词</p>
+<ul>
+<li>Elasticsearch中的keyword</li>
+</ul>
+<p>Elasticsearch为每一个keyword字段创建一个倒排索引</p>
+<h1 id="Full-Text全文本"><a href="#Full-Text全文本" class="headerlink" title="Full Text全文本"></a>Full Text全文本</h1><p>全文本，非结构化的文本数据，也就是Elasticsearch中的text。需要做分词</p>
+<h1 id="Index-Template"><a href="#Index-Template" class="headerlink" title="Index Template"></a>Index Template</h1><p>随着时间推移，集群上会有越来越多的索引。比如集群用作日志管理，每天都会为日志生成新的索引，这样子会为数据管理更加合理，也会有更好的性能。</p>
+<p>Index Template可以帮助你设置Mappings和Settings的shards、replicas等，并按照一定的规则，自动匹配到新创建的索引之上</p>
+<ul>
+<li>模版仅在一个索引被新创建时，才会产生作用。修改模版不会影响已创建的索引</li>
+<li>可以设定多个索引模版，这些设置会被”merge”在一起</li>
+<li>可以指定”order”的数值，控制”merging”的过程</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">PUT _template/template_default</span><br><span class="line">&#123;</span><br><span class="line">  &quot;index_patterns&quot;: [&quot;*&quot;],</span><br><span class="line">  &quot;order&quot; : 0,</span><br><span class="line">  &quot;version&quot;: 1,</span><br><span class="line">  &quot;settings&quot;: &#123;</span><br><span class="line">    &quot;number_of_shards&quot;: 1,</span><br><span class="line">    &quot;number_of_replicas&quot;:1</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PUT /_template/template_test</span><br><span class="line">&#123;</span><br><span class="line">    &quot;index_patterns&quot; : [&quot;test*&quot;],</span><br><span class="line">    &quot;order&quot; : 1,</span><br><span class="line">    &quot;settings&quot; : &#123;</span><br><span class="line">    	&quot;number_of_shards&quot;: 1,</span><br><span class="line">        &quot;number_of_replicas&quot; : 2</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;mappings&quot; : &#123;</span><br><span class="line">    	&quot;date_detection&quot;: false,</span><br><span class="line">    	&quot;numeric_detection&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Index-Template的工作方式"><a href="#Index-Template的工作方式" class="headerlink" title="Index Template的工作方式"></a>Index Template的工作方式</h2><p>当一个索引被创建时，按照以下进行设置：</p>
+<ol>
+<li>应用Elasticsearch默认的settings和mappings</li>
+<li>应用order数值低的Index Template中的设定</li>
+<li>应用order数值高的Index Template中的设定，之前的设定会被覆盖</li>
+<li>应用创建索引时，用户所指定的settings和mappings，并覆盖之前模版中的设定</li>
+</ol>
+<p>查看template信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /_template/template_default</span><br><span class="line">GET /_template/temp*</span><br></pre></td></tr></table></figure></p>
+<h1 id="Dynamic-Template"><a href="#Dynamic-Template" class="headerlink" title="Dynamic Template"></a>Dynamic Template</h1><p>Index Template是应用于所有的Index上的，Dynamic Template是应用与具体某个Index上的</p>
+<p>根据Elasticsearch识别的数据额类型结合字段名称，来动态设置字段类型，设定了Dynamic Template就可以让文档中字段的推断符合预期了</p>
+<p>使用场景例如：</p>
+<ul>
+<li>所有的字符串类型都设定成keyword，或者关闭keyword字段</li>
+<li>is开头的字段都设置成boolean</li>
+<li>long开头的都设置成</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"># Dynaminc Mapping 根据类型和字段名</span><br><span class="line">DELETE my_index</span><br><span class="line"></span><br><span class="line">PUT my_index/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;firstName&quot;:&quot;Ruan&quot;,</span><br><span class="line">  &quot;isVIP&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET my_index/_mapping</span><br><span class="line"></span><br><span class="line">DELETE my_index</span><br><span class="line"></span><br><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;dynamic_templates&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">        &quot;strings_as_boolean&quot;: &#123;</span><br><span class="line">          &quot;match_mapping_type&quot;:   &quot;string&quot;,</span><br><span class="line">          &quot;match&quot;:&quot;is*&quot;,</span><br><span class="line">          &quot;mapping&quot;: &#123;</span><br><span class="line">            &quot;type&quot;: &quot;boolean&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;strings_as_keywords&quot;: &#123;</span><br><span class="line">          &quot;match_mapping_type&quot;:   &quot;string&quot;,</span><br><span class="line">          &quot;mapping&quot;: &#123;</span><br><span class="line">            &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">DELETE my_index</span><br><span class="line"></span><br><span class="line"># 结合路径</span><br><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;dynamic_templates&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;full_name&quot;: &#123;</span><br><span class="line">          &quot;path_match&quot;:   &quot;name.*&quot;,</span><br><span class="line">          &quot;path_unmatch&quot;: &quot;*.middle&quot;,</span><br><span class="line">          &quot;mapping&quot;: &#123;</span><br><span class="line">            &quot;type&quot;:       &quot;text&quot;,</span><br><span class="line">            &quot;copy_to&quot;:    &quot;full_name&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PUT my_index/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &#123;</span><br><span class="line">    &quot;first&quot;:  &quot;John&quot;,</span><br><span class="line">    &quot;middle&quot;: &quot;Winston&quot;,</span><br><span class="line">    &quot;last&quot;:   &quot;Lennon&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET my_index/_search?q=full_name:John</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Dynamic Template是定义在某个索引的Mapping中</li>
+<li>Template有一个名称</li>
+<li>匹配规则是一个数组</li>
+<li>为匹配到字段设置Mapping</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ElasticSearch/" rel="tag"># ElasticSearch</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/01/logstash_config_for_docker/" rel="next" title="Configuring Logstash for Docker">
+                <i class="fa fa-chevron-left"></i> Configuring Logstash for Docker
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/15/elasitcsearch_09_Aggregation/" rel="prev" title="ElasticSearch聚合">
+                ElasticSearch聚合 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是Mapping"><span class="nav-number">1.</span> <span class="nav-text">什么是Mapping</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#API"><span class="nav-number">2.</span> <span class="nav-text">API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看Mapping"><span class="nav-number">2.1.</span> <span class="nav-text">查看Mapping</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字段的数据类型"><span class="nav-number">3.</span> <span class="nav-text">字段的数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单类型"><span class="nav-number">3.1.</span> <span class="nav-text">简单类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复杂类型"><span class="nav-number">3.2.</span> <span class="nav-text">复杂类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特殊类型"><span class="nav-number">3.3.</span> <span class="nav-text">特殊类型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dynamic-Mapping"><span class="nav-number">4.</span> <span class="nav-text">Dynamic Mapping</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#类型的自动识别"><span class="nav-number">4.1.</span> <span class="nav-text">类型的自动识别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">4.2.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写入文档"><span class="nav-number">5.</span> <span class="nav-text">写入文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看mapping"><span class="nav-number">6.</span> <span class="nav-text">查看mapping</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#删除mapping"><span class="nav-number">7.</span> <span class="nav-text">删除mapping</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写入一个新文档"><span class="nav-number">8.</span> <span class="nav-text">写入一个新文档</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#控制Dynamic-Mappings"><span class="nav-number">8.1.</span> <span class="nav-text">控制Dynamic Mappings</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#更改Mapping的字段类型"><span class="nav-number">9.</span> <span class="nav-text">更改Mapping的字段类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#新增字段"><span class="nav-number">9.1.</span> <span class="nav-text">新增字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原因"><span class="nav-number">9.2.</span> <span class="nav-text">原因</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#注意点"><span class="nav-number">10.</span> <span class="nav-text">注意点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#keyword"><span class="nav-number">10.1.</span> <span class="nav-text">keyword</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mapping信息位置"><span class="nav-number">10.2.</span> <span class="nav-text">mapping信息位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用动态mapping的隐患"><span class="nav-number">10.3.</span> <span class="nav-text">使用动态mapping的隐患</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选择使用ES的场景，及同步数据的思路"><span class="nav-number">10.4.</span> <span class="nav-text">选择使用ES的场景，及同步数据的思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#显式Mapping设置"><span class="nav-number">11.</span> <span class="nav-text">显式Mapping设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#建议"><span class="nav-number">11.1.</span> <span class="nav-text">建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制当前字段是否被索引"><span class="nav-number">11.2.</span> <span class="nav-text">控制当前字段是否被索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Index-Options"><span class="nav-number">11.3.</span> <span class="nav-text">Index Options</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null-value"><span class="nav-number">11.4.</span> <span class="nav-text">null_value</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#copy-to设置"><span class="nav-number">11.5.</span> <span class="nav-text">copy_to设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组类型"><span class="nav-number">11.6.</span> <span class="nav-text">数组类型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Exact-Values精确词"><span class="nav-number">12.</span> <span class="nav-text">Exact Values精确词</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Full-Text全文本"><span class="nav-number">13.</span> <span class="nav-text">Full Text全文本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Index-Template"><span class="nav-number">14.</span> <span class="nav-text">Index Template</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Index-Template的工作方式"><span class="nav-number">14.1.</span> <span class="nav-text">Index Template的工作方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dynamic-Template"><span class="nav-number">15.</span> <span class="nav-text">Dynamic Template</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>
