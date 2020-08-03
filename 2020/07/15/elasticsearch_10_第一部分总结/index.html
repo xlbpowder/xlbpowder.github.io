@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ElasticSearch," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="对ES学习的第一部分做一个总结，以及部分练习题。从19年6月份开始学习ES到现在一年了陆续学习了这么一点，今后应该加快学习的脚步了">
+<meta name="keywords" content="ElasticSearch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ElasticSearch 第一部分总结">
+<meta property="og:url" content="http://yoursite.com/2020/07/15/elasticsearch_10_第一部分总结/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="对ES学习的第一部分做一个总结，以及部分练习题。从19年6月份开始学习ES到现在一年了陆续学习了这么一点，今后应该加快学习的脚步了">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-08-03T08:18:25.016Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ElasticSearch 第一部分总结">
+<meta name="twitter:description" content="对ES学习的第一部分做一个总结，以及部分练习题。从19年6月份开始学习ES到现在一年了陆续学习了这么一点，今后应该加快学习的脚步了">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/07/15/elasticsearch_10_第一部分总结/"/>
+
+
+
+
+
+  <title>ElasticSearch 第一部分总结 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/15/elasticsearch_10_第一部分总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ElasticSearch 第一部分总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-15T18:00:00+08:00">
+                2020-07-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Elastic-Stack/" itemprop="url" rel="index">
+                    <span itemprop="name">Elastic Stack</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>对ES学习的第一部分做一个总结，以及部分练习题。从19年6月份开始学习ES到现在一年了陆续学习了这么一点，今后应该加快学习的脚步了<br><a id="more"></a></p>
+<h1 id="产品与使用场景"><a href="#产品与使用场景" class="headerlink" title="产品与使用场景"></a>产品与使用场景</h1><ul>
+<li>Elasticsearch是一个开源的分布式搜索与分析引擎，提供了近实时搜索和聚合两大功能</li>
+<li>Elastic Stack包括Elasticsearch、Kibana、Logstash、Beats等一系列产品<ul>
+<li>Elasticsearch是核心引擎，提供了海量数据存储、搜索和聚合能力</li>
+<li>Beats是轻量的数据采集器</li>
+<li>Logstash用来做数据转换</li>
+<li>Kibana提供了丰富的可视化展示与分析功能</li>
+</ul>
+</li>
+<li>Elastic Stack主要被广泛适用于：搜索、日志管理、安全分析、指标分析、业务分析、应用性能监控等多个领域</li>
+<li>Elastic Stack开源了X-Pack在哪的相关代码。作为商业解决方案，X-Pack的部分功能需要收费。Elastic公司从6.8和7.1开始，Security功能也可以免费使用</li>
+<li>相比关系型数据库，Elasticsearch提供了如模糊查询，搜索条件的算分等关系型数据库所不擅长的功能。但是在事务性等方面，也是不如关系型数据库强大。因此，在实际生产环境中，需要考虑具体业务要求综合使用</li>
+</ul>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><ul>
+<li>一个Elasticsearch集群可以运行在单节点上，也支持运行在多个服务器上，实现数据和服务的水平扩展</li>
+<li>从逻辑角度看，索引是一些具有相似结构的文档的集合</li>
+<li>从物理角度看，分片是一个Lucene的实例。分片存储了索引的具体数据，分片可以分布在不同的节点上。副本分片除了提高数据的可靠性，还能一定程度提升集群查询的性能</li>
+<li>Elasticsearch的文档可以是任意的JSON格式的数据</li>
+<li>将文档写进Elasticsearch的过程也叫做索引(indexing)</li>
+<li>Elasticsearch提供了REST API和Transport API两种方式，建议使用REST API</li>
+</ul>
+<h1 id="搜索和Aggregation-聚合"><a href="#搜索和Aggregation-聚合" class="headerlink" title="搜索和Aggregation(聚合)"></a>搜索和Aggregation(聚合)</h1><ul>
+<li>Precosion指除了相关结果，还返回了多少不相关的结果</li>
+<li>Recall衡量有多少相关的结果，实际上并没有返回</li>
+<li>精确值包括：数字、日期和某些具体的字符串</li>
+<li>全文本是需要被检索的非结构文本</li>
+<li>Analyis是将文本转换成倒排索引中的Term的过程</li>
+<li>Elasticsearch的Analyzer是Char_filter -&gt; Tokenizer -&gt; Token Filter的过程</li>
+<li>Elasticsearch搜索支持URI Search和REST Body两种方式</li>
+<li>Elasticsearch提供了Bucket/Metric/Pipeline/Matrix四种方式的聚合</li>
+</ul>
+<h1 id="文档的CRUD与Index-Mapping"><a href="#文档的CRUD与Index-Mapping" class="headerlink" title="文档的CRUD与Index Mapping"></a>文档的CRUD与Index Mapping</h1><ul>
+<li>除了CRUD操作外，Elasticsearch还提供了bulk、mget和msearch等操作。从性能的角度上建议使用以提升性能，但是，单次操作的数据量不要过大，以免引发性能问题</li>
+<li>每个索引都有一个Mapping定义。包含文档的字段和类型，字段的Analyzer的相关配置</li>
+<li>Mapping可以被动态创建，为了避免一些错误的类型推算或者满足特定的需求，也可以显性的定义Mapping</li>
+<li>你可以为字段指定定制化的Analyzer，也可以为查询字符串指定search_analyzer</li>
+<li>Index Template可以定义Mapping和Settings，并自动的应用到新创建的索引之上，建议合理的使用Index Template</li>
+<li>Dynamic Template支持在具体的索引上指定规则，为新增加的字段指定相应的Mapping</li>
+</ul>
+<h1 id="测试题"><a href="#测试题" class="headerlink" title="测试题"></a>测试题</h1><ol>
+<li>判断题：ES支持使用HTTP PUT写入新文档，并通过曰asticsearch生成文档Id<ul>
+<li>错，需要用POST命令创建。</li>
+</ul>
+</li>
+<li>判断题：Update—个文档，需要使用HTTP PUT<ul>
+<li>错，Update文档，使用POST, PUT只能用来做Index或者Create</li>
+</ul>
+</li>
+<li>判断题：Index—个已存在的文档，旧的文档会先被删除，新的文档再被写入，同时版本号加1<ul>
+<li>对</li>
+</ul>
+</li>
+<li>尝试描述创建一个新的文档到一个不存在的索引中，背后会发生一些什么？<ul>
+<li>默认情况下，会创建相应的索引，并且自己设置Mapping，当然，实际情况还是要看是否有合适的Index Template</li>
+</ul>
+</li>
+<li>ES7中的合法的type是什么？<ul>
+<li>_doc</li>
+</ul>
+</li>
+<li>精确值和全文的本质区别是什么？<ul>
+<li>精确值不会被Analyzer分词，全文本会</li>
+</ul>
+</li>
+<li>Analyzer由哪几个部分组成？<ul>
+<li>Character Filter + Tokenizer + Token Filter</li>
+</ul>
+</li>
+<li>尝试描述match和match_phrase的区别<ul>
+<li>Match中的terms之间是or的关系，Match Phrase的terms之间是and的关系，并且term之间位置关系也影响搜索的结果</li>
+</ul>
+</li>
+<li>如果你希望match_phrase匹配到更多结果，你应该配置查询中什么参数？<ul>
+<li>slop</li>
+</ul>
+</li>
+<li>如果Mapping的dynamic设置成“strict”，索引一个包含新增字段的文档时会发生什么?<ul>
+<li>直接报错</li>
+</ul>
+</li>
+<li>如果Mapping的dynamic设置成“false”，索引一个包含新增字段的文档时会发生什么？<ul>
+<li>文档被索引，新的字段在_source中可见。但是该字段无法被搜索</li>
+</ul>
+</li>
+<li>判断：可以把一个字段的类型从“integer”改成“long”，因为这两个类型是兼容的<ul>
+<li>错。字段类型修改，需要重新reindex</li>
+</ul>
+</li>
+<li>判断：你可以在Mapping文件中为indexing和searching指定不同的analyzer<ul>
+<li>对。可以在Mapping中为index和search指定不同的analyizer</li>
+</ul>
+</li>
+<li>判断：字段类型为Text的字段， 一定可以被全文搜索<ul>
+<li>错。可以通过为text类型的字段指定Not Indexed，使其无法被搜索</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ElasticSearch/" rel="tag"># ElasticSearch</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/15/elasitcsearch_09_Aggregation/" rel="next" title="ElasticSearch 聚合">
+                <i class="fa fa-chevron-left"></i> ElasticSearch 聚合
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/16/算法与数据结构初学概览/" rel="prev" title="算法与数据结构初学概览">
+                算法与数据结构初学概览 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#产品与使用场景"><span class="nav-number">1.</span> <span class="nav-text">产品与使用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-number">2.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#搜索和Aggregation-聚合"><span class="nav-number">3.</span> <span class="nav-text">搜索和Aggregation(聚合)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文档的CRUD与Index-Mapping"><span class="nav-number">4.</span> <span class="nav-text">文档的CRUD与Index Mapping</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试题"><span class="nav-number">5.</span> <span class="nav-text">测试题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>
