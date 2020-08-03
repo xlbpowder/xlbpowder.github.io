@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="设计模式," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="代理模式/JAVA动态代理 在学习Spring AOP与RPC的实现时，总会与代理模式密不可分，而日常编码中代理模式也是常用的设计模式之一。学习代理模式与动态代理的实现与作用是非常有益于理解框架的源码实现，并且可以提高抽象思维。本文是个人在学习代理模式以及动态代理的一个小总结，没有过深的探讨。本文不会提及具体动态代理底层字节码框架的实现，之后有机会会补充Javassist和ASM字节码框架的文章。">
+<meta name="keywords" content="设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="代理模式&#x2F;JAVA动态代理">
+<meta property="og:url" content="http://yoursite.com/2018/12/12/proxy_pattern/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="代理模式/JAVA动态代理 在学习Spring AOP与RPC的实现时，总会与代理模式密不可分，而日常编码中代理模式也是常用的设计模式之一。学习代理模式与动态代理的实现与作用是非常有益于理解框架的源码实现，并且可以提高抽象思维。本文是个人在学习代理模式以及动态代理的一个小总结，没有过深的探讨。本文不会提及具体动态代理底层字节码框架的实现，之后有机会会补充Javassist和ASM字节码框架的文章。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/image/W3sDesign_Proxy_Design_Pattern_UML.jpg">
+<meta property="og:image" content="http://yoursite.com/image/cglib_callback.png">
+<meta property="og:updated_time" content="2020-06-19T08:31:49.568Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="代理模式&#x2F;JAVA动态代理">
+<meta name="twitter:description" content="代理模式/JAVA动态代理 在学习Spring AOP与RPC的实现时，总会与代理模式密不可分，而日常编码中代理模式也是常用的设计模式之一。学习代理模式与动态代理的实现与作用是非常有益于理解框架的源码实现，并且可以提高抽象思维。本文是个人在学习代理模式以及动态代理的一个小总结，没有过深的探讨。本文不会提及具体动态代理底层字节码框架的实现，之后有机会会补充Javassist和ASM字节码框架的文章。">
+<meta name="twitter:image" content="http://yoursite.com/image/W3sDesign_Proxy_Design_Pattern_UML.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/12/proxy_pattern/"/>
+
+
+
+
+
+  <title>代理模式/JAVA动态代理 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/12/proxy_pattern/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">代理模式/JAVA动态代理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-12T15:01:00+08:00">
+                2018-12-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="代理模式-JAVA动态代理"><a href="#代理模式-JAVA动态代理" class="headerlink" title="代理模式/JAVA动态代理"></a>代理模式/JAVA动态代理</h1><blockquote>
+<p>在学习Spring AOP与RPC的实现时，总会与代理模式密不可分，而日常编码中代理模式也是常用的设计模式之一。学习代理模式与动态代理的实现与作用是非常有益于理解框架的源码实现，并且可以提高抽象思维。本文是个人在学习代理模式以及动态代理的一个小总结，没有过深的探讨。本文不会提及具体动态代理底层字节码框架的实现，之后有机会会补充Javassist和ASM字节码框架的文章。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><em><strong>计算机科学领域的任何问题都可以通过增加一个间接的中间层来解决</strong></em></p>
+<p>代理模式被定位为：为其他对象提供一种代理以控制对这个对象的访问。在某些情况下，一个对象不适合或者不能直接引用另一个对象，而代理对象可以在客户端和目标对象之间起到中介的作用。</p>
+<p>代理设计模式是二十三种着名的GOF设计模式之一 ，它描述了如何解决重复出现的设计问题，以设计灵活且可重用的面向对象软件，即更容易实现，更改的对象，测试和重用。在JAVA中可以实现静态代理、动态代理，而动态代理常用的有JDK Proxy和CGLIB两种方式实现动态代理。</p>
+<h3 id="代理模式的核心作用"><a href="#代理模式的核心作用" class="headerlink" title="代理模式的核心作用"></a>代理模式的核心作用</h3><ul>
+<li>通过代理控制对对象的访问，做为隔离客户端和委托类的中介。</li>
+<li>借助代理增加一些功能，而不需要修改原有代码。符合开闭原则。</li>
+</ul>
+<p><img src="/image/W3sDesign_Proxy_Design_Pattern_UML.jpg" alt="Proxy_design_UML_photo"></p>
+<h3 id="静态代理与动态代理"><a href="#静态代理与动态代理" class="headerlink" title="静态代理与动态代理"></a>静态代理与动态代理</h3><p>静态代理一般指的显式指定的代理，由业务实现类、业务代理类两部分组成。业务实现类提供业务的主要实现，业务代理类负责对业务真正的实现进行调用，并且可以进行拦截、过滤、预处理。但静态代理对代码是有很大耦合性的，如果需要大量代理的使用，则需要动态代理。</p>
+<p>动态代理则是在程序运行时，根据需求动态的通过反射机制、字节码框架，动态生成代理类进行代理业务操作，极大程度的减少代理模式实现的编码量。</p>
+<h2 id="如何实现动态代理"><a href="#如何实现动态代理" class="headerlink" title="如何实现动态代理"></a>如何实现动态代理</h2><h3 id="JDK-Proxy实现动态代理"><a href="#JDK-Proxy实现动态代理" class="headerlink" title="JDK Proxy实现动态代理"></a>JDK Proxy实现动态代理</h3><p>java.lang.reflect包中有提供给我们实现动态代理的类库，Proxy和InvocationHandler，来帮助我们实现基于接口的动态代理。</p>
+<p>创建代理对象<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CallerSensitive</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler h)</span> <span class="keyword">throws</span> IllegalArgumentException</span></span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>ClassLoader loader：被代理类的ClassLoader</li>
+<li>Class&lt;?&gt;[] interfaces：被代理类所实现的接口</li>
+<li>InvocationHandler h：代理对象实例</li>
+</ul>
+<p>实现InvocationHandler接口，实现invoke方法，通过反射调用原方法。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable</span>;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Object proxy：调用该方法的代理类的实例</li>
+<li>Method method：代理方法</li>
+<li>Object[] args：代理方法参数列表</li>
+</ul>
+<p>下面是一段非常简单的示例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IBusiness</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BusinessImpl</span> <span class="keyword">implements</span> <span class="title">IBusiness</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"do something ..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * JDK proxy动态代理示例</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: liu.bo</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@CreateTime</span>: 2018-12-05 10:36</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JDKProxyDemo01</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        BusinessImpl impl = <span class="keyword">new</span> BusinessImpl();</span><br><span class="line">        BusinessProxy proxy = <span class="keyword">new</span> BusinessProxy();</span><br><span class="line">        IBusiness iBusiness = (IBusiness) proxy.blind(impl);</span><br><span class="line">        iBusiness.doSomething();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BusinessProxy</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Object obj;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">blind</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.obj = obj;</span><br><span class="line">        <span class="keyword">return</span> Proxy.newProxyInstance(obj.getClass().getClassLoader(),</span><br><span class="line">                obj.getClass().getInterfaces(), <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        Object result = <span class="keyword">null</span>;</span><br><span class="line">        System.out.println(<span class="string">"before ..."</span>);</span><br><span class="line">        result = method.invoke(obj, args);</span><br><span class="line">        System.out.println(<span class="string">"after ..."</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由示例可知，借助于JDK proxy实现动态代理的弊端，被代理类必须有接口，JDK动态代理其实也是基本接口实现的。因为通过接口指向实现类实例的多态方式，可以有效地将具体实现与调用解耦，便于后期的修改和维护。</p>
+<p>JDK动态代理是利用反射机制在运行时创建代理类的。核心是InvocationHandler。每一个代理的实例都会有一个关联的调用处理程序(InvocationHandler)。对待代理实例进行调用时，将对方法的调用进行编码并指派到它的调用处理器(InvocationHandler)的invoke方法。所以对代理对象实例方法的调用都是通过InvocationHandler中的invoke方法来完成的，而invoke方法会根据传入的代理对象、方法名称以及参数决定调用代理的哪个方法。</p>
+<p>关于JDK Proxy动态代理具体实现细节，可以参考<a href="https://www.jianshu.com/p/471c80a7e831" target="_blank" rel="noopener">深入理解JDK动态代理机制</a>，该篇文章很简洁的介绍了源码。</p>
+<h2 id="CGLIB实现动态代理"><a href="#CGLIB实现动态代理" class="headerlink" title="CGLIB实现动态代理"></a>CGLIB实现动态代理</h2><p>cglib能够实现基于类的动态代理，生成业务类的子类，覆盖业务方法实现代理，因为采用的是继承，所以不能对final修饰的类进行代理。 </p>
+<h3 id="Enhancer"><a href="#Enhancer" class="headerlink" title="Enhancer"></a>Enhancer</h3><p>实例Enhancer，通过该类对象创建代理实例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Enhancer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(SOURCE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSuperclass</span><span class="params">(Class superclass)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(<span class="keyword">final</span> Callback callback)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">create</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">create</span><span class="params">(Class[] argumentTypes, Object[] arguments)</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>setSuperclass：设置代理的父类</li>
+<li>setCallback：设置代理回调<br>  net.sf.cglib.proxy.Callback是一个用于标记的接口，net.sf.cglib.proxy.Enhancer使用的所有回调都会继承这个接口。</li>
+<li>create：默认使用无参构造方法创建目标对象，如果需要调用有参构造方法应该使用net.sf.cglib.proxy.Enhancer.create(Class[], Object[])。该方法的第一个参数指明参数类型，第二个参数指明参数值。参数中的原子类型需要使用包装类。</li>
+</ul>
+<h3 id="CallBack"><a href="#CallBack" class="headerlink" title="CallBack"></a>CallBack</h3><p><img src="/image/cglib_callback.png" alt="cglib_callback_photo"></p>
+<pre><code>net.sf.cglib.proxy.FixedValue：在强制一个特定方法返回固定值，在特定场景下非常有用且性能高。
+net.sf.cglib.proxy.NoOp：它直接透传到父类的方法实现。
+net.sf.cglib.proxy.LazyLoader：在被代理对象需要懒加载场景下非常有用，如果被代理对象加载完成，那么在以后的代理调用时会重复使用。
+net.sf.cglib.proxy.Dispatcher：与net.sf.cglib.proxy.LazyLoader差不多，但每次调用代理方法时都会调用loadObject方法来加载被代理对象。
+net.sf.cglib.proxy.ProxyRefDispatcher：与Dispatcher相同，但它的loadObject方法支持传入代理对象。
+net.sf.cglib.proxy.MethodInterceptor：是最常用的回调类型，在基于代理的AOP实现中它经常被用来拦截方法调用。
+</code></pre><h3 id="使用Enhancer创建代理对象"><a href="#使用Enhancer创建代理对象" class="headerlink" title="使用Enhancer创建代理对象"></a>使用Enhancer创建代理对象</h3><p>先编写一个简单的代理示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Enhancer enhancer = <span class="keyword">new</span> Enhancer();</span><br><span class="line">    enhancer.setSuperclass(BusinessImpl.class);</span><br><span class="line">    enhancer.setCallback(NoOp.INSTANCE);</span><br><span class="line">    BusinessImpl business = (BusinessImpl) enhancer.create();</span><br><span class="line">    business.doSomething();</span><br><span class="line">    System.out.println(business.getClass().getSuperclass());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">do something ...</span><br><span class="line">class proxy.BusinessImpl</span><br></pre></td></tr></table></figure>
+<p>通过运行结果，最后生成的代理类的父类是我们的业务类，由此可以得出结论Enhancer生成的代理对象是设置的Superclass设置的子类。</p>
+<p>而我们使用的内置回调NoOp，实际上代理类没有做其他的代理操作，相当于直接调用了父业务类的方法。</p>
+<h3 id="使用MethodInterceptor"><a href="#使用MethodInterceptor" class="headerlink" title="使用MethodInterceptor"></a>使用MethodInterceptor</h3><p>通过实现MethodInterceptor接口，可以将代理的所有方法调用都会被分派给net.sf.cglib.proxy.MethodInterceptor的intercept方法。intercept方法中可以调用底层对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object obj, Method method, Object[] args, MethodProxy methodProxy)</span> <span class="keyword">throws</span> Throwable</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>obj：代理对象</li>
+<li>method：被代理的方法</li>
+<li>args：被代理方法的参数列表</li>
+<li>methodProxy：代理方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> net.sf.cglib.proxy.Enhancer;</span><br><span class="line"><span class="keyword">import</span> net.sf.cglib.proxy.MethodInterceptor;</span><br><span class="line"><span class="keyword">import</span> net.sf.cglib.proxy.MethodProxy;</span><br><span class="line"><span class="keyword">import</span> net.sf.cglib.proxy.NoOp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>:</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: liu.bo</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@CreateTime</span>: 2018-12-05 09:40</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CglibProxyDemo01</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        BusinessImpl impl = <span class="keyword">new</span> BusinessImpl();</span><br><span class="line">        Enhancer enhancer = <span class="keyword">new</span> Enhancer();</span><br><span class="line">        enhancer.setSuperclass(impl.getClass());</span><br><span class="line">        enhancer.setCallback(<span class="keyword">new</span> CglibProxy(impl));</span><br><span class="line">        BusinessImpl business = (BusinessImpl) enhancer.create();</span><br><span class="line">        business.doSomething();</span><br><span class="line">        System.out.println(business.getClass().getSuperclass());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CglibProxy</span> <span class="keyword">implements</span> <span class="title">MethodInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Object obj;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CglibProxy</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.obj = obj;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object obj, Method method, Object[] args, MethodProxy methodProxy)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"method:"</span> + method);</span><br><span class="line">        System.out.println(<span class="string">"methodProxy:"</span> + methodProxy);</span><br><span class="line">        Object returnObj = <span class="keyword">null</span>;</span><br><span class="line">        System.out.println(<span class="string">"after..."</span>);</span><br><span class="line">        returnObj = methodProxy.invoke(<span class="keyword">this</span>.obj, args);</span><br><span class="line">        System.out.println(<span class="string">"before..."</span>);</span><br><span class="line">        <span class="keyword">return</span> returnObj;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">method:public void proxy.BusinessImpl.doSomething()</span><br><span class="line">methodProxy:net.sf.cglib.proxy.MethodProxy@45ff54e6</span><br><span class="line">after...</span><br><span class="line">do something ...</span><br><span class="line">before...</span><br><span class="line">class proxy.BusinessImpl</span><br></pre></td></tr></table></figure></p>
+<p>关于使用Method还是MethodProxy调用类方法，Method则是被代理类的方法，即通过反射调用。而MethodProxy则是cglib提供的被代理方法的代理。看了一些文章有讲到MethodProxy的执行效率更高，但具体没有研究过，有待验证。</p>
+<h3 id="CallbackFilter"><a href="#CallbackFilter" class="headerlink" title="CallbackFilter"></a>CallbackFilter</h3><p>Enhancer还提供了CallbackFilter和多个Callbacks，通过下标的方式提供对于具体细化到方法粒度的回调。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallbacks</span><span class="params">(Callback[] callbacks)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallbackFilter</span><span class="params">(CallbackFilter filter)</span></span></span><br></pre></td></tr></table></figure>
+<p>因为设置CallbackFilter需要传入CallbackFilter接口实现类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Map methods of subclasses generated by &#123;<span class="doctag">@link</span> Enhancer&#125; to a particular</span></span><br><span class="line"><span class="comment"> * callback. The type of the callbacks chosen for each method affects</span></span><br><span class="line"><span class="comment"> * the bytecode generated for that method in the subclass, and cannot</span></span><br><span class="line"><span class="comment"> * change for the life of the class.</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;Note: &#123;<span class="doctag">@link</span> CallbackFilter&#125; implementations are supposed to be</span></span><br><span class="line"><span class="comment"> * lightweight as cglib might keep &#123;<span class="doctag">@link</span> CallbackFilter&#125; objects</span></span><br><span class="line"><span class="comment"> * alive to enable caching of generated classes. Prefer using &#123;<span class="doctag">@code</span> static&#125;</span></span><br><span class="line"><span class="comment"> * classes for implementation of &#123;<span class="doctag">@link</span> CallbackFilter&#125;.&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CallbackFilter</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Map a method to a callback.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> method the intercepted method</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the index into the array of callbacks (as specified by &#123;<span class="doctag">@link</span> Enhancer#setCallbacks&#125;) to use for the method, </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">accept</span><span class="params">(Method method)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The &lt;code&gt;CallbackFilter&lt;/code&gt; in use affects which cached class</span></span><br><span class="line"><span class="comment">     * the &lt;code&gt;Enhancer&lt;/code&gt; will use, so this is a reminder that</span></span><br><span class="line"><span class="comment">     * you should correctly implement &lt;code&gt;equals&lt;/code&gt; and</span></span><br><span class="line"><span class="comment">     * &lt;code&gt;hashCode&lt;/code&gt; for custom &lt;code&gt;CallbackFilter&lt;/code&gt;</span></span><br><span class="line"><span class="comment">     * implementations in order to improve performance.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关于CallbackFilter，我们可以看下accept方法，主要作用为通过方法映射到不同的callback，方法的返回值是enhancer中设置的Callbacks的下标。</p>
+<p>举个栗子</p>
+<p>先增加两个方法，因为本身与接口无关，所以就直接在类中增加方法了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BusinessImpl</span> <span class="keyword">implements</span> <span class="title">IBusiness</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"do something ..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomethingA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"do something A ..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomethingB</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"do something B ..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后实现CallbackFilter，我们先设置方法A和方法B使用第二个Callback，默认使用第一个。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoCallbackFilter</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">sf</span>.<span class="title">cglib</span>.<span class="title">proxy</span>.<span class="title">CallbackFilter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">accept</span><span class="params">(Method method)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(method.getName().equals(<span class="string">"doSomethingA"</span>) || method.getName().equals(<span class="string">"doSomethingB"</span>))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里我们设置CallbackFilter，并且设置Callbacks，第一个设置为默认代理，第二个使用之前例子中的MethodInterceptor。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Enhancer enhancer = <span class="keyword">new</span> Enhancer();</span><br><span class="line">    enhancer.setSuperclass(BusinessImpl.class);</span><br><span class="line">    Callback callBack_0 = NoOp.INSTANCE;</span><br><span class="line">    Callback callBack_1 = <span class="keyword">new</span> CglibProxy(<span class="keyword">new</span> BusinessImpl());</span><br><span class="line">    Callback[] callbacks = <span class="keyword">new</span> Callback[]&#123;callBack_0, callBack_1 &#125;;</span><br><span class="line">    enhancer.setCallbackFilter(<span class="keyword">new</span> DemoCallbackFilter());</span><br><span class="line">    enhancer.setCallbacks(callbacks);</span><br><span class="line">    BusinessImpl business = (BusinessImpl) enhancer.create();</span><br><span class="line">    business.doSomething();</span><br><span class="line">    business.doSomethingA();</span><br><span class="line">    business.doSomethingB();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">do something ...</span><br><span class="line">methodName:public void proxy.BusinessImpl.doSomethingA()</span><br><span class="line">methodProxy:net.sf.cglib.proxy.MethodProxy@45283ce2</span><br><span class="line">after...</span><br><span class="line">do something A ...</span><br><span class="line">before...</span><br><span class="line">methodName:public void proxy.BusinessImpl.doSomethingB()</span><br><span class="line">methodProxy:net.sf.cglib.proxy.MethodProxy@3d71d552</span><br><span class="line">after...</span><br><span class="line">do something B ...</span><br><span class="line">before...</span><br></pre></td></tr></table></figure></p>
+<p>可以看出，通过CallbackFilter实现了对方法粒度的回调过滤。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>一般情况下都可以使用JDK动态代理方法来创建代理，对于没有接口的情况或者性能因素，CGLIB是一个很好的选择。而CGLIB是一个强大的高性能的代码生成库。作为JDK动态代理的互补，它对于那些没有实现接口的类提供了代理方案。在底层，它使用ASM字节码操纵框架。本质上来说，CGLIB通过产生子类覆盖非final方法来进行代理。它比使用Java反射的JDK动态代理方法更快。CGLIB不能代理一个final类或者final方法。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://en.wikipedia.org/wiki/Proxy_pattern" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Proxy_pattern</a></li>
+<li><a href="https://www.jianshu.com/p/471c80a7e831" target="_blank" rel="noopener">https://www.jianshu.com/p/471c80a7e831</a></li>
+<li><a href="https://www.jianshu.com/p/9a61af393e41?from=timeline&amp;isappinstalled=0" target="_blank" rel="noopener">https://www.jianshu.com/p/9a61af393e41?from=timeline&amp;isappinstalled=0</a></li>
+<li><a href="https://www.cnblogs.com/ygj0930/p/6542259.html" target="_blank" rel="noopener">https://www.cnblogs.com/ygj0930/p/6542259.html</a></li>
+<li><a href="https://www.cnblogs.com/LCcnblogs/p/6823982.html" target="_blank" rel="noopener">https://www.cnblogs.com/LCcnblogs/p/6823982.html</a></li>
+<li><a href="https://www.2cto.com/kf/201801/710319.html" target="_blank" rel="noopener">https://www.2cto.com/kf/201801/710319.html</a></li>
+<li><a href="https://www.cnblogs.com/xrq730/p/6661692.html" target="_blank" rel="noopener">https://www.cnblogs.com/xrq730/p/6661692.html</a></li>
+<li><a href="https://mp.weixin.qq.com/s/sS4QYvERlYFZh1EyXuDV3Q" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/sS4QYvERlYFZh1EyXuDV3Q</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/28/对象创建及类的加载机制/" rel="next" title="对象的创建及类的加载机制">
+                <i class="fa fa-chevron-left"></i> 对象的创建及类的加载机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/14/JAVA程序常见问题与JVM内存模型关系/" rel="prev" title="JAVA程序常见问题与JVM内存模型关系">
+                JAVA程序常见问题与JVM内存模型关系 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#代理模式-JAVA动态代理"><span class="nav-number">1.</span> <span class="nav-text">代理模式/JAVA动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#代理模式的核心作用"><span class="nav-number">1.1.1.</span> <span class="nav-text">代理模式的核心作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态代理与动态代理"><span class="nav-number">1.1.2.</span> <span class="nav-text">静态代理与动态代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何实现动态代理"><span class="nav-number">1.2.</span> <span class="nav-text">如何实现动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK-Proxy实现动态代理"><span class="nav-number">1.2.1.</span> <span class="nav-text">JDK Proxy实现动态代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CGLIB实现动态代理"><span class="nav-number">1.3.</span> <span class="nav-text">CGLIB实现动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Enhancer"><span class="nav-number">1.3.1.</span> <span class="nav-text">Enhancer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CallBack"><span class="nav-number">1.3.2.</span> <span class="nav-text">CallBack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Enhancer创建代理对象"><span class="nav-number">1.3.3.</span> <span class="nav-text">使用Enhancer创建代理对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用MethodInterceptor"><span class="nav-number">1.3.4.</span> <span class="nav-text">使用MethodInterceptor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CallbackFilter"><span class="nav-number">1.3.5.</span> <span class="nav-text">CallbackFilter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.5.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>

@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对象的创建及类的加载机制">
+<meta property="og:url" content="http://yoursite.com/2018/11/28/对象创建及类的加载机制/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/image/classloader01.png">
+<meta property="og:image" content="http://yoursite.com/image/classloader02.jpg">
+<meta property="og:updated_time" content="2020-06-19T08:31:49.570Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="对象的创建及类的加载机制">
+<meta name="twitter:description" content="本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。">
+<meta name="twitter:image" content="http://yoursite.com/image/classloader01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/11/28/对象创建及类的加载机制/"/>
+
+
+
+
+
+  <title>对象的创建及类的加载机制 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/28/对象创建及类的加载机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">对象的创建及类的加载机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-28T14:20:10+08:00">
+                2018-11-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本篇是最近在学习JVM相关知识时的随笔，虽然我们现在大都通过Spring容器进行对象的实例化，但本身应当了解对象的各类创建方式，以及最基本的Class文件如何通过何种方式加载到内存中生成对应的对象的。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="类加载的各种几种方式和区别"><a href="#类加载的各种几种方式和区别" class="headerlink" title="类加载的各种几种方式和区别"></a>类加载的各种几种方式和区别</h2><ol>
+<li>new</li>
+<li>clazz.newInstance</li>
+<li>constructor.newInstance</li>
+<li>clone</li>
+<li>反序列化</li>
+<li>ClassLoader</li>
+</ol>
+<p>总结起来有对象的实例化方式分为：</p>
+<p>new关键字进行实例化、反射机制进行实例化、克隆对象实例化、反序列化方式实例化，以及以上几种方式的最基本的类加载器加载对象。</p>
+<p>注：clazz.newInstance在JDK1.9之后变为了Deprecated，不推荐使用。<br>clazz.getDeclearedConstructor().newInstance()，通过构造器类进行实例化。</p>
+<h2 id="ClassLoader"><a href="#ClassLoader" class="headerlink" title="ClassLoader"></a>ClassLoader</h2><blockquote>
+<p>我们都知道JAVA程序是运行在JVM中，我们编写的.java文件编译后生成.class文件，而该文件用于描述类的数据结构，以及通过CLASSPATH加载其他相关类的支持。而.class文件加载到JVM内存中这个过程，就是由ClassLoader完成的。</p>
+</blockquote>
+<p>类加载器主要分为两类，一类是JDK默认提供的，一类是用户自定义的。 </p>
+<ul>
+<li><p>JDK1.8以前：</p>
+<p>  <img src="/image/classloader01.png" alt="classloader01-photo"></p>
+</li>
+<li><p>JDK1.8之后：</p>
+<p>  <img src="/image/classloader02.jpg" alt="classloader02-photo"></p>
+</li>
+</ul>
+<h3 id="JDK-默认提供三种类加载器："><a href="#JDK-默认提供三种类加载器：" class="headerlink" title="JDK 默认提供三种类加载器："></a>JDK 默认提供三种类加载器：</h3><ul>
+<li><p>Bootstrap ClassLoader 启动类加载器</p>
+<p>  每次执行java命令时都会使用该加载器为虚拟机加载核心类。该加载器是由nativecode实现，而不是Java代码，加载类的路径为&lt;JAVA_HOME&gt;/jre/lib。特别的 &lt;JAVA_HOME&gt;/jre/lib/rt.jar中包含了sun.misc.Launcher 类， 而sun.misc.Launcher$ExtClassLoader和sun.misc.Launcher$AppClassLoader都是 sun.misc.Launcher的内部类，所以拓展类加载器和系统类加载器都是由启动类加载器加载的。</p>
+</li>
+<li><p>PlatformClassLoader，平台类加载器；（JDK1.8以前为Extension ClassLoader, 拓展类加载器）</p>
+<p>  JDK1.8之前：JDK目录下提供的ext目录，可以直接将需要执行的扩展jar包直接放入运行，但并不提倡使用，因为不安全，现在已经废除。用于加载拓展库中的类。拓展库路径为&lt;JAVA_HOME&gt;/jre/lib/ext/。实现类为sun.misc.Launcher$ExtClassLoader</p>
+</li>
+<li><p>System ClassLoader 系统类加载器：</p>
+<p>  用于加载CLASSPATH中的类。实现类为sun.misc.Launcher$AppClassLoader</p>
+</li>
+</ul>
+<h3 id="用户自定义的类加载器"><a href="#用户自定义的类加载器" class="headerlink" title="用户自定义的类加载器"></a>用户自定义的类加载器</h3><ul>
+<li><p>Custom ClassLoader, 一般都是java.lang.ClassLoder的子类</p>
+<p>  正统的类加载机制是基于双亲委派的，也就是当调用类加载器加载类时，首先将加载任务委派给双亲，若双亲无法加载成功时，自己才进行类加载。</p>
+<p>  在实例化一个新的类加载器时，我们可以为其指定一个parent，即双亲，若未显式指定，则System ClassLoader就作为默认双亲。</p>
+<p>  具体的说，类加载任务是由ClassLoader的loadClass() 方法来执行的，他会按照以下顺序加载类：</p>
+<p>  通过findLoadedClass() 看该类是否已经被加载。该方法为nativecode 实现，若已加载则返回。</p>
+<p>  若未加载则委派给双亲，parent.loadClass()，若成功则返回。</p>
+<p>  若未成功，则调用 findClass() 方法加载类。java.lang.ClassLoader中该方法只是简单的抛出一个ClassNotFoundException所以，自定义的ClassLoader都需要 Override findClass() 方法。</p>
+</li>
+</ul>
+<h3 id="ClassLoader的API"><a href="#ClassLoader的API" class="headerlink" title="ClassLoader的API"></a>ClassLoader的API</h3><h4 id="java-lang-ClassLoader"><a href="#java-lang-ClassLoader" class="headerlink" title="java.lang.ClassLoader"></a>java.lang.ClassLoader</h4><ul>
+<li>ClassLoader 是一个抽象类。</li>
+<li>待加载的类必须用The Java™Language Specification 定义的全类名，全类名的定义请查阅The Form of a Binary。</li>
+<li>给定一个全类名，类加载器应该去定位该类所在的位置。通用的策略是将全类名转换为类文件路径，然后通过类文件路径在文件系统中定位。</li>
+<li>每一个加载到内存的类都由一个Class对象来表示，每一个Class对象都有一个指向加载该类的类加载器的引用。但是数组的Class对象是由Java运行时环境创建的，通过 Class.getClassLoader()方法返回的是数组元素的类加载器，若数组元素是基本类型，则返回null，若类是由Bootstrap ClassLoader加载的话也是返回null。</li>
+<li>ClassLoader默认支持并行加载，但是其子类必须调用ClassLoader.registerAsParallelCapable()来启用并行加载</li>
+<li>一般来说,JVM从本地文件系统加载类的行为是与平台有关的。</li>
+<li>defineClass() 方法可以将字节流转换成一个Class对象。然后调用Class.newInstance()来创建类的实例</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Object 类在 &lt;java_home&gt;/jre/lib/rt.jar 中，</span></span><br><span class="line">    <span class="comment">// 由 Bootstrap ClassLoader 加载，由于该类加载器是由 native code 编写</span></span><br><span class="line">    <span class="comment">// 所以输出为 null</span></span><br><span class="line">    Object[] objects = <span class="keyword">new</span> Object[<span class="number">5</span>];</span><br><span class="line">    System.out.println();</span><br><span class="line">    System.out.println(objects.getClass().getClassLoader());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ZipFileAttributes 类在 &lt;java_home&gt;/jre/lib/ext/zipfs.jar 中，</span></span><br><span class="line">    <span class="comment">// 由 Extension ClassLoader 加载，</span></span><br><span class="line">    <span class="comment">// 输出为  sun.misc.Launcher$ExtClassLoader@4b67cf4d</span></span><br><span class="line">    ZipFileAttributes[] attributes = <span class="keyword">new</span> ZipFileAttributes[<span class="number">5</span>];</span><br><span class="line">    System.out.println();</span><br><span class="line">    System.out.println(attributes.getClass().getClassLoader());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Main 类是自定义的类，</span></span><br><span class="line">    <span class="comment">// 默认由 System ClassLoader 加载，</span></span><br><span class="line">    <span class="comment">// 输出为 sun.misc.Launcher$AppClassLoader@18b4aac2</span></span><br><span class="line">    Main[] array = <span class="keyword">new</span> Main[<span class="number">5</span>];</span><br><span class="line">    array[<span class="number">0</span>] = <span class="keyword">new</span> Main();</span><br><span class="line">    System.out.println();</span><br><span class="line">    System.out.println(array.getClass().getClassLoader());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="java-security-SecureClassLoader"><a href="#java-security-SecureClassLoader" class="headerlink" title="java.security.SecureClassLoader"></a>java.security.SecureClassLoader</h4><p>增加了一层权限验证，因为关注点不在安全，所以暂不讨论。</p>
+<h4 id="java-net-URLClassLoader"><a href="#java-net-URLClassLoader" class="headerlink" title="java.net.URLClassLoader"></a>java.net.URLClassLoader</h4><p>该类加载器用来加载URL指定的JAR文件或目录中的类和资源，以/结尾的URL认为是目录，否则认为是JAR文件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 尝试通过 URLClassLoader 来加载桌面下的 Test 类。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        URL[] urls = <span class="keyword">new</span> URL[<span class="number">1</span>];</span><br><span class="line">        URLStreamHandler streamHandler = <span class="keyword">null</span>;</span><br><span class="line">        File classPath = <span class="keyword">new</span> File(<span class="string">"/home/chen/Desktop/"</span>);</span><br><span class="line">        String repository = (<span class="keyword">new</span> URL(<span class="string">"file"</span>, <span class="keyword">null</span>,</span><br><span class="line">                classPath.getCanonicalPath() + File.separator))</span><br><span class="line">                .toString();</span><br><span class="line">        urls[<span class="number">0</span>] = <span class="keyword">new</span> URL(<span class="keyword">null</span>, repository, streamHandler);</span><br><span class="line"></span><br><span class="line">        ClassLoader loader = <span class="keyword">new</span> URLClassLoader(urls);</span><br><span class="line"></span><br><span class="line">        Class testClass = loader.loadClass(<span class="string">"Test"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// output:  java.net.URLClassLoader@7f31245a</span></span><br><span class="line">        System.out.println(testClass.getClassLoader());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (MalformedURLException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="破坏双亲委派机制"><a href="#破坏双亲委派机制" class="headerlink" title="破坏双亲委派机制"></a>破坏双亲委派机制</h2><p>可以看出双亲委派机制是一种至下而上的加载方式，那么SPI是如何打破这种关系？</p>
+<p>以JDBC加载驱动为例：<br>在JDBC4.0之后支持SPI方式加载java.sql.Driver的实现类。SPI实现方式为，通过ServiceLoader.load(Driver.class)方法，去各自实现Driver接口的lib的META-INF/services/java.sql.Driver文件里找到实现类的名字，通过Thread.currentThread().getContextClassLoader()类加载器加载实现类并返回实例。</p>
+<p>先看下如果不用Thread.currentThread().getContextClassLoader()加载器加载，整个流程会怎么样。</p>
+<ul>
+<li>从META-INF/services/java.sql.Driver文件得到实现类名字DriverA</li>
+<li>Class.forName(“xx.xx.DriverA”)来加载实现类</li>
+<li>Class.forName()方法默认使用当前类的ClassLoader，JDBC是在DriverManager类里调用Driver的，当前类也就是DriverManager，它的加载器是BootstrapClassLoader。</li>
+</ul>
+<p>用BootstrapClassLoader去加载非rt.jar包里的类xx.xx.DriverA，就会找不到。要加载xx.xx.DriverA需要用到AppClassLoader或其他自定义ClassLoader</p>
+<p>最终矛盾出现在，要在BootstrapClassLoader加载的类里，调用AppClassLoader去加载实现类。这样就出现了一个问题：如何在父加载器加载的类中，去调用子加载器去加载类？</p>
+<p>jdk提供了两种方式，</p>
+<ul>
+<li>Thread.currentThread().getContextClassLoader()</li>
+<li>ClassLoader.getSystemClassLoader()<br>一般都指向AppClassLoader，他们能加载classpath中的类</li>
+</ul>
+<p>SPI则用Thread.currentThread().getContextClassLoader()来加载实现类，实现在核心包里的基础类调用用户代码</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://github.com/c-rainstorm/blog/blob/master/java" target="_blank" rel="noopener">https://github.com/c-rainstorm/blog/blob/master/java</a></li>
+<li><a href="https://mp.weixin.qq.com/s/HIiy7Q5UoPySFn3ge8Y-Ow" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/HIiy7Q5UoPySFn3ge8Y-Ow</a></li>
+<li><a href="https://docs.oracle.com/javase/tutorial/ext/basics/load.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/ext/basics/load.html</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Java_Classloader" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Java_Classloader</a></li>
+<li><a href="https://www.jianshu.com/p/9cf306550b0a" target="_blank" rel="noopener">https://www.jianshu.com/p/9cf306550b0a</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/28/thread/" rel="next" title="Java Thread">
+                <i class="fa fa-chevron-left"></i> Java Thread
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/12/proxy_pattern/" rel="prev" title="代理模式/JAVA动态代理">
+                代理模式/JAVA动态代理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#类加载的各种几种方式和区别"><span class="nav-number">1.</span> <span class="nav-text">类加载的各种几种方式和区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ClassLoader"><span class="nav-number">2.</span> <span class="nav-text">ClassLoader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK-默认提供三种类加载器："><span class="nav-number">2.1.</span> <span class="nav-text">JDK 默认提供三种类加载器：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用户自定义的类加载器"><span class="nav-number">2.2.</span> <span class="nav-text">用户自定义的类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ClassLoader的API"><span class="nav-number">2.3.</span> <span class="nav-text">ClassLoader的API</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#java-lang-ClassLoader"><span class="nav-number">2.3.1.</span> <span class="nav-text">java.lang.ClassLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java-security-SecureClassLoader"><span class="nav-number">2.3.2.</span> <span class="nav-text">java.security.SecureClassLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java-net-URLClassLoader"><span class="nav-number">2.3.3.</span> <span class="nav-text">java.net.URLClassLoader</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#破坏双亲委派机制"><span class="nav-number">3.</span> <span class="nav-text">破坏双亲委派机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>

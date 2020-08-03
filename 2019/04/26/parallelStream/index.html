@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="今天工作中遇到了关于使用parallelStream导致的并发安全问题，使用三个ArrayList容器进行数据交集等处理时，由于数据较多，希望通过并行流提高处理效率，但没考虑过线程安全问题。 解决的方法非常简单，正确的使用map、collect、reduce，或者使用线程安全容器、加锁即可。 但其实是使用时没有仔细了解相关的使用知识导致应用出现问题。搜了下确实有很多相关资料，需要仔细了解相关API">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于parallelStream并发安全的思考">
+<meta property="og:url" content="http://yoursite.com/2019/04/26/parallelStream/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="今天工作中遇到了关于使用parallelStream导致的并发安全问题，使用三个ArrayList容器进行数据交集等处理时，由于数据较多，希望通过并行流提高处理效率，但没考虑过线程安全问题。 解决的方法非常简单，正确的使用map、collect、reduce，或者使用线程安全容器、加锁即可。 但其实是使用时没有仔细了解相关的使用知识导致应用出现问题。搜了下确实有很多相关资料，需要仔细了解相关API">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/image/parallelStream_01.png">
+<meta property="og:updated_time" content="2020-06-19T08:31:49.568Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于parallelStream并发安全的思考">
+<meta name="twitter:description" content="今天工作中遇到了关于使用parallelStream导致的并发安全问题，使用三个ArrayList容器进行数据交集等处理时，由于数据较多，希望通过并行流提高处理效率，但没考虑过线程安全问题。 解决的方法非常简单，正确的使用map、collect、reduce，或者使用线程安全容器、加锁即可。 但其实是使用时没有仔细了解相关的使用知识导致应用出现问题。搜了下确实有很多相关资料，需要仔细了解相关API">
+<meta name="twitter:image" content="http://yoursite.com/image/parallelStream_01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/26/parallelStream/"/>
+
+
+
+
+
+  <title>关于parallelStream并发安全的思考 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/26/parallelStream/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于parallelStream并发安全的思考</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-26T18:00:00+08:00">
+                2019-04-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>今天工作中遇到了关于使用parallelStream导致的并发安全问题，使用三个ArrayList容器进行数据交集等处理时，由于数据较多，希望通过并行流提高处理效率，但没考虑过线程安全问题。</p>
+<p>解决的方法非常简单，正确的使用map、collect、reduce，或者使用线程安全容器、加锁即可。</p>
+<p>但其实是使用时没有仔细了解相关的使用知识导致应用出现问题。搜了下确实有很多相关资料，需要仔细了解相关API的使用才可以避免相关问题的出现。</p>
+<p>本文内容全部摘自其他博客等文章内容，具体地址在本文结尾。</p>
+<a id="more"></a>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>Java8的stream接口极大地减少了for循环写法的复杂性，stream提供了map/reduce/collect等一系列聚合接口，还支持并发操作：parallelStream。</p>
+<p>在爬虫开发过程中，经常会遇到遍历一个很大的集合做重复的操作，这时候如果使用串行执行会相当耗时，因此一般会采用多线程来提速。Java8的paralleStream用fork/join框架提供了并发执行能力。但是如果使用不当，很容易陷入误区。</p>
+<h2 id="Java8的paralleStream是线程安全的吗"><a href="#Java8的paralleStream是线程安全的吗" class="headerlink" title="Java8的paralleStream是线程安全的吗"></a>Java8的paralleStream是线程安全的吗</h2><p>先来两个简单的例子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParallelStreamTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> COUNT = <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        List&lt;RiderDto&gt; orilist = <span class="keyword">new</span> ArrayList&lt;RiderDto&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; COUNT; i++) &#123;</span><br><span class="line">            orilist.add(init());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">final</span> List&lt;RiderDto&gt; copeList = <span class="keyword">new</span> ArrayList&lt;RiderDto&gt;();</span><br><span class="line">        orilist.parallelStream().forEach(rider -&gt; &#123;</span><br><span class="line">            RiderDto t = <span class="keyword">new</span> RiderDto();</span><br><span class="line">            t.setId(rider.getId());</span><br><span class="line">            t.setCityId(rider.getCityId());</span><br><span class="line">            copeList.add(t);</span><br><span class="line">        &#125;);</span><br><span class="line">        System.out.println(<span class="string">"orilist size:"</span> + orilist.size());</span><br><span class="line">        System.out.println(<span class="string">"copeList size:"</span> + copeList.size());</span><br><span class="line">        System.out.println(<span class="string">"compare copeList and list,result:"</span> + (copeList.size() == orilist.size()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> RiderDto <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        RiderDto t = <span class="keyword">new</span> RiderDto();</span><br><span class="line">        Random random = <span class="keyword">new</span> Random();</span><br><span class="line">        t.setId(random.nextInt(<span class="number">2</span> ^ <span class="number">20</span>));</span><br><span class="line">        t.setCityId(random.nextInt(<span class="number">1000</span>));</span><br><span class="line">        <span class="keyword">return</span> t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">RiderDto</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">private</span> Integer cityId;</span><br><span class="line">        <span class="keyword">private</span> Integer id;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>多次运行输出如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">orilist size:<span class="number">1000</span></span><br><span class="line">copeList size:<span class="number">998</span></span><br><span class="line">compare copeList and orilist,result:<span class="keyword">false</span></span><br><span class="line"></span><br><span class="line">orilist size:<span class="number">1000</span></span><br><span class="line">copeList size:<span class="number">981</span></span><br><span class="line">compare copeList and orilist,result:<span class="keyword">false</span></span><br><span class="line"></span><br><span class="line">orilist size:<span class="number">1000</span></span><br><span class="line">copeList size:<span class="number">1000</span></span><br><span class="line">compare copeList and orilist,result:<span class="keyword">true</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">"main"</span> java.lang.ArrayIndexOutOfBoundsException</span><br><span class="line">	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)</span><br><span class="line">	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:<span class="number">62</span>)</span><br><span class="line">	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:<span class="number">45</span>)</span><br><span class="line">	at java.lang.reflect.Constructor.newInstance(Constructor.java:<span class="number">423</span>)</span><br><span class="line">	at java.util.concurrent.ForkJoinTask.getThrowableException(ForkJoinTask.java:<span class="number">598</span>)</span><br><span class="line">	at java.util.concurrent.ForkJoinTask.reportException(ForkJoinTask.java:<span class="number">677</span>)</span><br><span class="line">	at java.util.concurrent.ForkJoinTask.invoke(ForkJoinTask.java:<span class="number">735</span>)</span><br><span class="line">	at java.util.stream.ForEachOps$ForEachOp.evaluateParallel(ForEachOps.java:<span class="number">160</span>)</span><br><span class="line">	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateParallel(ForEachOps.java:<span class="number">174</span>)</span><br><span class="line">	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:<span class="number">233</span>)</span><br><span class="line">	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:<span class="number">418</span>)</span><br><span class="line">	at java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:<span class="number">583</span>)</span><br><span class="line">	at com.dianwoba.test.ParallelStreamTest.main(ParallelStreamTest.java:<span class="number">17</span>)</span><br><span class="line">Caused by: java.lang.ArrayIndexOutOfBoundsException: <span class="number">244</span></span><br><span class="line">	at java.util.ArrayList.add(ArrayList.java:<span class="number">459</span>)</span><br><span class="line">	at com.dianwoba.test.ParallelStreamTest.lambda$<span class="number">0</span>(ParallelStreamTest.java:<span class="number">21</span>)</span><br><span class="line">	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:<span class="number">184</span>)</span><br><span class="line">	at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:<span class="number">1374</span>)</span><br><span class="line">	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:<span class="number">481</span>)</span><br><span class="line">	at java.util.stream.ForEachOps$ForEachTask.compute(ForEachOps.java:<span class="number">291</span>)</span><br><span class="line">	at java.util.concurrent.CountedCompleter.exec(CountedCompleter.java:<span class="number">731</span>)</span><br><span class="line">	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:<span class="number">289</span>)</span><br><span class="line">	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:<span class="number">1056</span>)</span><br><span class="line">	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:<span class="number">1692</span>)</span><br><span class="line">	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:<span class="number">157</span>)</span><br></pre></td></tr></table></figure>
+<p>在下面的代码中采用stream的forEach接口对1-10000进行遍历，分别插入到3个ArrayList中。其中对第一个list的插入采用串行遍历，第二个使用paralleStream，第三个使用paralleStream的同时用ReentryLock对插入列表操作进行同步：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> List&lt;Integer&gt; list1 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> List&lt;Integer&gt; list2 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> List&lt;Integer&gt; list3 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    IntStream.range(<span class="number">0</span>, <span class="number">10000</span>).forEach(list1::add);</span><br><span class="line"></span><br><span class="line">    IntStream.range(<span class="number">0</span>, <span class="number">10000</span>).parallel().forEach(list2::add);</span><br><span class="line"></span><br><span class="line">    IntStream.range(<span class="number">0</span>, <span class="number">10000</span>).forEach(i -&gt; &#123;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        list3.add(i);</span><br><span class="line">    &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"串行执行的大小："</span> + list1.size());</span><br><span class="line">    System.out.println(<span class="string">"并行执行的大小："</span> + list2.size());</span><br><span class="line">    System.out.println(<span class="string">"加锁并行执行的大小："</span> + list3.size());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行结果：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">串行执行的大小：<span class="number">10000</span></span><br><span class="line">并行执行的大小：<span class="number">9595</span></span><br><span class="line">加锁并行执行的大小：<span class="number">10000</span></span><br></pre></td></tr></table></figure></p>
+<p>parallelStream是一个并行执行的流，其使用 fork/join （ForkJoinPool）并行方式来拆分任务和加速处理过程。研究parallelStream之前，搞清楚ForkJoinPool是很有必要的。</p>
+<p>ForkJoinPool的核心是采用分治法的思想，将一个大任务拆分为若干互不依赖的子任务，把这些子任务分别放到不同的队列里，并为每个队列创建一个单独的线程来执行队列里的任务。同时，为了最大限度地提高并行处理能力，采用了工作窃取算法来运行任务，也就是说当某个线程处理完自己工作队列中的任务后，尝试当其他线程的工作队列中窃取一个任务来执行，直到所有任务处理完毕。所以为了减少线程之间的竞争，通常会使用双端队列，被窃取任务线程永远从双端队列的头部拿任务执行，而窃取任务的线程永远从双端队列的尾部拿任务执行。</p>
+<p>到这里，我们知道parallelStream使用多线程并行处理数据，关于多线程，有个老生常谈的问题，线程安全。正如上面的分析，demo中list会被拆分为多个小任务，每个任务只负责处理一小部分数据，然后多线程并发地处理这些任务。问题就在于ArrayList不是线程安全的容器，并发调用add就会发生线程安全的问题。</p>
+<p>那么既然paralleStream不是线程安全的，是不是在其中的进行的非原子操作都要加锁呢？我在stackOverflow上找到了答案：</p>
+<ul>
+<li><a href="https://codereview.stackexchange.com/questions/60401/using-java-8-parallel-streams" target="_blank" rel="noopener">https://codereview.stackexchange.com/questions/60401/using-java-8-parallel-streams</a></li>
+<li><a href="https://stackoverflow.com/questions/22350288/parallel-streams-collectors-and-thread-safety" target="_blank" rel="noopener">https://stackoverflow.com/questions/22350288/parallel-streams-collectors-and-thread-safety</a></li>
+</ul>
+<p>在上面两个问题的解答中，证实paralleStream的forEach接口确实不能保证同步，同时也提出了解决方案：使用collect和reduce接口。</p>
+<ul>
+<li><a href="http://docs.oracle.com/javase/tutorial/collections/streams/parallelism.html" target="_blank" rel="noopener">http://docs.oracle.com/javase/tutorial/collections/streams/parallelism.html</a></li>
+</ul>
+<p>在Javadoc中也对stream的并发操作进行了相关介绍：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The Collections Framework provides synchronization wrappers, which add automatic synchronization to an arbitrary collection, making it thread-safe.</span><br></pre></td></tr></table></figure></p>
+<p>Collections框架提供了同步的包装，使得其中的操作线程安全。</p>
+<p>所以下一步，来看看collect接口如何使用。</p>
+<h2 id="stream的collect接口"><a href="#stream的collect接口" class="headerlink" title="stream的collect接口"></a>stream的collect接口</h2><p>闲话不多说直接上源码吧，Stream.java中的collect方法句柄：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;R, A&gt; <span class="function">R <span class="title">collect</span><span class="params">(Collector&lt;? <span class="keyword">super</span> T, A, R&gt; collector)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>在该实现方法中，参数是一个Collector对象，可以使用Collectors类的静态方法构造Collector对象，比如Collectors.toList()，toSet(),toMap()，etc，这块很容易查到API故不细说了。</p>
+<p>除此之外，我们如果要在collect接口中做更多的事，就需要自定义实现Collector接口，需要实现以下方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Supplier&lt;A&gt; <span class="title">supplier</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">BiConsumer&lt;A, T&gt; <span class="title">accumulator</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">BinaryOperator&lt;A&gt; <span class="title">combiner</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">Function&lt;A, R&gt; <span class="title">finisher</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">Set&lt;Characteristics&gt; <span class="title">characteristics</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>要轻松理解这三个参数，要先知道fork/join是怎么运转的，一图以蔽之：</p>
+<p><img src="/image/parallelStream_01.png" alt="parallelStream_01"></p>
+<p>简单地说就是大任务拆分成小任务，分别用不同线程去完成，然后把结果合并后返回。所以第一步是拆分，第二步是分开运算，第三步是合并。这三个步骤分别对应的就是Collector的supplier,accumulator和combiner。talk is cheap show me the code，下面用一个例子来说明：</p>
+<p>输入是一个10个整型数字的ArrayList，通过计算转换成double类型的Set，首先定义一个计算组件：</p>
+<p>Compute.java:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Compute</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Double <span class="title">compute</span><span class="params">(<span class="keyword">int</span> num)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">double</span>) (<span class="number">2</span> * num);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接下来在Main.java中定义输入的类型为ArrayList的nums和类型为Set的输出结果result：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> List&lt;Integer&gt; nums = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">private</span> Set&lt;Double&gt; result = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br></pre></td></tr></table></figure></p>
+<p>定义转换list的run方法，实现Collector接口，调用内部类Container中的方法，其中characteristics()方法返回空set即可：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 填充原始数据，nums中填充0-9 10个数</span></span><br><span class="line">    IntStream.range(<span class="number">0</span>, <span class="number">10</span>).forEach(nums::add);</span><br><span class="line">    <span class="comment">//实现Collector接口</span></span><br><span class="line">    result = nums.stream().parallel().collect(<span class="keyword">new</span> Collector&lt;Integer, Container, Set&lt;Double&gt;&gt;() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Supplier&lt;Container&gt; <span class="title">supplier</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Container::<span class="keyword">new</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> BiConsumer&lt;Container, Integer&gt; <span class="title">accumulator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Container::accumulate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> BinaryOperator&lt;Container&gt; <span class="title">combiner</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Container::combine;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Function&lt;Container, Set&lt;Double&gt;&gt; finisher() &#123;</span><br><span class="line">        <span class="keyword">return</span> Container::getResult;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Set&lt;Characteristics&gt; <span class="title">characteristics</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 固定写法</span></span><br><span class="line">        <span class="keyword">return</span> Collections.emptySet();</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>构造内部类Container，该类的作用是一个存放输入的容器，定义了三个方法：</p>
+<ul>
+<li>accumulate方法对输入数据进行处理并存入本地的结果</li>
+<li>combine方法将其他容器的结果合并到本地的结果中</li>
+<li>getResult方法返回本地的结果</li>
+</ul>
+<p>Container.java:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Container</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 定义本地的result</span></span><br><span class="line">    <span class="keyword">public</span> Set&lt;Double&gt; set;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Container</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.set = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Container <span class="title">accumulate</span><span class="params">(<span class="keyword">int</span> num)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.set.add(compute.compute(num));</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Container <span class="title">combine</span><span class="params">(Container container)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.set.addAll(container.set);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Set&lt;Double&gt; <span class="title">getResult</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.set;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在Main.java中编写测试方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Main main = <span class="keyword">new</span> Main();</span><br><span class="line">    main.run();</span><br><span class="line">    System.out.println(<span class="string">"原始数据："</span>);</span><br><span class="line">    main.nums.forEach(i -&gt; System.out.print(i + <span class="string">" "</span>));</span><br><span class="line">    System.out.println(<span class="string">"\n\ncollect方法加工后的数据："</span>);</span><br><span class="line">    main.result.forEach(i -&gt; System.out.print(i + <span class="string">" "</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">原始数据：</span><br><span class="line"><span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> </span><br><span class="line"></span><br><span class="line">collect方法加工后的数据：</span><br><span class="line"><span class="number">0.0</span> <span class="number">2.0</span> <span class="number">4.0</span> <span class="number">8.0</span> <span class="number">16.0</span> <span class="number">18.0</span> <span class="number">10.0</span> <span class="number">6.0</span> <span class="number">12.0</span> <span class="number">14.0</span></span><br></pre></td></tr></table></figure></p>
+<p>我们将10个整型数值的list转成了10个double类型的set，至此验证成功～</p>
+<h2 id="一言蔽之"><a href="#一言蔽之" class="headerlink" title="一言蔽之"></a>一言蔽之</h2><p>总结就是paralleStream里直接去修改变量是非线程安全的，但是采用collect和reduce操作就是满足线程安全的了。</p>
+<h2 id="相关资料"><a href="#相关资料" class="headerlink" title="相关资料"></a>相关资料</h2><ul>
+<li><a href="https://www.infoq.cn/article/fork-join-introduction" target="_blank" rel="noopener">https://www.infoq.cn/article/fork-join-introduction</a></li>
+<li><a href="https://blog.csdn.net/io_field/article/details/54971555" target="_blank" rel="noopener">https://blog.csdn.net/io_field/article/details/54971555</a></li>
+<li><a href="https://www.cnblogs.com/puyangsky/p/7608741.html" target="_blank" rel="noopener">https://www.cnblogs.com/puyangsky/p/7608741.html</a></li>
+<li><a href="https://my.oschina.net/7001/blog/1475500" target="_blank" rel="noopener">https://my.oschina.net/7001/blog/1475500</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/26/数据库三范式/" rel="next" title="数据库设计三范式&五大约束">
+                <i class="fa fa-chevron-left"></i> 数据库设计三范式&五大约束
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/10/网络IO模型/" rel="prev" title="网络IO模型">
+                网络IO模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java8的paralleStream是线程安全的吗"><span class="nav-number">2.</span> <span class="nav-text">Java8的paralleStream是线程安全的吗</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#stream的collect接口"><span class="nav-number">3.</span> <span class="nav-text">stream的collect接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一言蔽之"><span class="nav-number">4.</span> <span class="nav-text">一言蔽之</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关资料"><span class="nav-number">5.</span> <span class="nav-text">相关资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>
