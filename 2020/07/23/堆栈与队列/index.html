@@ -93,7 +93,7 @@
 <meta property="og:image" content="http://yoursite.com/image/algorithm/stack_queue/02.png">
 <meta property="og:image" content="http://yoursite.com/image/algorithm/stack_queue/03.png">
 <meta property="og:image" content="http://yoursite.com/image/algorithm/heap.png">
-<meta property="og:updated_time" content="2020-07-30T09:22:21.679Z">
+<meta property="og:updated_time" content="2020-08-12T13:10:06.690Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="堆栈与队列">
 <meta name="twitter:description" content="堆栈（Stack）和队列（Queue），这里Stack可以叫做堆栈，也可以叫做栈。但是不能叫做堆，因为堆是Heap，是另外一种数据结构。">
@@ -367,7 +367,10 @@
         <p>堆栈（Stack）和队列（Queue），这里Stack可以叫做堆栈，也可以叫做栈。但是不能叫做堆，因为堆是Heap，是另外一种数据结构。<br><a id="more"></a></p>
 <h1 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h1><p>FILO: First In Last Out 先入后出</p>
 <ul>
-<li>Array or Linked List</li>
+<li>Array or Linked List<blockquote>
+<p>最近相关性都可以是用栈解决</p>
+</blockquote>
+</li>
 </ul>
 <h1 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h1><p>FIFO: First In First Out 先入先出</p>
 <ul>
@@ -437,6 +440,10 @@
 <h2 id="双队列-压入-O-n-，-弹出-O-1"><a href="#双队列-压入-O-n-，-弹出-O-1" class="headerlink" title="双队列 压入 -O(n)， 弹出 -O(1)"></a>双队列 压入 -O(n)， 弹出 -O(1)</h2><p><img src="/image/algorithm/stack_queue/03.png" alt="05"></p>
 <p>列出其中一种pop的时候做处理，push、top的时候从第一个队列中直接取<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyStack</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Queue&lt;Integer&gt; q1 = <span class="keyword">new</span> LinkedList();</span><br><span class="line">    <span class="keyword">private</span> Queue&lt;Integer&gt; q2 = <span class="keyword">new</span> LinkedList();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> top;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyStack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;</span><br><span class="line">        q1.add(x);</span><br><span class="line">        top = x;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (q1.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            top = q1.remove();</span><br><span class="line">            q2.add(top);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> i = q1.remove();</span><br><span class="line">        Queue&lt;Integer&gt; temp = q1;</span><br><span class="line">        q1 = q2;</span><br><span class="line">        q2 = temp;</span><br><span class="line">        <span class="keyword">return</span> i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">top</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> top;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">empty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> q1.isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h1 id="PriorityQueue-优先队列"><a href="#PriorityQueue-优先队列" class="headerlink" title="PriorityQueue 优先队列"></a>PriorityQueue 优先队列</h1><p>正常入，按照优先级出。优先级是优先队列本身的一个属性，可以是最大的先出、最小的先出，或者是设置每个元素出现的次数等等。</p>
+<ul>
+<li>插入操作: O(1)</li>
+<li>取出操作: O(logN) 按照元素的优先级取出</li>
+</ul>
 <h2 id="实现机制"><a href="#实现机制" class="headerlink" title="实现机制"></a>实现机制</h2><ul>
 <li>Heap<ul>
 <li>Binary 二叉堆</li>
@@ -601,7 +608,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-count">69</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
