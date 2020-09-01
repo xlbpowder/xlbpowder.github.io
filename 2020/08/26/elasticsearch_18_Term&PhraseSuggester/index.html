@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ElasticSearch," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="现代的搜索引擎一般都会提供Suggest as you type的功能，即搜索建议。本篇就主要记录下ES提供的相关能力">
+<meta name="keywords" content="ElasticSearch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ElasticSearch Term&amp;PhraseSuggester">
+<meta property="og:url" content="http://yoursite.com/2020/08/26/elasticsearch_18_Term&PhraseSuggester/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="现代的搜索引擎一般都会提供Suggest as you type的功能，即搜索建议。本篇就主要记录下ES提供的相关能力">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-09-01T08:46:37.399Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ElasticSearch Term&amp;PhraseSuggester">
+<meta name="twitter:description" content="现代的搜索引擎一般都会提供Suggest as you type的功能，即搜索建议。本篇就主要记录下ES提供的相关能力">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/08/26/elasticsearch_18_Term&PhraseSuggester/"/>
+
+
+
+
+
+  <title>ElasticSearch Term&PhraseSuggester | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/26/elasticsearch_18_Term&PhraseSuggester/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ElasticSearch Term&PhraseSuggester</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-26T14:00:00+08:00">
+                2020-08-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Elastic-Stack/" itemprop="url" rel="index">
+                    <span itemprop="name">Elastic Stack</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>现代的搜索引擎一般都会提供Suggest as you type的功能，即搜索建议。本篇就主要记录下ES提供的相关能力<br><a id="more"></a></p>
+<h1 id="什么是搜索建议"><a href="#什么是搜索建议" class="headerlink" title="什么是搜索建议"></a>什么是搜索建议</h1><p>现代的搜索引擎，一般都会提供SUggest as you type的功能。帮助用户在输入搜索的过程中，进行自动补全或者纠错。通过协助用户输入更加精准的关键词，提高后续搜索阶段文档匹配程度</p>
+<p>在google上搜索，一开始会自动补全。当输入到一定长度，如因为单词拼写错误无法补全，就会开始提示相似的词或者句子</p>
+<h1 id="Elasticsearch-Suggester-API"><a href="#Elasticsearch-Suggester-API" class="headerlink" title="Elasticsearch Suggester API"></a>Elasticsearch Suggester API</h1><p>ES通过Suggester API来实现的搜索建议</p>
+<p>原理是，将输入的文本分解为Token，然后在索引的字典里查找相似的Term并返回</p>
+<p>根据不同的使用场景，ES设计了四种类别的Suggester</p>
+<ul>
+<li>Term &amp; Phrase Suggester</li>
+<li>Complete &amp; Context Suggester</li>
+</ul>
+<h1 id="Term-Suggester"><a href="#Term-Suggester" class="headerlink" title="Term Suggester"></a>Term Suggester</h1><p>Suggester其实就是一种特殊类型的搜索，”text”里是调用时候提供的文本，通常来自用户输入的内容</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h3 id="创建示例数据"><a href="#创建示例数据" class="headerlink" title="创建示例数据"></a>创建示例数据</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">DELETE articles</span><br><span class="line">PUT articles</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"mappings"</span>: &#123;</span><br><span class="line">    <span class="attr">"properties"</span>: &#123;</span><br><span class="line">      <span class="attr">"title_completion"</span>:&#123;</span><br><span class="line">        <span class="attr">"type"</span>: <span class="string">"completion"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST articles/_bulk</span><br><span class="line">&#123; <span class="attr">"index"</span> : &#123; &#125; &#125;</span><br><span class="line">&#123; <span class="attr">"title_completion"</span>: <span class="string">"lucene is very cool"</span>&#125;</span><br><span class="line">&#123; <span class="attr">"index"</span> : &#123; &#125; &#125;</span><br><span class="line">&#123; <span class="attr">"title_completion"</span>: <span class="string">"Elasticsearch builds on top of lucene"</span>&#125;</span><br><span class="line">&#123; <span class="attr">"index"</span> : &#123; &#125; &#125;</span><br><span class="line">&#123; <span class="attr">"title_completion"</span>: <span class="string">"Elasticsearch rocks"</span>&#125;</span><br><span class="line">&#123; <span class="attr">"index"</span> : &#123; &#125; &#125;</span><br><span class="line">&#123; <span class="attr">"title_completion"</span>: <span class="string">"elastic is the company behind ELK stack"</span>&#125;</span><br><span class="line">&#123; <span class="attr">"index"</span> : &#123; &#125; &#125;</span><br><span class="line">&#123; <span class="attr">"title_completion"</span>: <span class="string">"Elk stack rocks"</span>&#125;</span><br><span class="line">&#123; <span class="attr">"index"</span> : &#123;&#125; &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="搜索"><a href="#搜索" class="headerlink" title="搜索"></a>搜索</h3><ul>
+<li>用户输入的”lucen”是一个错误的拼写</li>
+<li>会到指定的字段”body”上搜索，当无法搜索到结果时(missing)，返回建议的词<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">POST /articles/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"size"</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="attr">"query"</span>: &#123;</span><br><span class="line">    <span class="attr">"match"</span>: &#123;</span><br><span class="line">      <span class="attr">"body"</span>: <span class="string">"lucen rock"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"suggest"</span>: &#123;</span><br><span class="line">    <span class="attr">"term-suggestion"</span>: &#123;</span><br><span class="line">      <span class="attr">"text"</span>: <span class="string">"lucen rock"</span>,</span><br><span class="line">      <span class="attr">"term"</span>: &#123;</span><br><span class="line">        <span class="attr">"suggest_mode"</span>: <span class="string">"missing"</span>,</span><br><span class="line">        <span class="attr">"field"</span>: <span class="string">"body"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="Suggestion-Mode"><a href="#Suggestion-Mode" class="headerlink" title="Suggestion Mode"></a>Suggestion Mode</h1><ul>
+<li>Missing 如索引中已经存在，就不提供建议</li>
+<li>Popular 推荐出现词频更加高的词</li>
+<li>Always 无论是否存在，都提供建议</li>
+</ul>
+<h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><p>相似性是通过Levenshtein Edit Distance的算法实现的。核心思想就是一个词改动多少字符就可以和另外一个词一致。提供了很多可选参数来控制相似度的模糊程度。例如”max_edits”</p>
+<p>每个建议都包含了一个算分，下面例子中响应信息可以看出</p>
+<h1 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h1><p>搜索”lucen rock”<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">POST /articles/_search</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">  <span class="attr">"suggest"</span>: &#123;</span><br><span class="line">    <span class="attr">"term-suggestion"</span>: &#123;</span><br><span class="line">      <span class="attr">"text"</span>: <span class="string">"lucen rock"</span>,</span><br><span class="line">      <span class="attr">"term"</span>: &#123;</span><br><span class="line">        <span class="attr">"suggest_mode"</span>: <span class="string">"popular"</span>,</span><br><span class="line">        <span class="attr">"field"</span>: <span class="string">"body"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>响应信息如下<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">"suggest" : &#123;</span><br><span class="line">"term-suggestion" : [</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="attr">"text"</span> : <span class="string">"lucen"</span>,</span><br><span class="line">    <span class="attr">"offset"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"length"</span> : <span class="number">5</span>,</span><br><span class="line">    <span class="attr">"options"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">        <span class="attr">"text"</span> : <span class="string">"lucene"</span>,</span><br><span class="line">        <span class="attr">"score"</span> : <span class="number">0.8</span>,</span><br><span class="line">        <span class="attr">"freq"</span> : <span class="number">2</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="attr">"text"</span> : <span class="string">"rock"</span>,</span><br><span class="line">    <span class="attr">"offset"</span> : <span class="number">6</span>,</span><br><span class="line">    <span class="attr">"length"</span> : <span class="number">4</span>,</span><br><span class="line">    <span class="attr">"options"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">        <span class="attr">"text"</span> : <span class="string">"rocks"</span>,</span><br><span class="line">        <span class="attr">"score"</span> : <span class="number">0.75</span>,</span><br><span class="line">        <span class="attr">"freq"</span> : <span class="number">2</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>讲查询条件”rock”修改为”hock”，增加了”prefix_length”来进行控制，结果返回也是会推荐”rock”相关推荐<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST /articles/_search</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">  <span class="attr">"suggest"</span>: &#123;</span><br><span class="line">    <span class="attr">"term-suggestion"</span>: &#123;</span><br><span class="line">      <span class="attr">"text"</span>: <span class="string">"lucen hocks"</span>,</span><br><span class="line">      <span class="attr">"term"</span>: &#123;</span><br><span class="line">        <span class="attr">"suggest_mode"</span>: <span class="string">"always"</span>,</span><br><span class="line">        <span class="attr">"field"</span>: <span class="string">"body"</span>,</span><br><span class="line">        <span class="attr">"prefix_length"</span>:<span class="number">0</span>,</span><br><span class="line">        <span class="attr">"sort"</span>: <span class="string">"frequency"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="Phrase-Suggester"><a href="#Phrase-Suggester" class="headerlink" title="Phrase Suggester"></a>Phrase Suggester</h1><p>Phrase Suggester在Term Suggester上增加了一些额外的逻辑。</p>
+<p>增加了如下参数</p>
+<ul>
+<li>Suggest Mode: missing, popular, always</li>
+<li>Max Errors: 最多可拼错的Terms数</li>
+<li>Confidence: 限制返回结果数，默认为1</li>
+</ul>
+<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">POST /articles/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"suggest"</span>: &#123;</span><br><span class="line">    <span class="attr">"my-suggestion"</span>: &#123;</span><br><span class="line">      <span class="attr">"text"</span>: <span class="string">"lucne and elasticsear rock hello world "</span>,</span><br><span class="line">      <span class="attr">"phrase"</span>: &#123;</span><br><span class="line">        <span class="attr">"field"</span>: <span class="string">"body"</span>,</span><br><span class="line">        <span class="attr">"max_errors"</span>:<span class="number">2</span>,</span><br><span class="line">        <span class="attr">"confidence"</span>:<span class="number">0</span>,</span><br><span class="line">        <span class="attr">"direct_generator"</span>:[&#123;</span><br><span class="line">          <span class="attr">"field"</span>:<span class="string">"body"</span>,</span><br><span class="line">          <span class="attr">"suggest_mode"</span>:<span class="string">"always"</span></span><br><span class="line">        &#125;],</span><br><span class="line">        <span class="attr">"highlight"</span>: &#123;</span><br><span class="line">          <span class="attr">"pre_tag"</span>: <span class="string">"&lt;em&gt;"</span>,</span><br><span class="line">          <span class="attr">"post_tag"</span>: <span class="string">"&lt;/em&gt;"</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ElasticSearch/" rel="tag"># ElasticSearch</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/25/elasticsearch_17_FunctionScoreQuery/" rel="next" title="ElasticSearch Function Score Query优化算分">
+                <i class="fa fa-chevron-left"></i> ElasticSearch Function Score Query优化算分
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是搜索建议"><span class="nav-number">1.</span> <span class="nav-text">什么是搜索建议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Elasticsearch-Suggester-API"><span class="nav-number">2.</span> <span class="nav-text">Elasticsearch Suggester API</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Term-Suggester"><span class="nav-number">3.</span> <span class="nav-text">Term Suggester</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">3.1.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建示例数据"><span class="nav-number">3.1.1.</span> <span class="nav-text">创建示例数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搜索"><span class="nav-number">3.1.2.</span> <span class="nav-text">搜索</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Suggestion-Mode"><span class="nav-number">4.</span> <span class="nav-text">Suggestion Mode</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现原理"><span class="nav-number">5.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#示例-1"><span class="nav-number">6.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Phrase-Suggester"><span class="nav-number">7.</span> <span class="nav-text">Phrase Suggester</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#示例-2"><span class="nav-number">7.1.</span> <span class="nav-text">示例</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>
