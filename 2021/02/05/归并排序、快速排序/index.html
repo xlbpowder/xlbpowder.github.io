@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="算法与数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="相比于冒泡排序、插入排序、选择排序，时间复杂度都为O(n^2)，适合小规模的数据排序，好处是前两者有稳定性，学习记录一下两种时间复杂度为O(nlogn)的排序算法，归并排序和快速排序。这两种排序算法适合大规模的数据排序。">
+<meta name="keywords" content="算法与数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="归并排序 快速排序">
+<meta property="og:url" content="http://yoursite.com/2021/02/05/归并排序、快速排序/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="相比于冒泡排序、插入排序、选择排序，时间复杂度都为O(n^2)，适合小规模的数据排序，好处是前两者有稳定性，学习记录一下两种时间复杂度为O(nlogn)的排序算法，归并排序和快速排序。这两种排序算法适合大规模的数据排序。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-02-05T07:25:21.820Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="归并排序 快速排序">
+<meta name="twitter:description" content="相比于冒泡排序、插入排序、选择排序，时间复杂度都为O(n^2)，适合小规模的数据排序，好处是前两者有稳定性，学习记录一下两种时间复杂度为O(nlogn)的排序算法，归并排序和快速排序。这两种排序算法适合大规模的数据排序。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/02/05/归并排序、快速排序/"/>
+
+
+
+
+
+  <title>归并排序 快速排序 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/05/归并排序、快速排序/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">归并排序 快速排序</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-05T08:00:00+08:00">
+                2021-02-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法与数据结构/" itemprop="url" rel="index">
+                    <span itemprop="name">算法与数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>相比于冒泡排序、插入排序、选择排序，时间复杂度都为O(n^2)，适合小规模的数据排序，好处是前两者有稳定性，学习记录一下两种时间复杂度为O(nlogn)的排序算法，归并排序和快速排序。这两种排序算法适合大规模的数据排序。</p>
+<a id="more"></a>
+<h1 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h1><p>归并排序的核心思想还是蛮简单的。如果要排序一个数组，我们先把数组从中间分成前后两部分，然后对前后两部分分别排序，再将排好序的两部分合并在一<br>起，这样整个数组就都有序了。</p>
+<h2 id="分治与递归"><a href="#分治与递归" class="headerlink" title="分治与递归"></a>分治与递归</h2><p>归并排序使用的就是分治思想。分治，顾名思义，就是分而治之，将一个大问题分解成小的子问题来解决。小的子问题解决了，大问题也就解决了。</p>
+<p>分治思想和递归思想很像。分治算法一般都是用递归来实现的。分治是一种解决问题的处理思想，递归是一种编程技巧，这两者并不冲突。</p>
+<h2 id="递推公式"><a href="#递推公式" class="headerlink" title="递推公式"></a>递推公式</h2><blockquote>
+<p>merge_sort(p…r) = merge(merge_sort(p…q), merge_sort(q+1…r))</p>
+<ul>
+<li>p 开始下标</li>
+<li>q 中间下标</li>
+<li>r 结束下标</li>
+</ul>
+</blockquote>
+<h3 id="终止条件"><a href="#终止条件" class="headerlink" title="终止条件"></a>终止条件</h3><blockquote>
+<p>p &gt;= r</p>
+</blockquote>
+<p>merge_sort(p…r)表示，给下标从p到r之间的数组排序。</p>
+<p>将这个排序问题转化为了两个子问题，merge_sort(p…q)和merge_sort(q+1…r)，其中下标q等于p和r的中间位置，也就是(p+r)/2。</p>
+<p>当下标从p到q和从q+1到r这两个子数组都排好序之后，再将两个有序的子数组合并在一起，这样下标从p到r之间的数据就也排好序了。</p>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><p>示例中我将p修改为left、q修改为mid、r修改为right以方便理解。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] array = &#123;<span class="number">4</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">6</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">5</span>&#125;;</span><br><span class="line">    Arrays.stream(array).forEach(System.out::print);</span><br><span class="line">    System.out.println();</span><br><span class="line">    mergeSortCopy(array, <span class="number">0</span>, array.length - <span class="number">1</span>);</span><br><span class="line">    Arrays.stream(array).forEach(System.out::print);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">mergeSortCopy</span><span class="params">(<span class="keyword">int</span>[] array,<span class="keyword">int</span> left, <span class="keyword">int</span> right)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (left &gt;= right) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> mid = (left + right) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    mergeSortCopy(array, left, mid);</span><br><span class="line">    mergeSortCopy(array, mid + <span class="number">1</span>, right);</span><br><span class="line">    mergeArray(array, left, mid, right);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">mergeArray</span><span class="params">(<span class="keyword">int</span>[] array, <span class="keyword">int</span> left, <span class="keyword">int</span> mid, <span class="keyword">int</span> right)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] tmp = <span class="keyword">new</span> <span class="keyword">int</span>[right - left + <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">int</span> tmpIndex = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> pre = left;</span><br><span class="line">    <span class="keyword">int</span> post = mid + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (pre &lt;= mid &amp;&amp; post &lt;= right) &#123;</span><br><span class="line">        <span class="keyword">if</span> (array[pre] &lt;= array[post]) &#123;</span><br><span class="line">            tmp[tmpIndex++] = array[pre++];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            tmp[tmpIndex++] = array[post++];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 判断剩余元素位置</span></span><br><span class="line">    <span class="keyword">int</span> start = pre;</span><br><span class="line">    <span class="keyword">int</span> end = mid;</span><br><span class="line">    <span class="keyword">if</span> (post &lt;= right) &#123;</span><br><span class="line">        start = post;</span><br><span class="line">        end = right;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将剩余元素拷贝至临时数组</span></span><br><span class="line">    <span class="keyword">while</span> (start &lt;= end) &#123;</span><br><span class="line">        tmp[tmpIndex++] = array[start++];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    while (pre &lt;= mid) &#123;</span></span><br><span class="line"><span class="comment">      tmp[tmpIndex++] = array[pre++];</span></span><br><span class="line"><span class="comment">    &#125;</span></span><br><span class="line"><span class="comment">    while (post &lt;= r) &#123;</span></span><br><span class="line"><span class="comment">      tmp[tmpIndex++] = array[post++];</span></span><br><span class="line"><span class="comment">    &#125;</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将临时数组拷贝至原数组</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; right - left + <span class="number">1</span>; i++) &#123;</span><br><span class="line">        array[i + left] = tmp[i];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h2><h3 id="归并排序是稳定排序算法么？"><a href="#归并排序是稳定排序算法么？" class="headerlink" title="归并排序是稳定排序算法么？"></a>归并排序是稳定排序算法么？</h3><p>归并排序稳不稳定关键要看merge()函数，也就是两个有序子数组合并成一个有序数组的那部分代 码。</p>
+<p>在合并的过程中，如果A[p…q]和A[q+1…r]之间有值相同的元素，那我们可以像伪代码中那样，先把A[p…q]中的元素放入tmp数组。这样就保证了值相同的元素， 在合并前后的先后顺序不变。所以，归并排序是一个稳定的排序算法。</p>
+<h3 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h3><p>归并排序涉及递归，时间复杂度的分析稍微有点复杂。正好借此机会来学习一下，如何分析递归代码的时间复杂度。</p>
+<p>递归的适用场景是，一个问题a可以分解为多个子问题b、c，那求解问题a就可以分解为求解问题b、c。问题b、c解决之后，我们再 把b、c的结果合并成a的结果。</p>
+<p>如果我们定义求解问题a的时间是T(a)，求解问题b、c的时间分别是T(b)和 T( c)，那我们就可以得到这样的递推关系式: </p>
+<blockquote>
+<p>T(a) = T(b) + T(c) + K</p>
+</blockquote>
+<p>其中K等于将两个子问题b、c的结果合并成问题a的结果所消耗的时间。不仅递归求解的问题可以写成递推公式，递归代码的时间复杂度也可以写成递推公式。</p>
+<p>套用这个公式，分析一下归并排序的时间复杂度。 假设对n个元素进行归并排序需要的时间是T(n)，那分解成两个子数组排序的时间都是T(n/2)。merge()函数合并两个有序子数组的时间复杂度是O(n)。</p>
+<p>所以，套用前面的公式，归并排序的时间复杂度的计算公式就是: </p>
+<blockquote>
+<p>T(1) = C; </p>
+</blockquote>
+<p>n=1时，只需要常量级的执行时间，所以表示为C。</p>
+<p>T(n) = 2*T(n/2) + n; n&gt;1 通过这个公式，进一步分解一下计算过程来求解T(n)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">T(n) = 2*T(n/2) + n</span><br><span class="line">    = 2*(2*T(n/4) + n/2) + n = 4*T(n/4) + 2*n</span><br><span class="line">    = 4*(2*T(n/8) + n/4) + 2*n = 8*T(n/8) + 3*n</span><br><span class="line">    = 8*(2*T(n/16) + n/8) + 3*n = 16*T(n/16) + 4*n ......</span><br><span class="line">    = 2^k * T(n/2^k) + k * n</span><br></pre></td></tr></table></figure>
+<p>通过这样一步一步分解推导，可以得到T(n) = 2^kT(n/2^k)+kn。</p>
+<p>当T(n/2^k)=T(1)时，也就是n/2^k=1，我们得到k=log2n 。我们将k值代入上面的公式，得到T(n)=Cn+nlog2n 。如果我们用大O标记法来表示的话，T(n)就等于O(nlogn)。</p>
+<p>所以归并排序的时间复杂度是O(nlogn)。 从我们的原理分析和伪代码可以看出，归并排序的执行效率与要排序的原始数组的有序程度无关，所以其时间复杂度是非常稳定的，不管是最好情况、最坏情况，还是平均情况，时间复杂度都是O(nlogn)。</p>
+<h3 id="空间复杂度"><a href="#空间复杂度" class="headerlink" title="空间复杂度"></a>空间复杂度</h3><p>归并排序由于merge时需要创建临时的数组存储数据，所以不是原地排序算法，即非O(1)。</p>
+<p>尽管每次合并操作都需要申请额外的内存空间，但在合并完成之后，临时开辟的内存空间就被释放掉了。在任意时刻，CPU只会有一个函数在执行，也就只会有一个临时的内存空间在使用。临时内存空间最大也不会 超过n个数据的大小，所以空间复杂度是O(n)。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法与数据结构/" rel="tag"># 算法与数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/02/04/web协议_01_HTTP-LINE和URI编码等杂记/" rel="next" title="HTTP-line和URI编码等杂记">
+                <i class="fa fa-chevron-left"></i> HTTP-line和URI编码等杂记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#归并排序"><span class="nav-number">1.</span> <span class="nav-text">归并排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分治与递归"><span class="nav-number">1.1.</span> <span class="nav-text">分治与递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#递推公式"><span class="nav-number">1.2.</span> <span class="nav-text">递推公式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#终止条件"><span class="nav-number">1.2.1.</span> <span class="nav-text">终止条件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例代码"><span class="nav-number">1.3.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能分析"><span class="nav-number">1.4.</span> <span class="nav-text">性能分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#归并排序是稳定排序算法么？"><span class="nav-number">1.4.1.</span> <span class="nav-text">归并排序是稳定排序算法么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时间复杂度"><span class="nav-number">1.4.2.</span> <span class="nav-text">时间复杂度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#空间复杂度"><span class="nav-number">1.4.3.</span> <span class="nav-text">空间复杂度</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>

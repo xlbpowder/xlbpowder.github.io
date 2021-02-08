@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="web协议," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="了解REST架构是如何从WEB五种架构推演而来的，以及在推演过程中放弃了什么，选择了什么">
+<meta name="keywords" content="web协议">
+<meta property="og:type" content="article">
+<meta property="og:title" content="web架构基础">
+<meta property="og:url" content="http://yoursite.com/2021/02/02/web架构基础/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="了解REST架构是如何从WEB五种架构推演而来的，以及在推演过程中放弃了什么，选择了什么">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/image/web/REST架构对于WEB架构的融合.png">
+<meta property="og:updated_time" content="2021-02-04T02:08:40.585Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="web架构基础">
+<meta name="twitter:description" content="了解REST架构是如何从WEB五种架构推演而来的，以及在推演过程中放弃了什么，选择了什么">
+<meta name="twitter:image" content="http://yoursite.com/image/web/REST架构对于WEB架构的融合.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/02/02/web架构基础/"/>
+
+
+
+
+
+  <title>web架构基础 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/02/web架构基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">web架构基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-02T10:00:00+08:00">
+                2021-02-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/架构/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>了解REST架构是如何从WEB五种架构推演而来的，以及在推演过程中放弃了什么，选择了什么</p>
+<a id="more"></a>
+<h1 id="网络架构属性"><a href="#网络架构属性" class="headerlink" title="网络架构属性"></a>网络架构属性</h1><h2 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h2><h3 id="网络性能-Network-Performance"><a href="#网络性能-Network-Performance" class="headerlink" title="网络性能 Network Performance"></a>网络性能 Network Performance</h3><ul>
+<li>Through 吞吐量：小于等于带宽bandwidth</li>
+<li>Overhead 开销：首次开销、每次开销</li>
+</ul>
+<h3 id="用户感知到的性能-User-perceived-Performance"><a href="#用户感知到的性能-User-perceived-Performance" class="headerlink" title="用户感知到的性能 User-perceived Performance"></a>用户感知到的性能 User-perceived Performance</h3><ul>
+<li>Latency 延迟：发起请求到接收到响应的时间</li>
+<li>Completion 完成时间：完成一个应用动作所花费的时间</li>
+</ul>
+<h3 id="网络效率-network-Efficiency"><a href="#网络效率-network-Efficiency" class="headerlink" title="网络效率 network Efficiency"></a>网络效率 network Efficiency</h3><ul>
+<li>重用缓存</li>
+<li>减少交互次数</li>
+<li>数据传输举例更近</li>
+<li>COD</li>
+</ul>
+<h2 id="可修改性"><a href="#可修改性" class="headerlink" title="可修改性"></a>可修改性</h2><h3 id="可进化性-Evolvability"><a href="#可进化性-Evolvability" class="headerlink" title="可进化性 Evolvability"></a>可进化性 Evolvability</h3><p>一个组件独立升级而不影响其他组件</p>
+<h3 id="可扩展性-Extensibility"><a href="#可扩展性-Extensibility" class="headerlink" title="可扩展性 Extensibility"></a>可扩展性 Extensibility</h3><p>向系统添加功能，而不会影响到系统的其他部分</p>
+<h3 id="可定制性-Customizability"><a href="#可定制性-Customizability" class="headerlink" title="可定制性 Customizability"></a>可定制性 Customizability</h3><p>临时性、定制性地更改某一要素来提供服务，不对常规客户产生影响</p>
+<h3 id="可配置性-Configurability"><a href="#可配置性-Configurability" class="headerlink" title="可配置性 Configurability"></a>可配置性 Configurability</h3><p>应用部署后可通过修改配置提供新的功能</p>
+<h3 id="可重用性-Reusability"><a href="#可重用性-Reusability" class="headerlink" title="可重用性 Reusability"></a>可重用性 Reusability</h3><p>组件可以不做修改在其他应用再使用</p>
+<h1 id="五类架构风格推导出HTTP的REST架构"><a href="#五类架构风格推导出HTTP的REST架构" class="headerlink" title="五类架构风格推导出HTTP的REST架构"></a>五类架构风格推导出HTTP的REST架构</h1><h2 id="数据流风格-Data-flow-Styles"><a href="#数据流风格-Data-flow-Styles" class="headerlink" title="数据流风格 Data-flow Styles"></a>数据流风格 Data-flow Styles</h2><p>优点：简单、可进化、可扩展、可配置、可重用</p>
+<h3 id="管道与过滤器-Pipe-And-Filter（PF）"><a href="#管道与过滤器-Pipe-And-Filter（PF）" class="headerlink" title="管道与过滤器 Pipe And Filter（PF）"></a>管道与过滤器 Pipe And Filter（PF）</h3><ul>
+<li>每一个Filter都有输入端和输出端，只能从输入端读取数据，处理后再从输出端产生数据</li>
+</ul>
+<h3 id="统一接口的管道与过滤器-Uniform-Pipe-And-Filter（UPF）"><a href="#统一接口的管道与过滤器-Uniform-Pipe-And-Filter（UPF）" class="headerlink" title="统一接口的管道与过滤器 Uniform Pipe And Filter（UPF）"></a>统一接口的管道与过滤器 Uniform Pipe And Filter（UPF）</h3><ul>
+<li>在PE上增加统一接口的约束，所有的Filter过滤器必须具备同样的接口</li>
+</ul>
+<h2 id="复制风格-Replication-Styles"><a href="#复制风格-Replication-Styles" class="headerlink" title="复制风格 Replication Styles"></a>复制风格 Replication Styles</h2><p>优点：用户可察觉性、可伸缩、网络效率、可靠性</p>
+<h3 id="复制仓库-Replicated-Respository（RR）"><a href="#复制仓库-Replicated-Respository（RR）" class="headerlink" title="复制仓库 Replicated Respository（RR）"></a>复制仓库 Replicated Respository（RR）</h3><ul>
+<li>多个进程提供相同服务，通过反向代理对外提供集中服务</li>
+</ul>
+<h3 id="缓存（-）"><a href="#缓存（-）" class="headerlink" title="缓存（$）"></a>缓存（$）</h3><ul>
+<li>RR的变体，通过复制请求的结果，为后续请求复用</li>
+</ul>
+<h2 id="分层风格-Hierarchical-Styles"><a href="#分层风格-Hierarchical-Styles" class="headerlink" title="分层风格 Hierarchical Styles"></a>分层风格 Hierarchical Styles</h2><p>优点：简单、可进化、可伸缩</p>
+<h3 id="客户端服务器-Client-Server（CS）"><a href="#客户端服务器-Client-Server（CS）" class="headerlink" title="客户端服务器 Client-Server（CS）"></a>客户端服务器 Client-Server（CS）</h3><ul>
+<li>用Client触发请求，Server监听到请求后产生响应，Client一直等待收到响应后会话才结束</li>
+<li>分离关注点，隐蔽细节，简单并且具有有良好的可伸缩性、可进化性、<h3 id="分层服务-Layered-System（LS）"><a href="#分层服务-Layered-System（LS）" class="headerlink" title="分层服务 Layered System（LS）"></a>分层服务 Layered System（LS）</h3></li>
+<li>每一层为其上一层服务，并使用在其下一层所提供的服务，同时还为下一层提供的服务隐藏细节，例如TCP/IP<h3 id="分层客户端服务器-Layered-Client-Server（LCS）"><a href="#分层客户端服务器-Layered-Client-Server（LCS）" class="headerlink" title="分层客户端服务器 Layered Client-Server（LCS）"></a>分层客户端服务器 Layered Client-Server（LCS）</h3></li>
+<li>LS+CS 例如正向代理和反向代理，从空间上分为外部层和内部层<h3 id="无状态-客户端服务器-Client-Stateless-Server（CSS）"><a href="#无状态-客户端服务器-Client-Stateless-Server（CSS）" class="headerlink" title="无状态 客户端服务器 Client-Stateless-Server（CSS）"></a>无状态 客户端服务器 Client-Stateless-Server（CSS）</h3></li>
+<li>基于CS，服务器上不允许有session state会话状态</li>
+<li>提升了可见性、可伸缩性、可靠性，但重复数据可能会导致降低网络性能<h3 id="缓存-无状态-客户端服务器-Client-Cache-Stateless-Server（C-SS）"><a href="#缓存-无状态-客户端服务器-Client-Cache-Stateless-Server（C-SS）" class="headerlink" title="缓存 无状态 客户端服务器 Client-Cache-Stateless-Server（C$SS）"></a>缓存 无状态 客户端服务器 Client-Cache-Stateless-Server（C$SS）</h3></li>
+<li>提升性能<h3 id="分层-缓存-无状态-客户端服务器-Layered-Client-Cache-Stateless-Server（LC-SS）"><a href="#分层-缓存-无状态-客户端服务器-Layered-Client-Cache-Stateless-Server（LC-SS）" class="headerlink" title="分层 缓存 无状态 客户端服务器 Layered-Client-Cache-Stateless-Server（LC$SS）"></a>分层 缓存 无状态 客户端服务器 Layered-Client-Cache-Stateless-Server（LC$SS）</h3></li>
+</ul>
+<blockquote>
+<p>分层架构中没有使用的两类分层风格</p>
+</blockquote>
+<h3 id="远程会话-Remote-Session（RS）"><a href="#远程会话-Remote-Session（RS）" class="headerlink" title="远程会话 Remote Session（RS）"></a>远程会话 Remote Session（RS）</h3><ul>
+<li>CS变体，服务器保存Application State应用状态</li>
+<li>可伸缩性、可见性差<h3 id="远程数据访问-Remote-Data-Access（RDA）"><a href="#远程数据访问-Remote-Data-Access（RDA）" class="headerlink" title="远程数据访问 Remote Data Access（RDA）"></a>远程数据访问 Remote Data Access（RDA）</h3></li>
+<li>CS变体，Application State应用状态同时分布在客户端与服务器</li>
+<li>巨大的数据集有可能通过迭代而减少</li>
+<li>简单性、可伸缩性较差</li>
+</ul>
+<h2 id="移动代码风格-Mobile-Code-Styles"><a href="#移动代码风格-Mobile-Code-Styles" class="headerlink" title="移动代码风格 Mobile Code Styles"></a>移动代码风格 Mobile Code Styles</h2><blockquote>
+<p>代码与执行过程或执行结果分离，如JavaScript</p>
+</blockquote>
+<p>优点：可移植、可扩展、网络效率</p>
+<h3 id="虚拟机-Virtual-Machine（VM）"><a href="#虚拟机-Virtual-Machine（VM）" class="headerlink" title="虚拟机 Virtual Machine（VM）"></a>虚拟机 Virtual Machine（VM）</h3><ul>
+<li>指令与实现<h3 id="远程求值-Remote-Evaluation（REV）"><a href="#远程求值-Remote-Evaluation（REV）" class="headerlink" title="远程求值 Remote Evaluation（REV）"></a>远程求值 Remote Evaluation（REV）</h3></li>
+<li>基于CS的VM，将代码发送至服务器执行<h3 id="按需代码-Code-on-Demand（COD）-服务器在响应中发回处理代码，在客户端执行"><a href="#按需代码-Code-on-Demand（COD）-服务器在响应中发回处理代码，在客户端执行" class="headerlink" title="按需代码 Code on Demand（COD）- 服务器在响应中发回处理代码，在客户端执行"></a>按需代码 Code on Demand（COD）- 服务器在响应中发回处理代码，在客户端执行</h3></li>
+<li>优秀的可扩展性和可配置性，提升用户可察觉性能和网络效率<h3 id="分层、按需代码、缓存、无状态、客户端服务器-Layered-Code-on-Demand-Client-Cache-Stateless-Server（LCODC-SS）"><a href="#分层、按需代码、缓存、无状态、客户端服务器-Layered-Code-on-Demand-Client-Cache-Stateless-Server（LCODC-SS）" class="headerlink" title="分层、按需代码、缓存、无状态、客户端服务器 Layered-Code-on-Demand-Client-Cache-Stateless-Server（LCODC$SS）"></a>分层、按需代码、缓存、无状态、客户端服务器 Layered-Code-on-Demand-Client-Cache-Stateless-Server（LCODC$SS）</h3></li>
+<li>LC$SS + COD<h3 id="移动代理-Mobile-Agent（MA）"><a href="#移动代理-Mobile-Agent（MA）" class="headerlink" title="移动代理 Mobile Agent（MA）"></a>移动代理 Mobile Agent（MA）</h3></li>
+<li>相当于REV + CODE</li>
+</ul>
+<h2 id="点对点风格-Peer-to-Peer-Styles"><a href="#点对点风格-Peer-to-Peer-Styles" class="headerlink" title="点对点风格 Peer-to-Peer Styles"></a>点对点风格 Peer-to-Peer Styles</h2><blockquote>
+<p>未REST架构中，但在分布式网络架构中经常使用</p>
+</blockquote>
+<p>优点：可进化、可重用性、可扩展性、可配置性</p>
+<h3 id="Event-based-Integration（EBI）"><a href="#Event-based-Integration（EBI）" class="headerlink" title="Event-based Integration（EBI）"></a>Event-based Integration（EBI）</h3><ul>
+<li>基于事件集成系统，如消息中间件，通过分发订阅来消除耦合</li>
+<li>优秀的可重用性、可扩展性、可进化性</li>
+<li>缺乏可理解性</li>
+<li>由于消息广播等因素造成消息风暴，可扩展性差<h3 id="Chiron-2（C2）"><a href="#Chiron-2（C2）" class="headerlink" title="Chiron-2（C2）"></a>Chiron-2（C2）</h3></li>
+<li>相当于EBI + LCS，可以控制消息的方向<h3 id="Distributed-Objects（DO）"><a href="#Distributed-Objects（DO）" class="headerlink" title="Distributed Objects（DO）"></a>Distributed Objects（DO）</h3></li>
+<li>组件结对交互<h3 id="Brokered-Distributed-objects（BDO）"><a href="#Brokered-Distributed-objects（BDO）" class="headerlink" title="Brokered Distributed objects（BDO）"></a>Brokered Distributed objects（BDO）</h3></li>
+<li>引入名字解析组件来简化DO，例如CORBA</li>
+</ul>
+<h1 id="REST架构对于WEB五种架构的融合"><a href="#REST架构对于WEB五种架构的融合" class="headerlink" title="REST架构对于WEB五种架构的融合"></a>REST架构对于WEB五种架构的融合</h1><p><img src="/image/web/REST架构对于WEB架构的融合.png" alt="00"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web协议/" rel="tag"># web协议</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/11/03/clojure_03_基础语法/" rel="next" title="Clojure 基础语法">
+                <i class="fa fa-chevron-left"></i> Clojure 基础语法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/04/web协议_01_HTTP-LINE和URI编码等杂记/" rel="prev" title="HTTP-line和URI编码等杂记">
+                HTTP-line和URI编码等杂记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#网络架构属性"><span class="nav-number">1.</span> <span class="nav-text">网络架构属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#性能"><span class="nav-number">1.1.</span> <span class="nav-text">性能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络性能-Network-Performance"><span class="nav-number">1.1.1.</span> <span class="nav-text">网络性能 Network Performance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用户感知到的性能-User-perceived-Performance"><span class="nav-number">1.1.2.</span> <span class="nav-text">用户感知到的性能 User-perceived Performance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络效率-network-Efficiency"><span class="nav-number">1.1.3.</span> <span class="nav-text">网络效率 network Efficiency</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可修改性"><span class="nav-number">1.2.</span> <span class="nav-text">可修改性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#可进化性-Evolvability"><span class="nav-number">1.2.1.</span> <span class="nav-text">可进化性 Evolvability</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可扩展性-Extensibility"><span class="nav-number">1.2.2.</span> <span class="nav-text">可扩展性 Extensibility</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可定制性-Customizability"><span class="nav-number">1.2.3.</span> <span class="nav-text">可定制性 Customizability</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可配置性-Configurability"><span class="nav-number">1.2.4.</span> <span class="nav-text">可配置性 Configurability</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可重用性-Reusability"><span class="nav-number">1.2.5.</span> <span class="nav-text">可重用性 Reusability</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五类架构风格推导出HTTP的REST架构"><span class="nav-number">2.</span> <span class="nav-text">五类架构风格推导出HTTP的REST架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据流风格-Data-flow-Styles"><span class="nav-number">2.1.</span> <span class="nav-text">数据流风格 Data-flow Styles</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#管道与过滤器-Pipe-And-Filter（PF）"><span class="nav-number">2.1.1.</span> <span class="nav-text">管道与过滤器 Pipe And Filter（PF）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#统一接口的管道与过滤器-Uniform-Pipe-And-Filter（UPF）"><span class="nav-number">2.1.2.</span> <span class="nav-text">统一接口的管道与过滤器 Uniform Pipe And Filter（UPF）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制风格-Replication-Styles"><span class="nav-number">2.2.</span> <span class="nav-text">复制风格 Replication Styles</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#复制仓库-Replicated-Respository（RR）"><span class="nav-number">2.2.1.</span> <span class="nav-text">复制仓库 Replicated Respository（RR）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存（-）"><span class="nav-number">2.2.2.</span> <span class="nav-text">缓存（$）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分层风格-Hierarchical-Styles"><span class="nav-number">2.3.</span> <span class="nav-text">分层风格 Hierarchical Styles</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端服务器-Client-Server（CS）"><span class="nav-number">2.3.1.</span> <span class="nav-text">客户端服务器 Client-Server（CS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分层服务-Layered-System（LS）"><span class="nav-number">2.3.2.</span> <span class="nav-text">分层服务 Layered System（LS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分层客户端服务器-Layered-Client-Server（LCS）"><span class="nav-number">2.3.3.</span> <span class="nav-text">分层客户端服务器 Layered Client-Server（LCS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#无状态-客户端服务器-Client-Stateless-Server（CSS）"><span class="nav-number">2.3.4.</span> <span class="nav-text">无状态 客户端服务器 Client-Stateless-Server（CSS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存-无状态-客户端服务器-Client-Cache-Stateless-Server（C-SS）"><span class="nav-number">2.3.5.</span> <span class="nav-text">缓存 无状态 客户端服务器 Client-Cache-Stateless-Server（C$SS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分层-缓存-无状态-客户端服务器-Layered-Client-Cache-Stateless-Server（LC-SS）"><span class="nav-number">2.3.6.</span> <span class="nav-text">分层 缓存 无状态 客户端服务器 Layered-Client-Cache-Stateless-Server（LC$SS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#远程会话-Remote-Session（RS）"><span class="nav-number">2.3.7.</span> <span class="nav-text">远程会话 Remote Session（RS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#远程数据访问-Remote-Data-Access（RDA）"><span class="nav-number">2.3.8.</span> <span class="nav-text">远程数据访问 Remote Data Access（RDA）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#移动代码风格-Mobile-Code-Styles"><span class="nav-number">2.4.</span> <span class="nav-text">移动代码风格 Mobile Code Styles</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟机-Virtual-Machine（VM）"><span class="nav-number">2.4.1.</span> <span class="nav-text">虚拟机 Virtual Machine（VM）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#远程求值-Remote-Evaluation（REV）"><span class="nav-number">2.4.2.</span> <span class="nav-text">远程求值 Remote Evaluation（REV）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#按需代码-Code-on-Demand（COD）-服务器在响应中发回处理代码，在客户端执行"><span class="nav-number">2.4.3.</span> <span class="nav-text">按需代码 Code on Demand（COD）- 服务器在响应中发回处理代码，在客户端执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分层、按需代码、缓存、无状态、客户端服务器-Layered-Code-on-Demand-Client-Cache-Stateless-Server（LCODC-SS）"><span class="nav-number">2.4.4.</span> <span class="nav-text">分层、按需代码、缓存、无状态、客户端服务器 Layered-Code-on-Demand-Client-Cache-Stateless-Server（LCODC$SS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#移动代理-Mobile-Agent（MA）"><span class="nav-number">2.4.5.</span> <span class="nav-text">移动代理 Mobile Agent（MA）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#点对点风格-Peer-to-Peer-Styles"><span class="nav-number">2.5.</span> <span class="nav-text">点对点风格 Peer-to-Peer Styles</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Event-based-Integration（EBI）"><span class="nav-number">2.5.1.</span> <span class="nav-text">Event-based Integration（EBI）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Chiron-2（C2）"><span class="nav-number">2.5.2.</span> <span class="nav-text">Chiron-2（C2）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Distributed-Objects（DO）"><span class="nav-number">2.5.3.</span> <span class="nav-text">Distributed Objects（DO）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Brokered-Distributed-objects（BDO）"><span class="nav-number">2.5.4.</span> <span class="nav-text">Brokered Distributed objects（BDO）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#REST架构对于WEB五种架构的融合"><span class="nav-number">3.</span> <span class="nav-text">REST架构对于WEB五种架构的融合</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>

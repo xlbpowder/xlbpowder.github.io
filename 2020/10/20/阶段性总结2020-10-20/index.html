@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="从上篇笔记开始已经一个月多没有更新了，有点苦恼，没有坚持学完ES和算法知识。不过最近工作上学习了很多运维知识，还学习了Clojure和Lua，但都还未进行纪录。非工作的事情也比较多。在此做一个阶段性总结，汇总下最近了解的知识，好为下一个阶段的学习做准备。 下面列出的只是简单的介绍，之后会逐一深入学习并且进行纪录。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-10-21T09:12:01.558Z">
+<meta property="og:updated_time" content="2020-10-21T12:24:28.631Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2020-10-20 阶段性总结">
 <meta name="twitter:description" content="从上篇笔记开始已经一个月多没有更新了，有点苦恼，没有坚持学完ES和算法知识。不过最近工作上学习了很多运维知识，还学习了Clojure和Lua，但都还未进行纪录。非工作的事情也比较多。在此做一个阶段性总结，汇总下最近了解的知识，好为下一个阶段的学习做准备。 下面列出的只是简单的介绍，之后会逐一深入学习并且进行纪录。">
@@ -373,12 +373,17 @@
 <h2 id="Netdata"><a href="#Netdata" class="headerlink" title="Netdata"></a>Netdata</h2><p>linux上的实时性能监控工具。会实用ansible在VM上进行自动部署，提供操作系统级别的metrics。</p>
 <h2 id="Skywalking"><a href="#Skywalking" class="headerlink" title="Skywalking"></a>Skywalking</h2><p>开源的分布式链路追踪应用，以前就有接触过，在此记录下。</p>
 <h1 id="Other-Language"><a href="#Other-Language" class="headerlink" title="Other Language"></a>Other Language</h1><h2 id="Clojure"><a href="#Clojure" class="headerlink" title="Clojure"></a>Clojure</h2><p>clojure是一个基于JVM的lisp语言，特点是函数式、复合类型数据结构，方便快捷。最近是有用该语言做一个后台的程序，目前学习的还比较浅，后面会单独列出一个分类做clojure的笔记</p>
-<ul>
+<h3 id="IDE相关"><a href="#IDE相关" class="headerlink" title="IDE相关"></a>IDE相关</h3><ul>
 <li>IDE: IntellJ + Curisve; Emacs + Cider</li>
 <li>构建工具: leiningen + boot-clj</li>
 <li>Clojure 语言特点: dynamic + functional + lisp + designed for concurrency + hosted on jvm</li>
 </ul>
+<h3 id="常用工具包"><a href="#常用工具包" class="headerlink" title="常用工具包"></a>常用工具包</h3><ul>
+<li>WebApp开发包：Ring、compojure</li>
+<li>Scheduler开发包：clojurewerkz</li>
+</ul>
 <h2 id="lua"><a href="#lua" class="headerlink" title="lua"></a>lua</h2><p>是一个轻量级的脚本语言，最近一段时间有做了一个网关的插件用到了。目前学习的比较浅。其实老版本的redis高可用、Nginx都有用到该语言。</p>
+<p>lua与lua-lit</p>
 
       
     </div>
@@ -447,6 +452,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/10/21/elasticsearch_20_集群分布式模型与脑裂问题/" rel="prev" title="ElasticSearch 集群分布式模型与脑裂问题">
+                ElasticSearch 集群分布式模型与脑裂问题 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -529,7 +538,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-count">80</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -540,7 +549,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -551,7 +560,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -606,7 +615,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#运维"><span class="nav-number">1.</span> <span class="nav-text">运维</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通过Metrics进行规则分析告警"><span class="nav-number">1.1.</span> <span class="nav-text">通过Metrics进行规则分析告警</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过K8S探针采集数据告警"><span class="nav-number">1.2.</span> <span class="nav-text">通过K8S探针采集数据告警</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概念"><span class="nav-number">2.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SLO、SLA、SLI"><span class="nav-number">2.1.</span> <span class="nav-text">SLO、SLA、SLI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ITIL"><span class="nav-number">2.2.</span> <span class="nav-text">ITIL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RCA"><span class="nav-number">2.3.</span> <span class="nav-text">RCA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Logging-amp-Monitor"><span class="nav-number">2.4.</span> <span class="nav-text">Logging &amp; Monitor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Metrics"><span class="nav-number">2.5.</span> <span class="nav-text">Metrics</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Alert"><span class="nav-number">2.6.</span> <span class="nav-text">Alert</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#工具"><span class="nav-number">3.</span> <span class="nav-text">工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prometheus"><span class="nav-number">3.1.</span> <span class="nav-text">Prometheus</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#promSQL"><span class="nav-number">3.1.1.</span> <span class="nav-text">promSQL</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Thanos"><span class="nav-number">3.2.</span> <span class="nav-text">Thanos</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Grafana"><span class="nav-number">3.3.</span> <span class="nav-text">Grafana</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fluentd"><span class="nav-number">3.4.</span> <span class="nav-text">Fluentd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ELK"><span class="nav-number">3.5.</span> <span class="nav-text">ELK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes"><span class="nav-number">3.6.</span> <span class="nav-text">Kubernetes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Netdata"><span class="nav-number">3.7.</span> <span class="nav-text">Netdata</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Skywalking"><span class="nav-number">3.8.</span> <span class="nav-text">Skywalking</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Other-Language"><span class="nav-number">4.</span> <span class="nav-text">Other Language</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Clojure"><span class="nav-number">4.1.</span> <span class="nav-text">Clojure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lua"><span class="nav-number">4.2.</span> <span class="nav-text">lua</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#运维"><span class="nav-number">1.</span> <span class="nav-text">运维</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通过Metrics进行规则分析告警"><span class="nav-number">1.1.</span> <span class="nav-text">通过Metrics进行规则分析告警</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过K8S探针采集数据告警"><span class="nav-number">1.2.</span> <span class="nav-text">通过K8S探针采集数据告警</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概念"><span class="nav-number">2.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SLO、SLA、SLI"><span class="nav-number">2.1.</span> <span class="nav-text">SLO、SLA、SLI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ITIL"><span class="nav-number">2.2.</span> <span class="nav-text">ITIL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RCA"><span class="nav-number">2.3.</span> <span class="nav-text">RCA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Logging-amp-Monitor"><span class="nav-number">2.4.</span> <span class="nav-text">Logging &amp; Monitor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Metrics"><span class="nav-number">2.5.</span> <span class="nav-text">Metrics</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Alert"><span class="nav-number">2.6.</span> <span class="nav-text">Alert</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#工具"><span class="nav-number">3.</span> <span class="nav-text">工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prometheus"><span class="nav-number">3.1.</span> <span class="nav-text">Prometheus</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#promSQL"><span class="nav-number">3.1.1.</span> <span class="nav-text">promSQL</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Thanos"><span class="nav-number">3.2.</span> <span class="nav-text">Thanos</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Grafana"><span class="nav-number">3.3.</span> <span class="nav-text">Grafana</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fluentd"><span class="nav-number">3.4.</span> <span class="nav-text">Fluentd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ELK"><span class="nav-number">3.5.</span> <span class="nav-text">ELK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes"><span class="nav-number">3.6.</span> <span class="nav-text">Kubernetes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Netdata"><span class="nav-number">3.7.</span> <span class="nav-text">Netdata</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Skywalking"><span class="nav-number">3.8.</span> <span class="nav-text">Skywalking</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Other-Language"><span class="nav-number">4.</span> <span class="nav-text">Other Language</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Clojure"><span class="nav-number">4.1.</span> <span class="nav-text">Clojure</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDE相关"><span class="nav-number">4.1.1.</span> <span class="nav-text">IDE相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用工具包"><span class="nav-number">4.1.2.</span> <span class="nav-text">常用工具包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lua"><span class="nav-number">4.2.</span> <span class="nav-text">lua</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -626,7 +635,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-snowflake-o"></i>
   </span>
