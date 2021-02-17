@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="相比于冒泡排序、插入排序、选择排序，时间复杂度都为O(n^2)，适合小规模的数据排序，好处是前两者有稳定性，学习记录一下两种时间复杂度为O(nlogn)的排序算法，归并排序和快速排序。这两种排序算法适合大规模的数据排序。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-02-05T07:25:21.820Z">
+<meta property="og:updated_time" content="2021-02-09T14:19:41.543Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="归并排序 快速排序">
 <meta name="twitter:description" content="相比于冒泡排序、插入排序、选择排序，时间复杂度都为O(n^2)，适合小规模的数据排序，好处是前两者有稳定性，学习记录一下两种时间复杂度为O(nlogn)的排序算法，归并排序和快速排序。这两种排序算法适合大规模的数据排序。">
@@ -359,6 +359,9 @@
       
         <p>相比于冒泡排序、插入排序、选择排序，时间复杂度都为O(n^2)，适合小规模的数据排序，好处是前两者有稳定性，学习记录一下两种时间复杂度为O(nlogn)的排序算法，归并排序和快速排序。这两种排序算法适合大规模的数据排序。</p>
 <a id="more"></a>
+<h1 id="排序算法的稳定性"><a href="#排序算法的稳定性" class="headerlink" title="排序算法的稳定性"></a>排序算法的稳定性</h1><p>仅仅用执行效率和内存消耗来衡量排序算法的好坏是不够的。针对排序算法，还有一个重要的度量指标，稳定性。</p>
+<p>这个概念是说，如果待排序的序列中存在值相等的元素，经过排序之后，相等元素之间原有的先后顺序不变。</p>
+<p>比如我们有一组数据2，9，3，4，8，3，按照大小排序之后就是2，3，3，4，8，9。 这组数据里有两个3。经过某种排序算法排序之后，如果两个3的前后顺序没有改变，这种排序算法叫作稳定的排序算法;如果前后顺序发生变化，那对应的排序算法就叫作不稳定的排序算法。</p>
 <h1 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h1><p>归并排序的核心思想还是蛮简单的。如果要排序一个数组，我们先把数组从中间分成前后两部分，然后对前后两部分分别排序，再将排好序的两部分合并在一<br>起，这样整个数组就都有序了。</p>
 <h2 id="分治与递归"><a href="#分治与递归" class="headerlink" title="分治与递归"></a>分治与递归</h2><p>归并排序使用的就是分治思想。分治，顾名思义，就是分而治之，将一个大问题分解成小的子问题来解决。小的子问题解决了，大问题也就解决了。</p>
 <p>分治思想和递归思想很像。分治算法一般都是用递归来实现的。分治是一种解决问题的处理思想，递归是一种编程技巧，这两者并不冲突。</p>
@@ -399,7 +402,13 @@
 <p>所以归并排序的时间复杂度是O(nlogn)。 从我们的原理分析和伪代码可以看出，归并排序的执行效率与要排序的原始数组的有序程度无关，所以其时间复杂度是非常稳定的，不管是最好情况、最坏情况，还是平均情况，时间复杂度都是O(nlogn)。</p>
 <h3 id="空间复杂度"><a href="#空间复杂度" class="headerlink" title="空间复杂度"></a>空间复杂度</h3><p>归并排序由于merge时需要创建临时的数组存储数据，所以不是原地排序算法，即非O(1)。</p>
 <p>尽管每次合并操作都需要申请额外的内存空间，但在合并完成之后，临时开辟的内存空间就被释放掉了。在任意时刻，CPU只会有一个函数在执行，也就只会有一个临时的内存空间在使用。临时内存空间最大也不会 超过n个数据的大小，所以空间复杂度是O(n)。</p>
-
+<h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><p>快速排序利用的也是分治思想，乍看起来，优点像归并排序，但是思路其实完全不一样。</p>
+<p>快排的主要思想是：如果要排序数组中下标从p到r之间的一组数据，我们选择p到r之间的任意一个数据作为pivot（分区点）。遍历p到r之间的数据，将小于pivot的放到左边，将大于pivot的放到右边，将pivot放到中间。经过这一步骤后，数据p到r之间的数据就被分成了三个部分，前面p到q-1之间都是小于pivot的，中间是pivot，后面q+1到r之间是大于pivot的。</p>
+<h2 id="递推公式-1"><a href="#递推公式-1" class="headerlink" title="递推公式"></a>递推公式</h2><p>根据分治、递归的处理思想，我们可以用递归排序下标从p到q-1之间的数据和下标从q+1到r之间的数据，直到区间缩小为1，就说明所有的数据都有序了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">quick_sort(p...r) = quict_sort(p, q-1) + qucik_sort(q+1, r)</span><br></pre></td></tr></table></figure>
+<h2 id="终止条件-1"><a href="#终止条件-1" class="headerlink" title="终止条件"></a>终止条件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p &gt;= r</span><br></pre></td></tr></table></figure>
+<p>通过游标i把数组[p…r-1]分成两部分。[p…i-1]的元素都是小于pivot的，我们暂且叫它“已处理区间”，A[i…r-1]是“未处理区 间”。我们每次都从未处理的区间[i…r-1]中取一个元素[j]，与pivot对比，如果小于pivot，则将其加入到已处理区间的尾部，也就是[i]的位置。</p>
+<h2 id="示例代码-1"><a href="#示例代码-1" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">quickSort</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> left, <span class="keyword">int</span> right)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (left &gt;= right) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> mid = partition(nums, left, right);</span><br><span class="line">    quickSort(nums, left, mid - <span class="number">1</span>);</span><br><span class="line">    quickSort(nums, mid + <span class="number">1</span>, right);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">partition</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> left, <span class="keyword">int</span> right)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> pivot = nums[right];</span><br><span class="line">    <span class="keyword">int</span> i = left;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> j = left; j &lt; right; j++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (nums[j] &lt; pivot) &#123;</span><br><span class="line">            swap(nums, i, j);</span><br><span class="line">            i++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    swap(nums, i, right);</span><br><span class="line">    <span class="keyword">return</span> i;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp = nums[i];</span><br><span class="line">    nums[i] = nums[j];</span><br><span class="line">    nums[j] = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -467,6 +476,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/14/web协议_02_HTTP/" rel="prev" title="HTTP杂记">
+                HTTP杂记 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -549,7 +562,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-count">81</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -626,7 +639,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#归并排序"><span class="nav-number">1.</span> <span class="nav-text">归并排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分治与递归"><span class="nav-number">1.1.</span> <span class="nav-text">分治与递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#递推公式"><span class="nav-number">1.2.</span> <span class="nav-text">递推公式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#终止条件"><span class="nav-number">1.2.1.</span> <span class="nav-text">终止条件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例代码"><span class="nav-number">1.3.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能分析"><span class="nav-number">1.4.</span> <span class="nav-text">性能分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#归并排序是稳定排序算法么？"><span class="nav-number">1.4.1.</span> <span class="nav-text">归并排序是稳定排序算法么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时间复杂度"><span class="nav-number">1.4.2.</span> <span class="nav-text">时间复杂度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#空间复杂度"><span class="nav-number">1.4.3.</span> <span class="nav-text">空间复杂度</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#排序算法的稳定性"><span class="nav-number">1.</span> <span class="nav-text">排序算法的稳定性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#归并排序"><span class="nav-number">2.</span> <span class="nav-text">归并排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分治与递归"><span class="nav-number">2.1.</span> <span class="nav-text">分治与递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#递推公式"><span class="nav-number">2.2.</span> <span class="nav-text">递推公式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#终止条件"><span class="nav-number">2.2.1.</span> <span class="nav-text">终止条件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例代码"><span class="nav-number">2.3.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能分析"><span class="nav-number">2.4.</span> <span class="nav-text">性能分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#归并排序是稳定排序算法么？"><span class="nav-number">2.4.1.</span> <span class="nav-text">归并排序是稳定排序算法么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时间复杂度"><span class="nav-number">2.4.2.</span> <span class="nav-text">时间复杂度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#空间复杂度"><span class="nav-number">2.4.3.</span> <span class="nav-text">空间复杂度</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#快速排序"><span class="nav-number">3.</span> <span class="nav-text">快速排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#递推公式-1"><span class="nav-number">3.1.</span> <span class="nav-text">递推公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#终止条件-1"><span class="nav-number">3.2.</span> <span class="nav-text">终止条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例代码-1"><span class="nav-number">3.3.</span> <span class="nav-text">示例代码</span></a></li></ol></li></ol></div>
             
 
           </div>
