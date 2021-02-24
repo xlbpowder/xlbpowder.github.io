@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
 <meta property="og:description" content="以前有记录过学习JDK HashMap源码，这次就记录下一个优秀的散列表实现需要的一些注意点">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-02-24T07:04:37.094Z">
+<meta property="og:updated_time" content="2021-02-24T07:42:59.455Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HashTable 散列表进阶">
 <meta name="twitter:description" content="以前有记录过学习JDK HashMap源码，这次就记录下一个优秀的散列表实现需要的一些注意点">
@@ -357,7 +357,7 @@
       
 
       
-        <p>以前有记录过学习JDK HashMap源码，这次就记录下一个优秀的散列表实现需要的一些注意点<br><a id="more"></a>y</p>
+        <p>以前有记录过学习JDK HashMap源码，这次就记录下一个优秀的散列表实现需要的一些注意点<br><a id="more"></a></p>
 <p>散列表的查询效率并不能笼统地说成是O(1)。它跟散列函数、装载因子、散列冲突等都有关系。如果散列函数设计得不好，或者装载因子过高，都可能导致散列冲突发生的概率升高，查询效率下降。</p>
 <h1 id="可能会出现的性能问题"><a href="#可能会出现的性能问题" class="headerlink" title="可能会出现的性能问题"></a>可能会出现的性能问题</h1><p>在极端情况下，有些恶意的攻击者，还有可能通过精心构造的数据，使得所有的数据经过散列函数之后，都散列到同一个槽里。如果使用的是基于链表的冲突解决方法，那这个时候，散列表就会退化为链表，查询的时间复杂度就从O(1)急剧退化为O(n)。 </p>
 <p>如果散列表中有10万个数据，退化后的散列表查询的效率就下降了10万倍。更直接点说，如果之前运行100次查询只需要0.1秒，那现在就需要1万秒。这样就有可能因为查询操作消耗大量CPU或者线程资源，导致系统无法响应其他请求，从而达到拒绝服务攻击(DoS)的目的。这也就是散列表碰撞攻击的基本原理。</p>
@@ -383,6 +383,12 @@
 <h3 id="为什么要用容量减去一"><a href="#为什么要用容量减去一" class="headerlink" title="为什么要用容量减去一?"></a>为什么要用容量减去一?</h3><p>因为 A % B = A &amp; (B - 1)，所以，(h ^ (h &gt;&gt;&gt; 16)) &amp; (capitity -1) = (h ^ (h &gt;&gt;&gt; 16)) % capitity，可以看出这里本质上是使用了「除留余数法」 </p>
 <p>综上，可以看出，hashcode的随机性，加上移位异或算法，得到一个非常随机的hash值，再通过「除留余数法」，得到index，整体的设计过程与所说的“散列函数”设计原则非常吻合!</p>
 <p>实际上，散列函数的设计方法还有很多，比如直接寻址法、平方取中法、折叠法、随机数法等</p>
+<h1 id="哈希算法要满足的要求"><a href="#哈希算法要满足的要求" class="headerlink" title="哈希算法要满足的要求"></a>哈希算法要满足的要求</h1><ul>
+<li>从哈希值不能反向推导出原始数据(所以哈希算法也叫单向哈希算法); </li>
+<li>对输入数据非常敏感，哪怕原始数据只修改了一个Bit，最后得到的哈希值也大不相同; </li>
+<li>散列冲突的概率要很小，对于不同的原始数据，哈希值相同的概率非常小; </li>
+<li>哈希算法的执行效率要尽量高效，针对较长的文本，也能快速地计算出哈希值。</li>
+</ul>
 
       
     </div>
@@ -451,6 +457,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/24/Hash算法/" rel="prev" title="Hash算法">
+                Hash算法 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -533,7 +543,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-count">90</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -610,7 +620,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#可能会出现的性能问题"><span class="nav-number">1.</span> <span class="nav-text">可能会出现的性能问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于散列函数的设计"><span class="nav-number">2.</span> <span class="nav-text">关于散列函数的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始大小"><span class="nav-number">2.1.</span> <span class="nav-text">初始大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#装载因子和动态扩容"><span class="nav-number">2.2.</span> <span class="nav-text">装载因子和动态扩容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#散列冲突解决方法"><span class="nav-number">2.3.</span> <span class="nav-text">散列冲突解决方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#散列函数"><span class="nav-number">2.4.</span> <span class="nav-text">散列函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要用容量减去一"><span class="nav-number">2.4.1.</span> <span class="nav-text">为什么要用容量减去一?</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#可能会出现的性能问题"><span class="nav-number">1.</span> <span class="nav-text">可能会出现的性能问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于散列函数的设计"><span class="nav-number">2.</span> <span class="nav-text">关于散列函数的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始大小"><span class="nav-number">2.1.</span> <span class="nav-text">初始大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#装载因子和动态扩容"><span class="nav-number">2.2.</span> <span class="nav-text">装载因子和动态扩容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#散列冲突解决方法"><span class="nav-number">2.3.</span> <span class="nav-text">散列冲突解决方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#散列函数"><span class="nav-number">2.4.</span> <span class="nav-text">散列函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要用容量减去一"><span class="nav-number">2.4.1.</span> <span class="nav-text">为什么要用容量减去一?</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#哈希算法要满足的要求"><span class="nav-number">3.</span> <span class="nav-text">哈希算法要满足的要求</span></a></li></ol></div>
             
 
           </div>
