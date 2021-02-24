@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="web协议," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前端通常会使用Cookie在浏览器客户端保存会话信息，本文主要记录了Cookie的工作原理、协议规范还有限制，以及在服务端常用的Seesion来维持会话状态与Cookie的关系等相关知识">
+<meta name="keywords" content="web协议">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP Cookie与Session">
+<meta property="og:url" content="http://yoursite.com/2021/02/20/web协议_05_HTTP-Cookie与Session/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="前端通常会使用Cookie在浏览器客户端保存会话信息，本文主要记录了Cookie的工作原理、协议规范还有限制，以及在服务端常用的Seesion来维持会话状态与Cookie的关系等相关知识">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/image/web/Cookie与Session_01.png">
+<meta property="og:updated_time" content="2021-02-23T07:29:29.654Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP Cookie与Session">
+<meta name="twitter:description" content="前端通常会使用Cookie在浏览器客户端保存会话信息，本文主要记录了Cookie的工作原理、协议规范还有限制，以及在服务端常用的Seesion来维持会话状态与Cookie的关系等相关知识">
+<meta name="twitter:image" content="http://yoursite.com/image/web/Cookie与Session_01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/02/20/web协议_05_HTTP-Cookie与Session/"/>
+
+
+
+
+
+  <title>HTTP Cookie与Session | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/20/web协议_05_HTTP-Cookie与Session/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTTP Cookie与Session</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-20T16:00:00+08:00">
+                2021-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络/" itemprop="url" rel="index">
+                    <span itemprop="name">网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前端通常会使用Cookie在浏览器客户端保存会话信息，本文主要记录了Cookie的工作原理、协议规范还有限制，以及在服务端常用的Seesion来维持会话状态与Cookie的关系等相关知识</p>
+<a id="more"></a>
+<h1 id="Cookie-RFC6265-HTTP-State-Management-Mechanism"><a href="#Cookie-RFC6265-HTTP-State-Management-Mechanism" class="headerlink" title="Cookie RFC6265, HTTP State Management Mechanism"></a>Cookie RFC6265, HTTP State Management Mechanism</h1><p>RFC626中对Cookie的定义为HTTP状态管理机制。</p>
+<p>保存在客户端、由浏览器维护、表示应用状态的HTTP头部。有以下特点：</p>
+<ul>
+<li>存放在内存或者磁盘中</li>
+<li>服务器端生成Cookie在响应中通过Set-Cookie头部告知客户端(允许多个Set-Cookie头部传递多个值)</li>
+<li>客户端得到Cookie后，后续请求都会自动将 Cookie 头部携带至请求中</li>
+</ul>
+<h1 id="Cookie和Set-Cookie头部的定义"><a href="#Cookie和Set-Cookie头部的定义" class="headerlink" title="Cookie和Set-Cookie头部的定义"></a>Cookie和Set-Cookie头部的定义</h1><p>Cookie 头部中可以存放多个 name/value 名值对</p>
+<blockquote>
+<p>cookie-header = “Cookie:” OWS cookie-string OWS</p>
+<ul>
+<li>cookie-string = cookie-pair *( “;” SP cookie-pair ) </li>
+<li>cookie-pair = cookie-name “=” cookie-value</li>
+</ul>
+</blockquote>
+<p>Set-Cookie 头部一次只能传递 1 个 name/value 名值对，响应中可以含多个Set-Cookie头部 </p>
+<blockquote>
+<p>set-cookie-header = “Set-Cookie:” SP set-cookie-string</p>
+<ul>
+<li>set-cookie-string = cookie-pair *( “;” SP cookie-av )</li>
+<li>cookie-pair = cookie-name “=” cookie-value</li>
+<li>cookie-av:描述 cookie-pair 的可选属性</li>
+</ul>
+</blockquote>
+<h1 id="Cookie-pair的属性"><a href="#Cookie-pair的属性" class="headerlink" title="Cookie-pair的属性"></a>Cookie-pair的属性</h1><blockquote>
+<p>cookie-av = expires-av / max-age-av / domain-av / path-av / secure-av / httponly-av / extension-av</p>
+<ul>
+<li>expires-av = “Expires=” sane-cookie-date<ul>
+<li>cookie 到日期 sane-cookie-date 后失效</li>
+</ul>
+</li>
+<li>max-age-av = “Max-Age=” non-zero-digit *DIGIT<ul>
+<li>cookie 经过 *DIGIT 秒后失效。max-age 优先级高于 expires </li>
+</ul>
+</li>
+<li>domain-av = “Domain=” domain-value<ul>
+<li>指定 cookie 可用于哪些域名，默认可以访问当前域名 </li>
+</ul>
+</li>
+<li>path-av = “Path=” path-value<ul>
+<li>指定 Path 路径下才能使用 cookie </li>
+</ul>
+</li>
+<li>secure-av = “Secure“<ul>
+<li>只有使用 TLS/SSL 协议(https)时才能使用 cookie </li>
+</ul>
+</li>
+<li>httponly-av = “HttpOnly“<ul>
+<li>不能使用 JavaScript(Document.cookie 、XMLHttpRequest 、Request APIs)访问到 cookie</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<h1 id="Cookie使用的限制"><a href="#Cookie使用的限制" class="headerlink" title="Cookie使用的限制"></a>Cookie使用的限制</h1><ul>
+<li><p>RFC规范对浏览器使用Cookie的要求</p>
+<ul>
+<li>每条Cookie的长度(包括name、value以及描述的属性等总长度)至于要达到4KB </li>
+<li>每个域名下至少支持50个Cookie</li>
+<li>至少要支持3000个Cookie</li>
+</ul>
+</li>
+<li><p>代理服务器传递 Cookie 时会有限制</p>
+</li>
+</ul>
+<h1 id="Cookie在协议设计上的问题"><a href="#Cookie在协议设计上的问题" class="headerlink" title="Cookie在协议设计上的问题"></a>Cookie在协议设计上的问题</h1><ul>
+<li>Cookie会被附加在每个HTTP请求中，所以无形中增加了流量</li>
+<li>由于在HTTP请求中的Cookie是明文传递的，所以安全性成问题(除非用HTTPS)</li>
+<li>Cookie的大小不应超过4KB，故对于复杂的存储需求来说是不够用的</li>
+</ul>
+<h1 id="登陆场景下Cookie与Session的常见用法"><a href="#登陆场景下Cookie与Session的常见用法" class="headerlink" title="登陆场景下Cookie与Session的常见用法"></a>登陆场景下Cookie与Session的常见用法</h1><p><img src="/image/web/Cookie与Session_01.png" alt="01"></p>
+<h1 id="无状态的REST架构-VS-状态管理"><a href="#无状态的REST架构-VS-状态管理" class="headerlink" title="无状态的REST架构 VS 状态管理"></a>无状态的REST架构 VS 状态管理</h1><h2 id="应用状态与资源状态"><a href="#应用状态与资源状态" class="headerlink" title="应用状态与资源状态"></a>应用状态与资源状态</h2><ul>
+<li><p>应用状态:应由客户端管理，不应由服务器管理 </p>
+<ul>
+<li>如浏览器目前在哪一页</li>
+<li>REST 架构要求服务器不应保存应用状态</li>
+</ul>
+</li>
+<li><p>资源状态:应由服务器管理，不应由客户端管理</p>
+<ul>
+<li>如数据库中存放的数据状态，例如用户的登陆信息</li>
+</ul>
+</li>
+</ul>
+<h2 id="HTTP请求的状态"><a href="#HTTP请求的状态" class="headerlink" title="HTTP请求的状态"></a>HTTP请求的状态</h2><h3 id="有状态的请求"><a href="#有状态的请求" class="headerlink" title="有状态的请求"></a>有状态的请求</h3><p>服务器端保存请求的相关信息，每个请求可以使用以前保留的请求相关信息</p>
+<ul>
+<li>服务器 session 机制使服务器保存请求的相关信息</li>
+<li>cookie 使请求可以携带查询信息，与 session 配合完成有状态的请求</li>
+</ul>
+<h3 id="无状态的请求"><a href="#无状态的请求" class="headerlink" title="无状态的请求"></a>无状态的请求</h3><p>服务器能够处理的所有信息都来自当前请求所携带的信息</p>
+<ul>
+<li>服务器不会保存session信息</li>
+<li>请求可以通过cookie携带</li>
+</ul>
+<h1 id="第三方Cookie"><a href="#第三方Cookie" class="headerlink" title="第三方Cookie"></a>第三方Cookie</h1><p>浏览器允许对于不安全域下的资源(如广告图片)响应中的Set-Cookie保存，并在后续访问该域时自动使用Cookie。<br>常用于用户踪迹信息的搜集</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web协议/" rel="tag"># web协议</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/02/18/web协议_03_HTTP包体/" rel="next" title="HTTP包体">
+                <i class="fa fa-chevron-left"></i> HTTP包体
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/20/web协议_04_HTTP-Range/" rel="prev" title="HTTP Range">
+                HTTP Range <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Cookie-RFC6265-HTTP-State-Management-Mechanism"><span class="nav-number">1.</span> <span class="nav-text">Cookie RFC6265, HTTP State Management Mechanism</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cookie和Set-Cookie头部的定义"><span class="nav-number">2.</span> <span class="nav-text">Cookie和Set-Cookie头部的定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cookie-pair的属性"><span class="nav-number">3.</span> <span class="nav-text">Cookie-pair的属性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cookie使用的限制"><span class="nav-number">4.</span> <span class="nav-text">Cookie使用的限制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cookie在协议设计上的问题"><span class="nav-number">5.</span> <span class="nav-text">Cookie在协议设计上的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#登陆场景下Cookie与Session的常见用法"><span class="nav-number">6.</span> <span class="nav-text">登陆场景下Cookie与Session的常见用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#无状态的REST架构-VS-状态管理"><span class="nav-number">7.</span> <span class="nav-text">无状态的REST架构 VS 状态管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#应用状态与资源状态"><span class="nav-number">7.1.</span> <span class="nav-text">应用状态与资源状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP请求的状态"><span class="nav-number">7.2.</span> <span class="nav-text">HTTP请求的状态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有状态的请求"><span class="nav-number">7.2.1.</span> <span class="nav-text">有状态的请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#无状态的请求"><span class="nav-number">7.2.2.</span> <span class="nav-text">无状态的请求</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三方Cookie"><span class="nav-number">8.</span> <span class="nav-text">第三方Cookie</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>

@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/new_favicon_source_02_180x180.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1571293259.jpg?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/new_favicon_source_02.jpg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="web协议," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="主要记录HTTP请求包体内容的格式协议，包含确定和不确定时包体长度、媒体类型的传输、FORM表单提交等协议格式。">
+<meta name="keywords" content="web协议">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP包体">
+<meta property="og:url" content="http://yoursite.com/2021/02/18/web协议_03_HTTP包体/index.html">
+<meta property="og:site_name" content="LiuBo&#39;s Notes">
+<meta property="og:description" content="主要记录HTTP请求包体内容的格式协议，包含确定和不确定时包体长度、媒体类型的传输、FORM表单提交等协议格式。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-02-20T08:54:55.878Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP包体">
+<meta name="twitter:description" content="主要记录HTTP请求包体内容的格式协议，包含确定和不确定时包体长度、媒体类型的传输、FORM表单提交等协议格式。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/02/18/web协议_03_HTTP包体/"/>
+
+
+
+
+
+  <title>HTTP包体 | LiuBo's Notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LiuBo's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/18/web协议_03_HTTP包体/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xlbpowder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/new_favicon_source_02_180x180.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiuBo's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTTP包体</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-18T14:00:00+08:00">
+                2021-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络/" itemprop="url" rel="index">
+                    <span itemprop="name">网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>  阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>主要记录HTTP请求包体内容的格式协议，包含确定和不确定时包体长度、媒体类型的传输、FORM表单提交等协议格式。<br><a id="more"></a></p>
+<h1 id="HTTP包体：承载的消息内容"><a href="#HTTP包体：承载的消息内容" class="headerlink" title="HTTP包体：承载的消息内容"></a>HTTP包体：承载的消息内容</h1><p>请求或者响应都可以携带包体</p>
+<blockquote>
+<p>HTTP-message = start-line *( header-field CRLF ) CRLF [ message-body]</p>
+<ul>
+<li>message-body = *OCTET: 二进制字节流</li>
+</ul>
+</blockquote>
+<h2 id="以下消息不能含有包体"><a href="#以下消息不能含有包体" class="headerlink" title="以下消息不能含有包体"></a>以下消息不能含有包体</h2><ul>
+<li>HEAD方法请求对应的响应</li>
+<li>1xx、204、304对应的响应</li>
+<li>CONNECT方法对应的2xx响应</li>
+</ul>
+<h1 id="两种传输HTTP包体的方式"><a href="#两种传输HTTP包体的方式" class="headerlink" title="两种传输HTTP包体的方式"></a>两种传输HTTP包体的方式</h1><h2 id="确定包体的全部长度"><a href="#确定包体的全部长度" class="headerlink" title="确定包体的全部长度"></a>确定包体的全部长度</h2><p>使用Content-Length头部明确指明包体长度</p>
+<blockquote>
+<p>Content-Length = 1*DIGIT</p>
+<ul>
+<li>用10进制（不是16进制）表示包体中的字节个数，且必须与实际传输的包体长度一致</li>
+</ul>
+</blockquote>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><p>接受端处理更简单</p>
+<h2 id="不能明确包体的全部长度"><a href="#不能明确包体的全部长度" class="headerlink" title="不能明确包体的全部长度"></a>不能明确包体的全部长度</h2><p>使用Transfer-Encoding头部指明使用Chunk传输方式</p>
+<ul>
+<li>含Transfer-Encoding头部后Content-Length头部应被忽略</li>
+</ul>
+<h3 id="Transfer-Encoding头部"><a href="#Transfer-Encoding头部" class="headerlink" title="Transfer-Encoding头部"></a>Transfer-Encoding头部</h3><blockquote>
+<p>transfer-coding = “chunked”/“compress”/“deflate”/“gzip”/transfer-extension</p>
+</blockquote>
+<p>使用Chunked transfer encoding分块传输编码：Transfer-Encoding: chunked<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">chunked-body = *chunk</span><br><span class="line">                last-chunk</span><br><span class="line">                trailer</span><br><span class="line">                CRLF</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>chunk = chunk-size [ chunk-ext] CRLF chunk-data CRLF</p>
+<ul>
+<li>chunk-size = 1*HEXDIG （注：这里是16进制 不同于Content-Lenght DIGIT的10进制）</li>
+<li>chunk-data = 1*OCTET</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>last-chunk = 1*(“0”) [chunk-ext] CRLF（1个或多个0，表明chunk已经结束了）</p>
+</blockquote>
+<blockquote>
+<p>trailer-part = *(header-field CRLF )（在chunk-body已经传输后，可以再次发送header）</p>
+</blockquote>
+<h3 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>基于长连接持续推送动态内容</li>
+<li>压缩提及较大的包体时，不必完全压缩完（计算出头部）再发送，可以边发送边压缩</li>
+<li>传递必须在包体传输完才能计算出Trailer头部</li>
+</ul>
+<h3 id="Trailer头部传输"><a href="#Trailer头部传输" class="headerlink" title="Trailer头部传输"></a>Trailer头部传输</h3><p>TE 头部:客户端在请求在声明是否接收Trailer头部 </p>
+<blockquote>
+<p>TE: trailers</p>
+</blockquote>
+<p>Trailer头部:服务器告知接下来chunk包体后会传输哪些Trailer头部 </p>
+<blockquote>
+<p>Trailer: Date</p>
+</blockquote>
+<h4 id="以下头部不允许出现在Trailer的值中"><a href="#以下头部不允许出现在Trailer的值中" class="headerlink" title="以下头部不允许出现在Trailer的值中"></a>以下头部不允许出现在Trailer的值中</h4><ul>
+<li>用于信息分帧的首部 (例如 Transfer-Encoding 和 Content-Length)</li>
+<li>用于路由用途的首部 (例如 Host)</li>
+<li>请求修饰首部 (例如控制类和条件类的，如 Cache-Control，Max-For wards，或者 TE)</li>
+<li>身份验证首部 (例如 Authorization 或者 Set-Cookie)</li>
+<li>Content-Encoding, Content-Type, Content-Range，以及 Trailer 自身</li>
+</ul>
+<p>Trailer头部HTTP/1.1中并不是所有浏览器都支持</p>
+<h1 id="MIME媒体类型-Multipurpose-Internet-Mail-Extensions"><a href="#MIME媒体类型-Multipurpose-Internet-Mail-Extensions" class="headerlink" title="MIME媒体类型(Multipurpose Internet Mail Extensions)"></a>MIME媒体类型(Multipurpose Internet Mail Extensions)</h1><blockquote>
+<p>content := “Content-Type” “:” type “/“ subtype *(“;” parameter)</p>
+<ul>
+<li>type := discrete-type / composite-type<ul>
+<li>discrete-type := “text” / “image” / “audio” / “video” / “application” / extension-token</li>
+<li>composite-type := “message” / “multipart” / extension-token</li>
+<li>extension-token := ietf-token / x-token</li>
+</ul>
+</li>
+<li>subtype := extension-token / iana-token</li>
+<li>parameter := attribute “=” value</li>
+</ul>
+</blockquote>
+<p>大小写不敏感，但通常是小写。例如: Content-type: text/plain; charset=”us-ascii”</p>
+<h2 id="Media-Types查阅地址"><a href="#Media-Types查阅地址" class="headerlink" title="Media Types查阅地址"></a>Media Types查阅地址</h2><p><strong><em> <a href="https://www.iana.org/assignments/media-types/media-types.xhtml" target="_blank" rel="noopener">https://www.iana.org/assignments/media-types/media-types.xhtml</a> </em></strong></p>
+<h1 id="Content-Disposition头部-RFC6266"><a href="#Content-Disposition头部-RFC6266" class="headerlink" title="Content-Disposition头部(RFC6266)"></a>Content-Disposition头部(RFC6266)</h1><p>当传输的包体是附件的形式给浏览器显示时比较有用</p>
+<blockquote>
+<p>disposition-type = “inline” | “attachment” | disp-ext-type</p>
+<ul>
+<li>inline: 指定包体是以 inline 内联的方式，作为页面的一部分展示</li>
+<li>attachment:指定浏览器将包体以附件的方式下载<ul>
+<li>例如: Content-Disposition: attachment</li>
+<li>例如: Content-Disposition: attachment; filename=”filename.jpg”</li>
+</ul>
+</li>
+<li>在多包体multipart/form-data 类型应答中，可以用于子消息体部分<ul>
+<li>如 Content-Disposition: form-data; name=”fieldName”; filename=”filename.jpg”</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<h1 id="HTML-FORM表单时包体的协议格式"><a href="#HTML-FORM表单时包体的协议格式" class="headerlink" title="HTML FORM表单时包体的协议格式"></a>HTML FORM表单时包体的协议格式</h1><h2 id="表单提交请求时的关键属性"><a href="#表单提交请求时的关键属性" class="headerlink" title="表单提交请求时的关键属性"></a>表单提交请求时的关键属性</h2><ul>
+<li>action: 提交时发起HTTP请求的URI</li>
+<li>method: 提交时发起HTTP请求的http方法<ul>
+<li>GET: 将表单数据以URI参数的方式提交</li>
+<li>POST: 将表单数据放在请求包体中提交</li>
+</ul>
+</li>
+<li>enctype: 在POST方法下，对表单内容在请求包体中的编码方式 <ul>
+<li>application/x-www-form-urlencoded <ul>
+<li>数据被编码成以‘&amp;’分隔的键-值对, 同时以‘=’分隔键和值，字符以URL编码方式编码</li>
+</ul>
+</li>
+<li>multipart/form-data<ul>
+<li>boundary 分隔符</li>
+<li>每部分表述皆有HTTP头部描述子包体，例如Content-Type</li>
+<li>last boundary结尾</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="multipart-RFC1521-一个包体中多个资源表述"><a href="#multipart-RFC1521-一个包体中多个资源表述" class="headerlink" title="multipart(RFC1521):一个包体中多个资源表述"></a>multipart(RFC1521):一个包体中多个资源表述</h2><p>Content-type 头部指明这是一个多表述包体 </p>
+<blockquote>
+<p>Content-type: multipart/form-data;</p>
+<ul>
+<li>boundary=—-WebKitFormBoundar yRRJKeWfHPGrS4LKe </li>
+</ul>
+</blockquote>
+<h2 id="Boundary-分隔符的格式"><a href="#Boundary-分隔符的格式" class="headerlink" title="Boundary 分隔符的格式"></a>Boundary 分隔符的格式</h2><ul>
+<li>boundary := 0*69&lt;bchars&gt; bcharsnospace（不能超过70个字符）<ul>
+<li>bchars := bcharsnospace / “ “</li>
+<li>bcharsnospace:=DIGIT/ALPHA/“‘“/“(“/“)”/“+”/“_”/“,”/“-“/“.”/“/“/“:” / “=” / “?”</li>
+</ul>
+</li>
+</ul>
+<h2 id="multipart-body-RFC822"><a href="#multipart-body-RFC822" class="headerlink" title="multipart-body(RFC822)"></a>multipart-body(RFC822)</h2><blockquote>
+<p>multipart-body = preamble 1*encapsulation close-delimiter epilogue</p>
+</blockquote>
+<p>前后两段通常不使用，一般也会要求服务端丢弃掉</p>
+<ul>
+<li>preamble := discard-text</li>
+<li>epilogue := discard-text<ul>
+<li>discard-text := <em>(</em>text CRLF)</li>
+</ul>
+</li>
+</ul>
+<p>结束分隔符，注意和每一部分资源表述的的分隔符不同，在最后也要有”–”</p>
+<ul>
+<li>close-delimiter = “–” boundary “–” CRLF<h3 id="每部分包体格式"><a href="#每部分包体格式" class="headerlink" title="每部分包体格式"></a>每部分包体格式</h3>一个或者多个，表示每一个资源表述<blockquote>
+<p>encapsulation = delimiter body-part CRLF</p>
+</blockquote>
+</li>
+<li>delimiter = “–” boundary CRLF</li>
+<li>body-part = fields <em>( CRLF </em>text )<ul>
+<li>field = field-name “:” [ field-value ] CRLF<ul>
+<li>content-disposition: form-data; name=”xxxxx“</li>
+<li>content-type 头部指明该部分包体的类型</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>投食入口</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/reward/wechatpay_reward.jpg" alt="xlbpowder 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/reward/alipay_reward.jpg" alt="xlbpowder 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web协议/" rel="tag"># web协议</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/02/14/web协议_02_HTTP/" rel="next" title="HTTP长短连接、代理服务器转、请求上下文、内容协商与资源表述等头部">
+                <i class="fa fa-chevron-left"></i> HTTP长短连接、代理服务器转、请求上下文、内容协商与资源表述等头部
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/20/web协议_05_HTTP-Cookie与Session/" rel="prev" title="HTTP Cookie与Session">
+                HTTP Cookie与Session <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+     <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/new_favicon_source_02_180x180.jpg"
+                alt="xlbpowder" />
+            
+              <p class="site-author-name" itemprop="name">xlbpowder</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xlbpowder" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/1870931111?refer_flag=1001030201_" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://xlbpowder.cn/image/QRcode/wechat_qrcode.jpg" target="_blank" title="WeChat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>WeChat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP包体：承载的消息内容"><span class="nav-number">1.</span> <span class="nav-text">HTTP包体：承载的消息内容</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#以下消息不能含有包体"><span class="nav-number">1.1.</span> <span class="nav-text">以下消息不能含有包体</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#两种传输HTTP包体的方式"><span class="nav-number">2.</span> <span class="nav-text">两种传输HTTP包体的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#确定包体的全部长度"><span class="nav-number">2.1.</span> <span class="nav-text">确定包体的全部长度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优点"><span class="nav-number">2.1.1.</span> <span class="nav-text">优点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不能明确包体的全部长度"><span class="nav-number">2.2.</span> <span class="nav-text">不能明确包体的全部长度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Transfer-Encoding头部"><span class="nav-number">2.2.1.</span> <span class="nav-text">Transfer-Encoding头部</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优点-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Trailer头部传输"><span class="nav-number">2.2.3.</span> <span class="nav-text">Trailer头部传输</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#以下头部不允许出现在Trailer的值中"><span class="nav-number">2.2.3.1.</span> <span class="nav-text">以下头部不允许出现在Trailer的值中</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MIME媒体类型-Multipurpose-Internet-Mail-Extensions"><span class="nav-number">3.</span> <span class="nav-text">MIME媒体类型(Multipurpose Internet Mail Extensions)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Media-Types查阅地址"><span class="nav-number">3.1.</span> <span class="nav-text">Media Types查阅地址</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Content-Disposition头部-RFC6266"><span class="nav-number">4.</span> <span class="nav-text">Content-Disposition头部(RFC6266)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTML-FORM表单时包体的协议格式"><span class="nav-number">5.</span> <span class="nav-text">HTML FORM表单时包体的协议格式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#表单提交请求时的关键属性"><span class="nav-number">5.1.</span> <span class="nav-text">表单提交请求时的关键属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multipart-RFC1521-一个包体中多个资源表述"><span class="nav-number">5.2.</span> <span class="nav-text">multipart(RFC1521):一个包体中多个资源表述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Boundary-分隔符的格式"><span class="nav-number">5.3.</span> <span class="nav-text">Boundary 分隔符的格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multipart-body-RFC822"><span class="nav-number">5.4.</span> <span class="nav-text">multipart-body(RFC822)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#每部分包体格式"><span class="nav-number">5.4.1.</span> <span class="nav-text">每部分包体格式</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlbpowder</span>
+
+  
+
+  <!-- 站长统计 -->
+  
+   <span style="display: none"
+    <script src="http://s6.cnzz.com/stat.php?id=1277962807&web_id=1277962807" type="text/javascript"></script>
+   </span>
+  
+
+  <!-- 不蒜子统计 
+  
+  -->
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1277962807&web_id=1277962807" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+  <script src="/lib/gitalk/gitalk.min.js"></script>
+   <script type="text/javascript">
+		var gitalk = new Gitalk({
+		  clientID: 'cb903b000756e9d9d1c7',
+		  clientSecret: 'ae8bc7faa89639391f0961c05fed416f38e8d820',
+		  repo: 'xlbpowder.comments',
+		  owner: 'xlbpowder',
+		  admin: ['xlbpowder'], 
+		  id: location.pathname,
+		  distractionFreeMode: ''
+		})
+		gitalk.render('gitalk-container')           
+       </script>
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"mobile":{"show":true,"scale":0.5},"log":false});</script></body>
+</html>

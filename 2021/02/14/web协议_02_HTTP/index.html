@@ -79,21 +79,23 @@
 
 
 
-<meta name="description" content="主要记录一些HTTP协议的细节">
+<meta name="description" content="主要记录一些HTTP协议的小知识点，长连接与短连接、HOST头部、代理服务器转发相关头部、请求响应上下文、内容协商与资源表述">
 <meta name="keywords" content="web协议">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HTTP杂记">
+<meta property="og:title" content="HTTP长短连接、代理服务器转、请求上下文、内容协商与资源表述等头部">
 <meta property="og:url" content="http://yoursite.com/2021/02/14/web协议_02_HTTP/index.html">
 <meta property="og:site_name" content="LiuBo&#39;s Notes">
-<meta property="og:description" content="主要记录一些HTTP协议的细节">
+<meta property="og:description" content="主要记录一些HTTP协议的小知识点，长连接与短连接、HOST头部、代理服务器转发相关头部、请求响应上下文、内容协商与资源表述">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/image/web/HTTP连接请求流程.png">
 <meta property="og:image" content="http://yoursite.com/image/web/TCP编程上看HTTP请求流程.png">
 <meta property="og:image" content="http://yoursite.com/image/web/短连接与长连接.png">
-<meta property="og:updated_time" content="2021-02-17T09:18:58.862Z">
+<meta property="og:image" content="http://yoursite.com/image/web/主动式内容协商流程.png">
+<meta property="og:image" content="http://yoursite.com/image/web/响应式内容协商流程.png">
+<meta property="og:updated_time" content="2021-02-20T12:32:21.005Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="HTTP杂记">
-<meta name="twitter:description" content="主要记录一些HTTP协议的细节">
+<meta name="twitter:title" content="HTTP长短连接、代理服务器转、请求上下文、内容协商与资源表述等头部">
+<meta name="twitter:description" content="主要记录一些HTTP协议的小知识点，长连接与短连接、HOST头部、代理服务器转发相关头部、请求响应上下文、内容协商与资源表述">
 <meta name="twitter:image" content="http://yoursite.com/image/web/HTTP连接请求流程.png">
 
 
@@ -130,7 +132,7 @@
 
 
 
-  <title>HTTP杂记 | LiuBo's Notes</title>
+  <title>HTTP长短连接、代理服务器转、请求上下文、内容协商与资源表述等头部 | LiuBo's Notes</title>
   
 
 
@@ -284,7 +286,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">HTTP杂记</h1>
+          <h1 class="post-title" itemprop="name headline">HTTP长短连接、代理服务器转、请求上下文、内容协商与资源表述等头部</h1>
         
 
         <div class="post-meta">
@@ -361,7 +363,7 @@
       
 
       
-        <p>主要记录一些HTTP协议的细节<br><a id="more"></a></p>
+        <p>主要记录一些HTTP协议的小知识点，长连接与短连接、HOST头部、代理服务器转发相关头部、请求响应上下文、内容协商与资源表述<br><a id="more"></a></p>
 <h1 id="HTTP-连接的简易流程"><a href="#HTTP-连接的简易流程" class="headerlink" title="HTTP 连接的简易流程"></a>HTTP 连接的简易流程</h1><p><img src="/image/web/HTTP连接请求流程.png" alt="01"></p>
 <h1 id="从TCP编程上看TP请求处理流程"><a href="#从TCP编程上看TP请求处理流程" class="headerlink" title="从TCP编程上看TP请求处理流程"></a>从TCP编程上看TP请求处理流程</h1><p><img src="/image/web/TCP编程上看HTTP请求流程.png" alt="02"></p>
 <h1 id="长连接与短连接"><a href="#长连接与短连接" class="headerlink" title="长连接与短连接"></a>长连接与短连接</h1><p>Connection头部，客户端、服务端都使用该属性作为是否长连接标示。客户端发起表示请求长连接，服务端响应该头部标示支持长连接，并且复用该连接。</p>
@@ -380,21 +382,95 @@
 </ul>
 </li>
 </ul>
-<h1 id="HOST头部"><a href="#HOST头部" class="headerlink" title="HOST头部"></a>HOST头部</h1><p>ABNF定义：Host = uri-host[“:” port]</p>
+<h1 id="HOST头部"><a href="#HOST头部" class="headerlink" title="HOST头部"></a>HOST头部</h1><blockquote>
+<p>Host = uri-host[“:” port]</p>
 <ul>
 <li>HTTP/1.1规范要求，不传递Host头部则返回400错误响应码</li>
-<li>为了防止陈旧的代理服务器发向正向代理的请求，request-target必须以absolute-form形式出现<ul>
+<li>为了防止陈旧的代理服务器发向正向代理的请求，request-target必须以absolute-form形式出现</li>
 <li>request-line = method SP request-target SP HTTP-version CRLF</li>
-<li>absolute-form =absolute-URI (absolute-URI = scheme “:” hier-part [“?” query])</li>
+<li>absolute-form = absolute-URI (absolute-URI = scheme “:” hier-part [“?” query])</li>
 </ul>
-</li>
-</ul>
-<h1 id="代理服务器转发消息时的相关头部"><a href="#代理服务器转发消息时的相关头部" class="headerlink" title="代理服务器转发消息时的相关头部"></a>代理服务器转发消息时的相关头部</h1><p>客户端与源服务器之间存在多个代理，</p>
+</blockquote>
+<h1 id="代理服务器转发消息时的相关头部"><a href="#代理服务器转发消息时的相关头部" class="headerlink" title="代理服务器转发消息时的相关头部"></a>代理服务器转发消息时的相关头部</h1><p>客户端与源服务器之间存在多个代理</p>
 <h2 id="如何传递IP地址？"><a href="#如何传递IP地址？" class="headerlink" title="如何传递IP地址？"></a>如何传递IP地址？</h2><ol>
 <li>TCP连接四元组(src ip, src port, dst ip, dst port)</li>
 <li>HTTP头部X-Forwarded-For 用于传递IP</li>
 <li>HTTP头部X-Real-IP用于传递用户IP（Nginx）</li>
 </ol>
+<h2 id="消息的转发"><a href="#消息的转发" class="headerlink" title="消息的转发"></a>消息的转发</h2><h3 id="Max-Forwards"><a href="#Max-Forwards" class="headerlink" title="Max-Forwards"></a>Max-Forwards</h3><p>限制Proxy代理服务器的最大转发次数，仅对TRACE/OPTIONS方法有效</p>
+<h3 id="Via"><a href="#Via" class="headerlink" title="Via"></a>Via</h3><p>指明经过的代理服务器名称及版本</p>
+<blockquote>
+<p>Via = 1#(received-protocol RWS received-by [RWS comment])</p>
+</blockquote>
+<h2 id="Cache-Control-no-transform"><a href="#Cache-Control-no-transform" class="headerlink" title="Cache-Control:no-transform"></a>Cache-Control:no-transform</h2><p>禁止代理服务器修改响应包体</p>
+<h1 id="请求与响应的上下文"><a href="#请求与响应的上下文" class="headerlink" title="请求与响应的上下文"></a>请求与响应的上下文</h1><h2 id="请求上下文"><a href="#请求上下文" class="headerlink" title="请求上下文"></a>请求上下文</h2><h3 id="User-Agent"><a href="#User-Agent" class="headerlink" title="User-Agent"></a>User-Agent</h3><p>指明客户端的类型信息，服务器可以根据此资源的表述作出抉择</p>
+<blockquote>
+<p>User-Agent = product *(RWS ( product / comment))</p>
+<ul>
+<li>product = token[“/“ product-version]</li>
+<li>RWS = 1*( SP / HTAB)</li>
+</ul>
+</blockquote>
+<h3 id="Referer"><a href="#Referer" class="headerlink" title="Referer"></a>Referer</h3><p>浏览器对来自某一页面的请求自动添加的头部。<br>服务器端常用于统计分析、缓存优化、防盗链等功能。</p>
+<ul>
+<li>Referer = absolute-URI / partial-URI<h4 id="Referer不会被添加的场景"><a href="#Referer不会被添加的场景" class="headerlink" title="Referer不会被添加的场景"></a>Referer不会被添加的场景</h4></li>
+</ul>
+<ol>
+<li>来源页面采用的协议为标示本地文件的“file”或“data” URI</li>
+<li>当前请求页面采用的http协议，而来源页面采用的是https协议</li>
+</ol>
+<h2 id="From"><a href="#From" class="headerlink" title="From"></a>From</h2><p>主要用于网络爬虫，告诉服务器如何通过邮件联系到爬虫的负责人</p>
+<blockquote>
+<p>From = mailbox</p>
+</blockquote>
+<h2 id="响应上下文"><a href="#响应上下文" class="headerlink" title="响应上下文"></a>响应上下文</h2><h3 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h3><p>指明服务器上所用软件的信息，用于帮助客户端定位问题或统计数据</p>
+<h3 id="Allow"><a href="#Allow" class="headerlink" title="Allow"></a>Allow</h3><p>告诉客户端，服务器上该URI对应资源允许哪些方法的执行</p>
+<h3 id="Accept-Ranges"><a href="#Accept-Ranges" class="headerlink" title="Accept-Ranges"></a>Accept-Ranges</h3><p>告诉客户端服务器上该资源是否允许range请求</p>
+<h1 id="内容的协商与资源表述"><a href="#内容的协商与资源表述" class="headerlink" title="内容的协商与资源表述"></a>内容的协商与资源表述</h1><h2 id="内容协商"><a href="#内容协商" class="headerlink" title="内容协商"></a>内容协商</h2><p>内容协商将决定服务器端生成不同的包体传输给客户端</p>
+<p>每个URI指向的资源可以是任何事物，可以有多种不同的表述，例如一份文档可以有不同语言的翻译(en, fr, de)、不同的媒体格式(text/html, text/pdf)、可以针对不同的浏览器提供不同的压缩编码(gzip, br)等。</p>
+<h3 id="Proactive-主动式内容协商"><a href="#Proactive-主动式内容协商" class="headerlink" title="Proactive 主动式内容协商"></a>Proactive 主动式内容协商</h3><p>指由客户端先在请求头部中提出需要的表述形式，而服务器根据这些请求头部提供特定的representation表述</p>
+<p><img src="/image/web/主动式内容协商流程.png" alt="04"></p>
+<ul>
+<li>Accept 接受格式</li>
+<li>Accept 接受语言</li>
+<li>Accept-Encoding 接受压缩编码格式</li>
+<li>Content-* 响应的格式、语言、压缩编码格式</li>
+</ul>
+<h3 id="Reactive-响应式内容协商"><a href="#Reactive-响应式内容协商" class="headerlink" title="Reactive 响应式内容协商"></a>Reactive 响应式内容协商</h3><p>指服务器返回300 Multiple Choices或406 Not Acceptable，由客户端选择一种表述URI使用</p>
+<p>存在一定的弊端，增加交互次数，且RFC规范中没有明确告诉Clent规则，各大浏览器无法按照统一策略响应，所以使用较少。</p>
+<p><img src="/image/web/响应式内容协商流程.png" alt="05"></p>
+<h2 id="常见协商要素"><a href="#常见协商要素" class="headerlink" title="常见协商要素"></a>常见协商要素</h2><p>质量因子q：内容的质量、可接受类型的优先级，例如现在发起请求一张高清图片的缩略图，让用户快速浏览用，现在可以做非常高的压缩比，质量因子就比较小。请求一张医学等清晰图片，不能容忍做大范围的压缩，就要使用质量较大因子。也可以设置多种语言等场景。</p>
+<ul>
+<li><p>媒体资源的MIME类型及质量因子</p>
+<blockquote>
+<p>Accept: text/html,application/xhtml+xml,application/xml;q=0.9,<em>/</em>;q=0.8</p>
+</blockquote>
+</li>
+<li><p>字符编码(由于UTF-8格式广为使用，Accept-Charset已被废弃)</p>
+<blockquote>
+<p>Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7</p>
+</blockquote>
+</li>
+<li><p>表述语言</p>
+<blockquote>
+<p>Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.5</p>
+</blockquote>
+</li>
+<li><p>内容编码</p>
+<blockquote>
+<p>Accept-Encoding: gzip, deflate, br</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="国际化与本地化"><a href="#国际化与本地化" class="headerlink" title="国际化与本地化"></a>国际化与本地化</h2><ul>
+<li>internationalization(i18n) 指设计软件时，在不同的国家、地区可以不做逻辑实现层面的修改便能够以不同语言显示</li>
+<li>localization(l10n) 指内容协商时，根据请求中的语言及区域信息，选择特定的语言作为资源表述</li>
+</ul>
+<h2 id="资源表述的元数据头部"><a href="#资源表述的元数据头部" class="headerlink" title="资源表述的元数据头部"></a>资源表述的元数据头部</h2><ul>
+<li>媒体类型、编码 content-type: text/html;charset=utf-8</li>
+<li>内容编码 content-encoding: gzip</li>
+<li>语言 Content-Language: de-DE, en-CA</li>
+</ul>
 
       
     </div>
@@ -463,6 +539,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/18/web协议_03_HTTP包体/" rel="prev" title="HTTP包体">
+                HTTP包体 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -545,7 +625,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-count">88</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -622,7 +702,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-连接的简易流程"><span class="nav-number">1.</span> <span class="nav-text">HTTP 连接的简易流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#从TCP编程上看TP请求处理流程"><span class="nav-number">2.</span> <span class="nav-text">从TCP编程上看TP请求处理流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#长连接与短连接"><span class="nav-number">3.</span> <span class="nav-text">长连接与短连接</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Proxy-Connection"><span class="nav-number">3.1.</span> <span class="nav-text">Proxy-Connection</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HOST头部"><span class="nav-number">4.</span> <span class="nav-text">HOST头部</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代理服务器转发消息时的相关头部"><span class="nav-number">5.</span> <span class="nav-text">代理服务器转发消息时的相关头部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何传递IP地址？"><span class="nav-number">5.1.</span> <span class="nav-text">如何传递IP地址？</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-连接的简易流程"><span class="nav-number">1.</span> <span class="nav-text">HTTP 连接的简易流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#从TCP编程上看TP请求处理流程"><span class="nav-number">2.</span> <span class="nav-text">从TCP编程上看TP请求处理流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#长连接与短连接"><span class="nav-number">3.</span> <span class="nav-text">长连接与短连接</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Proxy-Connection"><span class="nav-number">3.1.</span> <span class="nav-text">Proxy-Connection</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HOST头部"><span class="nav-number">4.</span> <span class="nav-text">HOST头部</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代理服务器转发消息时的相关头部"><span class="nav-number">5.</span> <span class="nav-text">代理服务器转发消息时的相关头部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何传递IP地址？"><span class="nav-number">5.1.</span> <span class="nav-text">如何传递IP地址？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息的转发"><span class="nav-number">5.2.</span> <span class="nav-text">消息的转发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Max-Forwards"><span class="nav-number">5.2.1.</span> <span class="nav-text">Max-Forwards</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Via"><span class="nav-number">5.2.2.</span> <span class="nav-text">Via</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cache-Control-no-transform"><span class="nav-number">5.3.</span> <span class="nav-text">Cache-Control:no-transform</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#请求与响应的上下文"><span class="nav-number">6.</span> <span class="nav-text">请求与响应的上下文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#请求上下文"><span class="nav-number">6.1.</span> <span class="nav-text">请求上下文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#User-Agent"><span class="nav-number">6.1.1.</span> <span class="nav-text">User-Agent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Referer"><span class="nav-number">6.1.2.</span> <span class="nav-text">Referer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Referer不会被添加的场景"><span class="nav-number">6.1.2.1.</span> <span class="nav-text">Referer不会被添加的场景</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#From"><span class="nav-number">6.2.</span> <span class="nav-text">From</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#响应上下文"><span class="nav-number">6.3.</span> <span class="nav-text">响应上下文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Server"><span class="nav-number">6.3.1.</span> <span class="nav-text">Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Allow"><span class="nav-number">6.3.2.</span> <span class="nav-text">Allow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Accept-Ranges"><span class="nav-number">6.3.3.</span> <span class="nav-text">Accept-Ranges</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内容的协商与资源表述"><span class="nav-number">7.</span> <span class="nav-text">内容的协商与资源表述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#内容协商"><span class="nav-number">7.1.</span> <span class="nav-text">内容协商</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Proactive-主动式内容协商"><span class="nav-number">7.1.1.</span> <span class="nav-text">Proactive 主动式内容协商</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reactive-响应式内容协商"><span class="nav-number">7.1.2.</span> <span class="nav-text">Reactive 响应式内容协商</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见协商要素"><span class="nav-number">7.2.</span> <span class="nav-text">常见协商要素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#国际化与本地化"><span class="nav-number">7.3.</span> <span class="nav-text">国际化与本地化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#资源表述的元数据头部"><span class="nav-number">7.4.</span> <span class="nav-text">资源表述的元数据头部</span></a></li></ol></li></ol></div>
             
 
           </div>
